@@ -3,6 +3,8 @@
 ![](image.png)   
 
 version 2.3 20150526   
+
+GPIO is an IPCore adapter to parallel Input and Output of signals   
    
 **Author:**   
 (c) Miguel A. Risco Castillo   
