@@ -1,6 +1,6 @@
 # **MarkDown Template**
 - - - 
-![](toolbar.png)   
+![](image.png)   
 
 Use this template for generate your datasheet for your IPCore.
 
