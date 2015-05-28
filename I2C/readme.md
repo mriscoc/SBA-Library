@@ -11,14 +11,11 @@ I2C is an IPCore adapter designed to send data using the [I2C Bus Specification]
 email: juan.vega25@gmail.com   
 
 **Notes**   
-v1.0 SBA 1.1 compliant  
+v1.0 SBA 1.0 compliant  
 
 ```vhdl
 entity I2C is
-generic (   
-  CLK_FREC  	: integer:= 50e6;   
-  I2C_ADDRESS   : natural:= 7;   
-  I2C_CLK       : natural:= 400e3); 
+generic (FREQ_SCL: natural:= 100e3); 
 port (
   -- SBA Bus Interface
   CLK_I : in std_logic;
