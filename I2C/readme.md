@@ -39,13 +39,13 @@ end I2C_Adapter;
 ```vhdl
    constant TXSTA   : integer:=15;				--Tx Ready
    constant RXSTA   : integer:=14;				--Rx Ready
-   constant I2C_ReadMEMORY   : unsigned(7 downto 0):=x"08";     --Enable Read Data from internal memory
+   constant I2C_ReadMEMORY   : unsigned(7 downto 0):=x"08";	--Enable Read Data from internal memory
    variable I2C_DEVICE_ADR   : unsigned(7 downto 0);     	--I2C Address Device
    variable I2C_DAT          : unsigned(7 downto 0);     	--Data to Write or Read
    variable I2C_ADR_REG      : unsigned(7 downto 0);     	--Initial address register to Write or Read 
    variable I2C_NumberBytesRead: unsigned(7 downto 0);		--Number of bytes to Write or Read
-   variable I2C_ADR_MEMORY   : unsigned(7 downto 0);            --Address Memory to Multiple Write 
-   variable I2CFlg           : std_logic;                       --Flag status
+   variable I2C_ADR_MEMORY   : unsigned(7 downto 0);		--Address Memory to Multiple Write 
+   variable I2CFlg           : std_logic;			--Flag status
 ```
 
 **Resume of functions avaliable in the I2C_Adapter**    
@@ -108,12 +108,12 @@ Example:
 ```vhdl
 
 -- Multiple Read I2C of ADXL345
-        When 059=> SBAcall(I2Cwait);             -- Is the I2C module avaliable?
+        When 059=> SBAcall(I2Cwait);			-- Is the I2C module avaliable?
         When 060=> I2C_DEVICE_ADR :=x"53";
                    I2C_ADR_REG:=x"32";
 -- /L:ReadBucle
-        When 061=> I2C_NumberBytesRead:=x"06";   -- Numbers bytes to Read
-                   SBACall(I2CReadbytes);        -- Call I2CReadBytes Routine
+        When 061=> I2C_NumberBytesRead:=x"06";		-- Numbers bytes to Read
+                   SBACall(I2CReadbytes);		-- Call I2CReadBytes Routine
         When 062=> SBARead(I2C);
         When 063=> SBAwait;  reg1:= x"00" & dati(7 downto 0);  -- first data    X (LSB)
         When 064=> SBAwait;  reg2:= x"00" & dati(7 downto 0);  -- second data   X (MSB)
@@ -124,12 +124,12 @@ Example:
         When 069=> SBARead(GPIO2);                             -- Read the status of the switches
         When 070=> reg7:= dati(2 downto 0);      
         When 071=> case reg7 is                  	       -- Evaluating the status of the switches
-                	  when "000" => SBAWrite(GPIO,reg1);   --Displaying X(LSB) data to the LEDs
-                          when "001" => SBAWrite(GPIO,reg2);   --Displaying X(MSB) data to the LEDs
-                 	  when "010" => SBAWrite(GPIO,reg3);   --Displaying Y(LSB) data to the LEDs
-                	  when "011" => SBAWrite(GPIO,reg4);   --Displaying Y(MSB) data to the LEDs
-                	  when "100" => SBAWrite(GPIO,reg5);   --Displaying Z(LSB) data to the LEDs
-                	  when "101" => SBAWrite(GPIO,reg6);   --Displaying Z(MSB) data to the LEDs
+                	  when "000" => SBAWrite(GPIO,reg1);   -- Displaying X(LSB) data to the LEDs
+                          when "001" => SBAWrite(GPIO,reg2);   -- Displaying X(MSB) data to the LEDs
+                 	  when "010" => SBAWrite(GPIO,reg3);   -- Displaying Y(LSB) data to the LEDs
+                	  when "011" => SBAWrite(GPIO,reg4);   -- Displaying Y(MSB) data to the LEDs
+                	  when "100" => SBAWrite(GPIO,reg5);   -- Displaying Z(LSB) data to the LEDs
+                	  when "101" => SBAWrite(GPIO,reg6);   -- Displaying Z(MSB) data to the LEDs
                 	  when others => SBAWrite(GPIO,x"0055"); -- Any Data
                    end case;
                 
