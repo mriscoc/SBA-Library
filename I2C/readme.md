@@ -51,7 +51,7 @@ end I2C_Adapter;
 **Resume of functions avaliable in the I2C_Adapter**    
 
 
-**1.Single write function.** Write a single data to dispositive I2C.
+**1. Single write function.** Write a single data to dispositive I2C.
 
 Example:
 
@@ -63,7 +63,7 @@ Example:
                    SBAcall(I2CWritebyte);
 ```
 
-**2.Single Read function.** Read single data from dispositive I2C.
+**2. Single Read function.** Read single data from dispositive I2C.
 
 Example:
 
@@ -76,7 +76,7 @@ Example:
 
 ```
 
-**3.Multiple Write function.** Write a Multiple data to an I2C dispositive. It use an internal memory, where the user  can
+**3. Multiple Write function.** Write a Multiple data to an I2C dispositive. It use an internal memory, where the user  can
 load all data, using the function I2CLoadbyteToMEMORY and It can upload until 256 data.
 The process requires that user define the I2C_DEVICE_ADR(I2C Address Device) and I2C_ADR_REG(Address Register).
 The multi-function writing data sequentially writes the addresses of I2C registers starting from the register address I2C_ADR_REG.    
@@ -98,7 +98,7 @@ Example:
                    SBAcall(I2CWritebytes);       -- Call routine I2CWriteBytes
 ```
 
-**4.Multiple Read function.** Read a Multiple data to an I2C dispositive. It use an internal memory, where the user  can
+**4. Multiple Read function.** Read a Multiple data to an I2C dispositive. It use an internal memory, where the user  can
 load all data, using the function I2CLoadbyteToMEMORY and It can upload until 256 data.
 The process requires that user define the I2C_DEVICE_ADR(I2C Address Device) and I2C_ADR_REG(Address Register).
 The function of reading multiple data sequentially reads the addresses of I2C registers starting from the register address I2C_ADR_REG.    
