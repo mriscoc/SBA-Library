@@ -59,7 +59,7 @@ Example:
 -- Turn On ADXL345
 => I2C_DEVICE_ADR:=x"53";  	-- Set Address Device
    I2C_ADR_REG:=x"2D";     	-- Register 0x2D—POWER_CTL				 
-   I2C_DAT:=x"08";	       	-- Enable the measurement mode of ADXL345,in the register 0x2D  	
+   I2C_DAT:=x"08";	       	-- Enable the measurement mode of ADXL345 in the register 0x2D  	
    SBAcall(I2CWritebyte);  	-- Call I2CWritebyte Routine   
 ```
 
