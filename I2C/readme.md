@@ -45,7 +45,7 @@ end I2C_Adapter;
    variable I2C_ADR_REG      : unsigned(7 downto 0);     	--Initial address register to Write or Read 
    variable I2C_NumberBytesRead: unsigned(7 downto 0);		--Number of bytes to Write or Read
    variable I2C_ADR_MEMORY   : unsigned(7 downto 0);            --Address Memory to Multiple Write 
-   variable I2CFlg           : std_logic;			--Flag status
+   variable I2CFlg           : std_logic;                       --Flag status
 ```
 
 **Resume of functions avaliable in the I2C_Adapter**    
@@ -121,11 +121,11 @@ Example:
         When 066=> SBAwait;  reg4:= x"00" & dati(7 downto 0);  -- Fourth data   Y (MSB)
         When 067=> SBAwait;  reg5:= x"00" & dati(7 downto 0);  -- fifth data    Z (LSB)
         When 068=> SBAwait;  reg6:= x"00" & dati(7 downto 0);  -- sixth data    Z (MSB)
-        When 069=> SBARead(GPIO2);			       -- Read the status of the switches
+        When 069=> SBARead(GPIO2);                             -- Read the status of the switches
         When 070=> reg7:= dati(2 downto 0);      
         When 071=> case reg7 is                  	       -- Evaluating the status of the switches
                 	  when "000" => SBAWrite(GPIO,reg1);   --Displaying X(LSB) data to the LEDs
-                    when "001" => SBAWrite(GPIO,reg2);         --Displaying X(MSB) data to the LEDs
+                          when "001" => SBAWrite(GPIO,reg2);   --Displaying X(MSB) data to the LEDs
                  	  when "010" => SBAWrite(GPIO,reg3);   --Displaying Y(LSB) data to the LEDs
                 	  when "011" => SBAWrite(GPIO,reg4);   --Displaying Y(MSB) data to the LEDs
                 	  when "100" => SBAWrite(GPIO,reg5);   --Displaying Z(LSB) data to the LEDs
