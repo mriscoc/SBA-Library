@@ -2,7 +2,7 @@
 - - - 
 ![](image.png)
 
-version 1.0 20150526   
+version 1.0 20150605   
 
 I2C is an IPCore designed to send data using the [I2C Bus Specification](http://www.nxp.com/documents/user_manual/UM10204.pdf "I2C Bus Specification").  
    
