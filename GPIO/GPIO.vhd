@@ -26,7 +26,7 @@
 --
 -- Notes
 --
--- v2.2
+-- v2.2 20120626
 -- Removed dependency of SBA_config
 --
 -- v2.1
