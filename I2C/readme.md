@@ -44,7 +44,7 @@ end I2C_Adapter;
    variable I2C_DAT          : unsigned(7 downto 0);     	--Data to Write or Read
    variable I2C_ADR_REG      : unsigned(7 downto 0);     	--Initial address register to Write or Read 
    variable I2C_NumberBytesRead: unsigned(7 downto 0);		--Number of bytes to Write or Read
-   variable I2C_ADR_MEMORY   : unsigned(7 downto 0);        --Address Memory to Multiple Write 
+   variable I2C_ADR_MEMORY   : unsigned(7 downto 0);        --Address Internal Memory to Multiple Write 
    variable I2CFlg           : std_logic;	                --Flag status 
 ```
 
@@ -57,10 +57,10 @@ Example:
 
 ```vhdl
 -- Turn On ADXL345
-=> I2C_DEVICE_ADR:=x"53";
-   I2C_ADR_REG:=x"2D";
-   I2C_DAT:=x"08";
-   SBAcall(I2CWritebyte);
+=> I2C_DEVICE_ADR:=x"53";  -- Set Address Device
+   I2C_ADR_REG:=x"2D";     -- Register 0x2D—POWER_CTL				 
+   I2C_DAT:=x"08";	   -- Enable the measurement mode of ADXL345,in the register 0x2D  	
+   SBAcall(I2CWritebyte);  -- Call I2CWritebyte Routine   
 ```
 
 **2. Single Read function.** Read single data from I2C device.
@@ -69,10 +69,10 @@ Example:
 
 ```vhdl
 -- Read Device ID ADXL345
-=> I2C_DEVICE_ADR :=x"53";
-   I2C_ADR_REG:=x"00";
-   SBAcall(I2CReadbyte);
-=> SBAWrite(GPIO, x"00" & I2C_DAT); 
+=> I2C_DEVICE_ADR :=x"53"; -- Set Address Device
+   I2C_ADR_REG:=x"00";     -- Register 0x00-Device ID 
+   SBAcall(I2CReadbyte);   -- Call I2CReadbyte Routine.The read value is returned in the variable I2C_DAT. 
+=> SBAWrite(GPIO, x"00" & I2C_DAT);  -- Displaying the value of I2C_DAT to the LEDs 
 
 ```
 
@@ -84,18 +84,23 @@ The multi-function writing data sequentially writes the addresses of I2C registe
 Example:
 
 ```vhdl
--- Multiple Write registers of ADXL345
+-- Multiple Write registers of ADXL345. 
+-- Writing three data.
 => SBAcall(I2Cwait);             -- Is the I2C module avaliable?
 => I2C_ADR_MEMORY:=x"00";        -- Reset address internal memory.
-   I2C_DAT:=x"00";
+   I2C_DAT:=x"10";               -- First data
    SBAcall(I2CLoadbyteToMEMORY); -- Load data within internal memory
-=> I2C_DAT:=x"02";
+=> I2C_DAT:=x"02";               -- Second data
    SBAcall(I2CLoadbyteToMEMORY); -- Load data within internal memory
-=> I2C_DAT:=x"25";
+=> I2C_DAT:=x"25";               -- Third data
    SBAcall(I2CLoadbyteToMEMORY); -- Load data within internal memory
-=> I2C_DEVICE_ADR :=x"53";
-   I2C_ADR_REG:=x"1E";
+=> I2C_DEVICE_ADR :=x"53";       -- Set Address Device
+   I2C_ADR_REG:=x"1E";           -- Register Initial
    SBAcall(I2CWritebytes);       -- Call routine I2CWriteBytes 
+				 -- Address  Value
+ 				 -- 0x1E   <- 10
+ 				 -- 0x1F   <- 02
+ 				 -- 0x20   <- 25
 ```
 
 **4. Multiple Read function.** Read a Multiple data to an I2C device. It use an internal memory, where the user  can
@@ -107,8 +112,8 @@ Example:
 
 ```vhdl
 => SBAcall(I2Cwait);             -- Is the I2C module avaliable?
-=> I2C_DEVICE_ADR :=x"53";
-   I2C_ADR_REG:=x"32";
+=> I2C_DEVICE_ADR :=x"53";       -- Set Address Device
+   I2C_ADR_REG:=x"32";           -- Set Register to starting to Read 
 -- /L:ReadBucle
 => I2C_NumberBytesRead:=x"06";   -- Numbers bytes to Read
    SBACall(I2CReadbytes);        -- Call I2CReadBytes Routine
