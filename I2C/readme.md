@@ -72,7 +72,7 @@ Example:
 => I2C_DEVICE_ADR :=x"53"; 		-- Set Address Device
    I2C_ADR_REG:=x"00";     		-- Register 0x00-Device ID 
    SBAcall(I2CReadbyte);   		-- Call I2CReadbyte Routine.The read value is returned in the variable I2C_DAT. 
-=> SBAWrite(GPIO, x"00" & I2C_DAT);  	-- Displaying the value of I2C_DAT to the LEDs 
+=> SBAWrite(GPIO, x"00" & I2C_DAT);-- Displaying the value of I2C_DAT to the LEDs 
 
 ```
 
@@ -96,11 +96,11 @@ Example:
    SBAcall(I2CLoadbyteToMEMORY); 	-- Load data within internal memory
 => I2C_DEVICE_ADR :=x"53";       	-- Set Address Device
    I2C_ADR_REG:=x"1E";           	-- Register Initial
-   SBAcall(I2CWritebytes);		-- Call routine I2CWriteBytes 
+   SBAcall(I2CWritebytes);		    -- Call routine I2CWriteBytes 
 				 	-- Address  Value
- 				 	--  0x1E  <- 10
- 				 	--  0x1F  <- 02
- 				 	--  0x20  <- 25
+					--  0x1E  <- 10
+					--  0x1F  <- 02
+					--  0x20  <- 25
 ```
 
 **4. Multiple Read function.** Read a Multiple data to an I2C device. It use an internal memory, where the user  can
