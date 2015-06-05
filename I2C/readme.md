@@ -4,7 +4,7 @@
 
 version 1.0 20150526   
 
-I2C is an IPCore adapter designed to send data using the [I2C Bus Specification](http://www.nxp.com/documents/user_manual/UM10204.pdf "I2C Bus Specification").  
+I2C is an IPCore designed to send data using the [I2C Bus Specification](http://www.nxp.com/documents/user_manual/UM10204.pdf "I2C Bus Specification").  
    
 **Author:**   
 (c) Juan S. Vega Martinez   
