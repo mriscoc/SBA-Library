@@ -2,8 +2,8 @@
 -- RxBuf_Adapter.vhd
 -- Buffered RX UART Adapter for SBA
 --
--- Version 0.4
--- Date: 20120619
+-- Version 0.6
+-- Date: 20141210
 -- 16 bits Data Interface
 --
 --
@@ -29,6 +29,10 @@
 --
 --
 -- Notes:
+--
+-- v0.6
+-- Modify of Baud Clock Process
+-- Move some variables to signals
 --
 -- v0.4
 -- Merge the two versions of RX_Adapter, with and without fifo buffer
@@ -81,6 +85,8 @@ signal RXi    : std_logic;
 -- FIFO types and signals ------
 type TBufData is array (0 to buffsize-1) of std_logic_vector(7 downto 0);
 signal BufData : TBufData;
+signal InP, OutP : natural range 0 to buffsize-1;
+signal BufLen : natural range 0 to buffsize;
 --------------------------------
 
 begin
@@ -91,8 +97,8 @@ begin
 
 RxFifoProc: process (RST_I,CLK_I)
 Variable cnt : integer range 0 to BaudDV/2;
-Variable InP, OutP : natural range 0 to buffsize-1;
-Variable BufLen : natural range 0 to buffsize;
+--Variable InP, OutP : natural range 0 to buffsize-1;
+--Variable BufLen : natural range 0 to buffsize;
 Variable BufEmpt, BufFull : Boolean;
 
 -- FIFO Procedures -------------
@@ -100,16 +106,16 @@ procedure Push(data:in std_logic_vector) is
 begin
   if not BufFull then
     BufData(InP) <= data;
-    if (InP < BuffSize-1) then InP:=InP+1; else InP:=0; end if;
-    BufLen:=BufLen+1;
+    if (InP < BuffSize-1) then InP<=InP+1; else InP<=0; end if;
+    BufLen<=BufLen+1;
   end if;
 end;
 
 procedure Pull is
 begin
   if not BufEmpt then
-    if (OutP < BuffSize-1) then OutP:=OutP+1; else OutP:=0; end if;
-    BufLen:=BufLen-1;
+    if (OutP < BuffSize-1) then OutP<=OutP+1; else OutP<=0; end if;
+    BufLen<=BufLen-1;
   end if;
 end;
 --------------------------------
@@ -123,9 +129,9 @@ begin
     BufEmpt:=true;
 
 -- FIFO
-    InP:=0;
-    OutP:=0;
-    BufLen:=0;
+    InP<=0;
+    OutP<=0;
+    BufLen<=0;
 
     if (debug=1) then
       Report "RX Baud: " &  integer'image(baud) & " real: " &integer'image(integer(real(sysfrec)/real((BaudDV+1))));
@@ -220,16 +226,30 @@ end generate;
 
 ------------------------------------------------------------------------------
 
-RxShiftProc: process (RxSt,BDclk)
+--RxShiftProc: process (RxSt,BDclk)
+--begin
+--  if RxSt=IdleSt then
+--    RxShift<= (others=>'0');
+--    BitCnt <= 0;
+--  elsif rising_edge(BDclk) then
+--    RxShift <= RXi & RxShift(7 downto 1);
+--    BitCnt <= BitCnt + 1;
+--  end if;
+--end process RxShiftProc;
+
+RxShiftProc:process (CLK_I, RxSt, BDclk)
 begin
   if RxSt=IdleSt then
     RxShift<= (others=>'0');
     BitCnt <= 0;
-  elsif rising_edge(BDclk) then
-    RxShift <= RXi & RxShift(7 downto 1);
-    BitCnt <= BitCnt + 1;
+  elsif rising_edge(CLK_I) then
+    if (BDclk='1') then 
+      RxShift <= RXi & RxShift(7 downto 1);
+      BitCnt <= BitCnt + 1;
+    end if;
   end if;
-end process RxShiftProc;
+end process;
+
 
 -- Sync incoming RX (anti metastable) ---
 syncproc: process(RST_I, CLK_I) is
