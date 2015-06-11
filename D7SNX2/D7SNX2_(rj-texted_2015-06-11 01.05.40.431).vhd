@@ -1,7 +1,7 @@
 ----------------------------------------------------
 -- 7Segment Display Module for Digilent NEXYS2 board
 --
--- version 0.1 20120607
+-- version 0.5
 --
 -- Miguel A. Risco Castillo
 -- email: mrisco@accesus.com
@@ -19,6 +19,8 @@
 -- consent of the author.
 --
 -- Notes:
+-- v0.4 20141210
+-- Automatic Clock generation for digit multiplexer
 -- v0.2
 -- reassignment of signals to use only a single ROM
 --
@@ -38,7 +40,6 @@ port (
    ADR_I : in std_logic_vector; -- Register Select, Data and decimal point.
    WE_I  : in std_logic;        -- write, active high
 -- Interface for NEXYS2 4 digits 7 seg Display
-   DCLK  : in std_logic;
    DIG	 : out std_logic_vector(3 downto 0);
    SEG	 : out std_logic_vector(7 downto 0)
 );
@@ -50,6 +51,7 @@ signal dpmask : std_logic_vector(3 downto 0);
 type tHEX is Array (0 to 3) of unsigned(3 downto 0);
 signal HEXS : tHEX;
 signal DREG:unsigned(1 downto 0);
+signal MPXCLKEN: std_logic;
 
 type tsegments  is Array (0 to 15) of std_logic_vector(6 downto 0);
 constant dig2seg : tsegments := (
@@ -88,12 +90,27 @@ begin
     end if;
 end process;
 
-DREG_Process:process (DCLK, RST_I)
+MPXCLK: process(CLK_I,RST_I)
+variable cnt:unsigned(9 downto 0);
+begin
+    if rising_edge(CLK_I) then
+      if (RST_I='1') then
+        cnt := (others =>'1');
+      else
+        cnt := cnt + 1 ;
+      end if;
+      if cnt=(cnt'range=>'0') then MPXCLKEN<='1'; else MPXCLKEN<='0'; end if;
+    end if;
+end process;
+
+DREG_Process:process (CLK_I, RST_I, MPXCLKEN)
 begin
   if (RST_I='1') then
     DREG <= (others =>'0');
-  elsif rising_edge(DCLK) then
-    DREG <= DREG+1;
+  elsif rising_edge(CLK_I) then
+    if (MPXCLKEN='1') then 
+	   DREG <= DREG+1;
+    end if;
   end if;
 end process;
 
