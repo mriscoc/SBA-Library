@@ -1,0 +1,38 @@
+-- /SBA: Program Details -------------------------------------------------------
+-- Rutines for UART Adapter
+-- Version: 1.0
+-- Date: 2015-05-14
+-- Author: Miguel A. Risco-Castillo
+-- Description: UART_1 and UART_2 address must be defined in SBA_config
+-- /SBA: End -------------------------------------------------------------------
+
+-- /SBA: User Registers and Constants ------------------------------------------
+  constant TXRDY   : integer=14;                 -- TXRDY Flag is bit 14
+  constant RXRDY   : integer=15;                 -- RXRDY Flag is bit 15
+  variable UARTFlg : std_logic;                  -- aux bit for UART flags
+  variable RSTmp   : unsigned(7 downto 0);       -- Temporal register for UART
+-- /SBA: End -------------------------------------------------------------------
+
+-- /SBA: User Program ----------------------------------------------------------
+-- /L:UARTSendChar
+=> SBARead(UART_1);              -- Read UART Status
+=> UARTFlg := dati(TXRDY);       -- Read TXRDY flag
+=> if UARTFlg ='0' then          -- Test TXRDY
+     SBARead(UART_1);            -- if not continue read UART Status
+     SBAjump(UARTSendChar+1);
+   else
+     SBAWrite(UART_0,RSTmp);     -- Write UART Tx
+     SBARet;                     -- Return
+   end if;
+
+-- /L:UARTGetChar
+=> SBARead(UART_0);              -- Read UART Status
+=> UARTFlg := dati(RXRDY);       -- Read RXRDY flag
+   RSTmp:= dati(7 downto 0);     -- Read possible char in to RSTmp
+=> if UARTFlg ='0' then          -- Test RXRDY
+     SBARead(UART_0);            -- Continue read UART Status
+     SBAjump(UARTGetChar+1);
+   else
+     SBARet;
+   end if;
+-- /SBA: End -------------------------------------------------------------------
