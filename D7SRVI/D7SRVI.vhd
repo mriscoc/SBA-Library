@@ -6,7 +6,7 @@
 --
 -- Version 4.1
 -- Date: 2015/06/14
--- Author: Miguel A. Risco Castillo
+-- Author: Miguel A. Risco-Castillo
 --
 -- sba webpage: http://sba.accesus.com
 -- core webpage: https://github.com/mriscoc/SBA-Library/tree/master/D7SRVI
@@ -47,7 +47,7 @@
 --------------------------------------------------------------------------------
 -- Copyright:
 --
--- (c) 2008-2015 Miguel A. Risco Castillo
+-- (c) 2008-2015 Miguel A. Risco-Castillo
 --
 -- This code, modifications, derivate work or based upon, can not be used or
 -- distributed without the complete credits on this header.

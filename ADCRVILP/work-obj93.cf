@@ -1,4 +1,0 @@
-v 3
-file . "ADCRVILP.vhd" "20150615034632.000" "20150614224633.069":
-  entity adc_adapter at 69( 2285) + 0 on 4;
-  architecture adc_adapter_arch of adc_adapter at 94( 3162) + 0 on 4;
