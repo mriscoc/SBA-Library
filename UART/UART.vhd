@@ -5,7 +5,7 @@
 -- Title: RS232 Universal Asynchronous Receiver Transmitter IPCore for SBA
 -- Version: 3.4
 -- Date: 2015/06/06
--- Author: Miguel A. Risco Castillo
+-- Author: Miguel A. Risco-Castillo
 --
 -- sba webpage: http://sba.accesus.com
 -- uart webpage: https://github.com/mriscoc/SBA-Library/tree/master/UART
@@ -40,7 +40,7 @@
 --------------------------------------------------------------------------------
 -- Copyright:
 --
--- (c) 2008-2015 Miguel A. Risco Castillo
+-- (c) 2008-2015 Miguel A. Risco-Castillo
 --
 -- This code, modifications, derivate work or based upon, can not be used or
 -- distributed without the complete credits on this header.
@@ -69,7 +69,12 @@ use IEEE.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 entity UART is
-generic (baud:positive:=115200; rxbuff:positive:=8);
+generic (
+  debug:positive:=1;
+  sysfrec:positive:=50E6;
+  baud:positive:=115200;
+  rxbuff:positive:=8
+);
 port (
       -- SBA Bus Interface
       CLK_I : in std_logic;

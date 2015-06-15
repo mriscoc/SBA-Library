@@ -1,9 +1,12 @@
 -----------------------------------------------------------
--- TX_Adapter.vhd
--- TX UART Adapter for SBA v1.0 (Simple Bus Architecture)
 --
--- Version 0.4
--- Date: 20120621
+-- RSTX
+--
+-- TX
+-- for SBA v1.0 (Simple Bus Architecture)
+--
+-- Version 0.6
+-- Date: 2016/06/09
 -- 16 bits Data Interface
 --
 --
@@ -30,7 +33,16 @@
 --
 -- Notes:
 --
--- v0.4
+-- v0.6 2016/06/09
+-- Remove dependency of SBAconfig
+-- Sysfrec is now a "generic" parameter
+-- Follow SBA v1.1 guidelines
+--
+-- v0.5 
+-- Make SBA buses generic std_logic_vectors
+-- remove unused bits of DAT_O.
+--
+-- v0.4 20120621
 -- Timing improvements
 --
 -- v0.3
@@ -45,11 +57,14 @@
 
 Library IEEE;
 use IEEE.std_logic_1164.all;
-use work.SBA_config.all;
-use work.SBA_package.all;
+use work.SBApackage.all;
 
-entity TX_Adapter is
-generic (baud:positive:=57600);
+entity RSTX is
+generic (
+  debug:positive:=1;
+  sysfrec:positive:=50E6;
+  baud:positive:=57600
+  );
 port (
       -- SBA Bus Interface
       CLK_I : in std_logic;
@@ -61,10 +76,10 @@ port (
       -- UART Interface;
       TX     :out std_logic
    );
-end TX_Adapter;
+end RSTX;
 --------------------------------------------------
 
-architecture arch1 of TX_Adapter is
+architecture RSTX_arch1 of RSTX is
 
 signal BDclk : std_logic;
 signal TXRDYi: std_logic;
@@ -130,4 +145,4 @@ WENi   <= (STB_I and WE_I and not RST_I);
 TXRDYi <= not (WENi or TxRun);
 DAT_O(14) <= TXRDYi;
 
-end arch1;
+end RSTX_arch1;

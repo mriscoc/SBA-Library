@@ -1,26 +1,31 @@
-----------------------------------------------------
--- 7Segment Display Module for RVI
+--------------------------------------------------------------------------------
 --
--- version 4.0 20100803
+-- D7SRVI
 --
--- Miguel A. Risco Castillo
--- email: mrisco@accesus.com
--- web page: http://mrisco.accesus.com
+-- Title: 7Segment Display Module for RVI
 --
--- SBA
--- It requires Data Bus of 16 bits and
--- low speed <1KHz clock (DCLK) for
--- digit multiplexing
--- Use two positions on address space :
--- ADR_I 0 Write Segments Data
--- ADR_I 1 Write Decimal Point Data
+-- Version 4.1
+-- Date: 2015/06/14
+-- Author: Miguel A. Risco Castillo
 --
--- This code, modifications, or based upon,
--- can not be used or distributed without the
--- complete credits on this header and the
--- consent of the author.
+-- sba webpage: http://sba.accesus.com
+-- core webpage: https://github.com/mriscoc/SBA-Library/tree/master/D7SRVI
 --
--- Rev 4.0
+-- Description: Seven segments four digits LED display
+-- It requires Data Bus of 16 bits and low speed <1KHz clock (DCLK) for
+-- digit multiplexing. Use two positions on address map :
+-- ADR_I=0 Write Segments Data
+-- ADR_I=1 Write Decimal Point Data
+--
+-- Follow SBA v1.1 Guidelines
+--
+-- Release Notes:
+--
+-- v4.1 2015/06/14
+-- Name change, remove dependency of SBAconfig
+-- adapt to SBA v1.1 guidelines
+--
+-- Rev 4.0 20100803
 -- Synchronous reset, SBA 1.0 compliant
 --
 -- Rev 3.8
@@ -39,25 +44,43 @@
 -- Rev 3.4
 -- Complete some sensitivity list
 --
--- RVI Hardware Developers -  MLAB, ICTP
--- http://mlab.ictp.it/research/rvi.html
+--------------------------------------------------------------------------------
+-- Copyright:
 --
--- Cicuttin, Andrés
--- Crespo, Maria Liz
--- Shapiro, Alex
-----------------------------------------------------
+-- (c) 2008-2015 Miguel A. Risco Castillo
+--
+-- This code, modifications, derivate work or based upon, can not be used or
+-- distributed without the complete credits on this header.
+--
+-- This version is released under the GNU/GLP license
+-- http://www.gnu.org/licenses/gpl.html
+-- if you use this component for your research please include the appropriate
+-- credit of Author.
+--
+-- The code may not be included into ip collections and similar compilations
+-- which are sold. If you want to distribute this code for money then contact me
+-- first and ask for my permission.
+--
+-- These copyright notices in the source code may not be removed or modified.
+-- If you modify and/or distribute the code to any third party then you must not
+-- veil the original author. It must always be clearly identifiable.
+--
+-- Although it is not required it would be a nice move to recognize my work by
+-- adding a citation to the application's and/or research.
+--
+-- FOR COMMERCIAL PURPOSES REQUEST THE APPROPRIATE LICENSE FROM THE AUTHOR.
+--------------------------------------------------------------------------------
 
 Library IEEE;
 Use ieee.std_logic_1164.all;
 Use ieee.numeric_std.all;
-use work.SBA_config.all;
 
-entity Dsply7Seg is
+entity D7SRVI is
 port (
 -- Interface for inside FPGA
    RST_I : in std_logic;        -- active high reset
    CLK_I : in std_logic;        -- Main clock
-   DAT_I : in DATA_Type;        -- Data input Bus
+   DAT_I : in std_logic_vector; -- Data input Bus
    STB_I : in std_logic;        -- ChipSel, active high
    ADR_I : in std_logic;        -- Register Select, Data and decimal point.
    WE_I  : in std_logic;        -- write, active high
@@ -65,10 +88,10 @@ port (
    DCLK    : in  std_logic;     -- Clock for Digit Multiplexing
    DIG_SEG : out std_logic_vector(8 downto 0)
 );
-end Dsply7Seg;
+end D7SRVI;
 
 
-architecture Dsply7Seg_arch of Dsply7Seg is
+architecture D7SRVI_arch of D7SRVI is
 type tstate is (OffSt, OnSt);  -- Segments States
 subtype tsegimg is std_logic_vector(6 downto 0);
 type tsegments  is Array (0 to 15) of tsegimg;
@@ -140,6 +163,6 @@ begin
     end if;
   end process;
 
-end Dsply7Seg_arch;
+end D7SRVI_arch;
 
 

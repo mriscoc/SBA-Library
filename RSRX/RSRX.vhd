@@ -1,41 +1,32 @@
-------------------------------------------------------------------------------
--- RxBuf_Adapter.vhd
--- Buffered RX UART Adapter for SBA
+--------------------------------------------------------------------------------
 --
--- Version 0.6
--- Date: 20141210
--- 16 bits Data Interface
+-- RSRX
 --
+-- Title: Buffered RX IPCore for SBA
+-- Version: 0.7
+-- Date: 2015/06/14
+-- Author: Miguel A. Risco-Castillo
 --
--- Author:
--- (c) Miguel A. Risco Castillo
--- email: mrisco@accesus.com
--- web page: http://mrisco.accesus.com
 -- sba webpage: http://sba.accesus.com
---
--- This code, modifications, derivate
--- work or based upon, can not be used
--- or distributed without the
--- complete credits on this header and
--- the consent of the author.
---
--- This version is released under the GNU/GLP license
--- http://www.gnu.org/licenses/gpl.html
--- if you use this component for your research please
--- include the appropriate credit of Author.
---
--- For commercial purposes request the appropriate
--- license from the author.
+-- core webpage: https://github.com/mriscoc/SBA-Library/tree/master/RSRX
+-- 
+-- Description:
+-- 16 bits minimum width Data Interface
 --
 --
--- Notes:
+-- Release Notes:
 --
--- v0.6
+-- v0.7 2015/06/14
+-- Entities rename, remove "adapter"
+-- Removed dependency of sbaconfig
+-- Follow SBA v1.1 Guidelines
+--
+-- v0.6 20141210
 -- Modify of Baud Clock Process
 -- Move some variables to signals
 --
 -- v0.4
--- Merge the two versions of RX_Adapter, with and without fifo buffer
+-- Merge the two versions of RSRX, with and without fifo buffer
 --
 -- v0.3.1
 -- Minor error about RxData assign corrected
@@ -44,18 +35,46 @@
 -- Add Address to read Status without clear flags and buffer
 --
 -- v0.2
--- Fist version cloned from RX_Adapter v0.2, adding buffer
+-- Fist version cloned from RSRX v0.2, adding buffer
 --
-------------------------------------------------------------------------------
-
+--------------------------------------------------------------------------------
+-- Copyright:
+--
+-- (c) 2008-2015 Miguel A. Risco Castillo
+--
+-- This code, modifications, derivate work or based upon, can not be used or
+-- distributed without the complete credits on this header.
+--
+-- This version is released under the GNU/GLP license
+-- http://www.gnu.org/licenses/gpl.html
+-- if you use this component for your research please include the appropriate
+-- credit of Author.
+--
+-- The code may not be included into ip collections and similar compilations
+-- which are sold. If you want to distribute this code for money then contact me
+-- first and ask for my permission.
+--
+-- These copyright notices in the source code may not be removed or modified.
+-- If you modify and/or distribute the code to any third party then you must not
+-- veil the original author. It must always be clearly identifiable.
+--
+-- Although it is not required it would be a nice move to recognize my work by
+-- adding a citation to the application's and/or research.
+--
+-- FOR COMMERCIAL PURPOSES REQUEST THE APPROPRIATE LICENSE FROM THE AUTHOR.
+--------------------------------------------------------------------------------
 
 library IEEE;
 use IEEE.std_logic_1164.all;
-use work.SBA_config.all;
-use work.SBA_package.all;
+use work.SBApackage.all;
 
-entity RX_Adapter is
-generic (baud:positive:=57600; buffsize:positive:=8);
+entity RSRX is
+generic (
+  debug:positive:=1;
+  sysfrec:positive:=50E6;
+  baud:positive:=57600;
+  buffsize:positive:=8
+);
 port (
       -- SBA Bus Interface
       CLK_I : in std_logic;
@@ -66,10 +85,10 @@ port (
       DAT_O : out std_logic_vector;
       -- UART Interface;
       RX    : in std_logic    -- RX UART input
-   );
-end RX_Adapter;
+);
+end RSRX;
 
-architecture RX_Arch of RX_Adapter is
+architecture RX_Arch of RSRX is
 
 constant BaudDV : integer := integer(real(sysfrec)/real(baud))-1;
 type tstate  is (IdleSt, CheckSt ,StartSt, DataSt, StopSt);   -- Rx Serial Communication States
@@ -225,17 +244,6 @@ end process RxStProc;
 end generate;
 
 ------------------------------------------------------------------------------
-
---RxShiftProc: process (RxSt,BDclk)
---begin
---  if RxSt=IdleSt then
---    RxShift<= (others=>'0');
---    BitCnt <= 0;
---  elsif rising_edge(BDclk) then
---    RxShift <= RXi & RxShift(7 downto 1);
---    BitCnt <= BitCnt + 1;
---  end if;
---end process RxShiftProc;
 
 RxShiftProc:process (CLK_I, RxSt, BDclk)
 begin

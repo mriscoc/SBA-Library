@@ -46,10 +46,13 @@
 library IEEE;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
-use work.SBA_config.all;
 
 entity ClkDiv is
-generic (frec:positive:=1000);    --  Means 1KHz
+generic (
+ infrec:positive:=50E6;
+ outfrec:positive:=1000;        -- Means 1KHz
+ debug:positive:=1              -- Debug mode 1=on, 0:off
+);
 port (
     CLK_I : in std_logic;
     RST_I : in std_logic;
@@ -62,7 +65,7 @@ signal Q : std_logic;
 signal Y : integer;
 signal YP: integer;
 
-constant M : integer := integer(real(sysfrec)/real(2*frec)+0.499)-1;
+constant M : integer := integer(real(infrec)/real(2*outfrec)+0.499)-1;
 
 begin
 
@@ -71,7 +74,7 @@ begin
    if rising_edge(CLK_I) then
      if RST_I = '1' then
        if (debug=1) then
-         report "CLKDiv Div: " & integer'image(M) & " frec: " & real'image(real(sysfrec)/real(2*(M+1)));
+         report "CLKDiv Div: " & integer'image(M) & " outfrec: " & real'image(real(infrec)/real(2*(M+1)));
        end if;
        Y <= 0;
        Q <='0';
