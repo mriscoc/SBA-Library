@@ -2,7 +2,7 @@
 --
 -- GPIO
 --
--- Title: Generic GPIO for SBA v1.1
+-- Title: Generic GPIO for SBA
 -- Version 2.3
 -- Date: 2015/06/14
 -- Author: Miguel A. Risco-Castillo
@@ -28,7 +28,7 @@
 --------------------------------------------------------------------------------
 -- Copyright:
 --
--- (c) 2008-2015 Miguel A. Risco Castillo
+-- (c) 2008-2015 Miguel A. Risco-Castillo
 --
 -- This code, modifications, derivate work or based upon, can not be used or
 -- distributed without the complete credits on this header.

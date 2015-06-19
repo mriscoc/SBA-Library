@@ -1,47 +1,68 @@
 --------------------------------------------------------------------------------
--- Company: uE - CIDI - UTP
 --
--- File: clkdiv.VHD
--- File history:
---      4.3: 2011-04-12
---      4.2: 2010-10-14
---      4.1: 2010-09-21 
---      4.0: 2010-08-03
---      3.0: 2009-09-24
+-- CLKDIV
 --
--- Description:
+-- Title=CLKDIV is an IPCore for divide an Input clock signal
 --
--- v4.3 Debug messages, change variables to signals to improve performance 
--- v4.2 Change Config file from SBA_package to SBA_config
--- v4.1 Improve calc divider for guarantee equal or lower frequencies
--- v4.0 Synchronous Reset
--- v3.0 Inital public release.
+-- Version: 4.4
+-- Date: 2015/05/26
+-- Author: Miguel A. Risco-Castillo
 --
--- Clock divider with generics Module
--- Using SBA_config for frecuency calculation
+-- sba webpage: http://sba.accesus.com
+-- core webpage: https://github.com/mriscoc/SBA-Library/tree/master/CLKDIV
 --
--- Targeted device: Any
--- Author:
--- (c) Miguel A. Risco Castillo
--- email: mrisco@accesus.com
--- web page: http://mrisco.accesus.com
+-- Description = CLKDIV automatically calculate the divider for give an
+-- 'outfrec'. 'infrec' is the frequency of the input clock
 --
+-- Follow SBA v1.1 Guidelines
 --
--- This code, modifications, derivate
--- work or based upon, can not be used
--- or distributed without the
--- complete credits on this header and
--- the consent of the author.
+-- Release Notes:
+--
+-- v4.4 2015/05/26
+-- Start to follow SBA v1.1 guidelines, remove SBAconfig dependency
+--
+-- v4.3 2011-04-12
+-- Debug messages, change variables to signals to improve performance
+--
+-- v4.2 2010-10-14
+-- Change Config file from SBA_package to SBA_config
+--
+-- v4.1 2010-09-21
+-- Improve calc divider for guarantee equal or lower frequencies
+--
+-- v4.0 2010-08-03
+-- Synchronous Reset
+--
+-- v3.0 2009-09-24
+-- Initial release.
+--
+--------------------------------------------------------------------------------
+-- Copyright:
+--
+-- (c) 2008-2015 Miguel A. Risco-Castillo
+--
+-- This code, modifications, derivate work or based upon, can not be used or
+-- distributed without the complete credits on this header.
 --
 -- This version is released under the GNU/GLP license
 -- http://www.gnu.org/licenses/gpl.html
--- if you use this component for your research please
--- include the appropriate credit of Author.
+-- if you use this component for your research please include the appropriate
+-- credit of Author.
 --
--- For commercial purposes request the appropriate
--- license from the author.
+-- The code may not be included into ip collections and similar compilations
+-- which are sold. If you want to distribute this code for money then contact me
+-- first and ask for my permission.
 --
+-- These copyright notices in the source code may not be removed or modified.
+-- If you modify and/or distribute the code to any third party then you must not
+-- veil the original author. It must always be clearly identifiable.
+--
+-- Although it is not required it would be a nice move to recognize my work by
+-- adding a citation to the application's and/or research.
+--
+-- FOR COMMERCIAL PURPOSES REQUEST THE APPROPRIATE LICENSE FROM THE AUTHOR.
 --------------------------------------------------------------------------------
+
 
 library IEEE;
 use ieee.std_logic_1164.all;
@@ -49,8 +70,8 @@ use ieee.numeric_std.all;
 
 entity ClkDiv is
 generic (
- infrec:positive:=50E6;
- outfrec:positive:=1000;        -- Means 1KHz
+ infrec:positive:=50E6;         -- 50MHz default system frequency
+ outfrec:positive:=1000;        -- 1KHz output frequency
  debug:positive:=1              -- Debug mode 1=on, 0:off
 );
 port (

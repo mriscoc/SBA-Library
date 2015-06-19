@@ -63,10 +63,10 @@ port (
 -- Interface for inside FPGA
    RST_I : in std_logic;        -- active high reset
    CLK_I : in std_logic;        -- Main clock
-   DAT_I : in std_logic_vector; -- Data input Bus (minimun 16 bits)
    STB_I : in std_logic;        -- ChipSel, active high
-   ADR_I : in std_logic;        -- Register Select, Data and decimal point.
    WE_I  : in std_logic;        -- write, active high
+   ADR_I : in std_logic_vector; -- Register Select, Data and decimal point.
+   DAT_I : in std_logic_vector; -- Data input Bus (minimun 16 bits)
 -- Interface for DE1 4 digits 7 seg Display
    HEX0	 : out std_logic_vector(7 downto 0);
    HEX1	 : out std_logic_vector(7 downto 0);
@@ -109,7 +109,7 @@ begin
         DATi <= (others =>'0');
         dpmask <= (others =>'0');
       elsif (STB_I='1') and (WE_I='1') then
-        if (ADR_I='0') then
+        if (ADR_I(0)='0') then
           DATi <= DAT_I;
         else
           dpmask <= DAT_I(3 downto 0);

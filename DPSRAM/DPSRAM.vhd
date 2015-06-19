@@ -1,10 +1,10 @@
 -----------------------------------------------------------
--- SBADPSRam.vhd
+-- DPSRam.vhd
 -- Generic Dual Port Single clock RAM for
 -- SBA v1.0 (Simple Bus Architecture)
 --
--- Version 0.1
--- Date: 20120612
+-- Version 0.2
+-- Date: 20150528
 --
 --
 -- Author:
@@ -34,7 +34,10 @@
 --
 -- Notes:
 --
--- v0.1
+-- v0.2 20150528
+-- remove ACK lines: not in use
+--
+-- v0.1 20120612
 -- Initial release
 -- Inspirated in Altera examples
 --
@@ -44,7 +47,7 @@ library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.Numeric_Std.all;
 
-entity SBADPSram is
+entity DPSram is
 generic(
       width:positive:=8;
       depth:positive:=8
@@ -52,23 +55,18 @@ generic(
 port (
       -- SBA Bus Interface
       CLK_I  : in std_logic;
-      RST_I  : in std_logic;
       -- Output Port 0
-      WE0_I  : in std_logic;
-      STB0_I : in std_logic;
-      ACK0_O : out std_logic;         -- Strobe Acknoledge
       ADR0_I : in std_logic_vector;
       DAT0_O : out std_logic_vector;
       -- Input Port 1
-      WE1_I  : in std_logic;
       STB1_I : in std_logic;
-      ACK1_O : out std_logic;         -- Strobe Acknoledge
+      WE1_I  : in std_logic;
       ADR1_I : in std_logic_vector;
       DAT1_I : in std_logic_vector
      );
-end SBADPSram;
+end DPSram;
 
-Architecture rtl of SBADPSram is
+Architecture rtl of DPSram is
 
 constant iMax : integer := (2**depth)-1;
 type TRam is array (0 to iMax) of std_logic_vector(width-1 downto 0);
@@ -91,8 +89,14 @@ begin
 	begin
 		if(rising_edge(CLK_I)) then
 			DAT0_O <= std_logic_vector(resize(unsigned(RAM(ADR0i)),DAT0_O'length));
-		end if;
+      end if;
 	end process;
+
+	-- Output Process Port 0
+--	process(ADR0i)
+--	begin
+--	  DAT0_O <= std_logic_vector(resize(unsigned(RAM(ADR0i)),DAT0_O'length));
+--	end process;
 
  ADR0i <= to_integer(unsigned(ADR0_I(depth-1 downto 0)));
  ADR1i <= to_integer(unsigned(ADR1_I(depth-1 downto 0)));

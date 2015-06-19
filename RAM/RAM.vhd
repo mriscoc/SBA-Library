@@ -17,9 +17,10 @@
 --
 -- v0.4 2015/06/14
 -- Entity rename from SBARam to RAM
+-- Remove false dependency of SBApackage
 -- Following SBA v1.1 guidelines
 
--- v0.3 20120612
+-- v0.3 2012/06/12
 -- Configurable width and depth bits, the width must be
 -- equal or lower the SBA Data bus width
 --
@@ -59,7 +60,6 @@
 library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.Numeric_Std.all;
-use work.SBApackage.all;
 
 entity RAM is
 generic(

@@ -2,9 +2,9 @@
 --
 -- ADCRVILP
 --
--- Title: ADC RVI low performance dauhgther board
+-- Title: ADC RVI low performance daughter board
 --
--- Version 7.1
+-- Version: 7.1
 -- Date: 2015/06/14
 -- Author: Miguel A. Risco-Castillo
 --
@@ -21,24 +21,25 @@
 -- v7.1 2015/06/14
 -- Name change, adapt to SBA v1.1 guidelines
 --
--- Rev 7.0 2011/04/13
+-- v7.0 2011/04/13
 -- ADC output is latched following datasheet typical
 -- demux Ref:Fig.30
 --
--- Rev 6.1
+-- v6.1
 -- Use config values from SBA_config and SBA_package
 --
--- Rev 6.0
+-- v6.0
 -- SBA v1.0 compliant
 -- Remove I,Q Channels DEMUX
 -- Automatic calculus of internal clock frequency
 --
--- Rev 5.0
+-- v5.0
 -- remove the z state for output bus for make this
 -- compatible with block gen in Actel designer
 --
--- Rev 4.6
+-- v4.6
 -- Remove ACK_O
+--
 --------------------------------------------------------------------------------
 -- Copyright:
 --
