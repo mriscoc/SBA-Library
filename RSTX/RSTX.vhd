@@ -2,19 +2,17 @@
 --
 -- RSTX
 --
--- TX
--- for SBA v1.0 (Simple Bus Architecture)
+-- Title: Serial Transmitter IPCore for SBA (Simple Bus Architecture)
 --
 -- Version 0.6
 -- Date: 2016/06/09
--- 16 bits Data Interface
---
+-- Description: RS232 Serial transmitter IP Core, Flag TXready to read in bit 14
+-- of Data bus.
 --
 -- Author:
 -- (c) Miguel A. Risco Castillo
--- email: mrisco@accesus.com
--- web page: http://mrisco.accesus.com
 -- sba webpage: http://sba.accesus.com
+-- Core URL: https://github.com/mriscoc/SBA_Library/blob/master/RSTX
 --
 -- This code, modifications, derivate
 -- work or based upon, can not be used
@@ -69,8 +67,8 @@ port (
       -- SBA Bus Interface
       CLK_I : in std_logic;
       RST_I : in std_logic;
-      WE_I  : in std_logic;
       STB_I : in std_logic;
+      WE_I  : in std_logic;
       DAT_I : in std_logic_vector;
       DAT_O : out std_logic_vector;
       -- UART Interface;

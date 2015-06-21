@@ -8,7 +8,6 @@ DPSRAM is an double port single clock RAM, it can be used to join multiple SBA s
    
 **Author:**   
 (c) Miguel A. Risco Castillo   
-email: mrisco@accesus.com   
 web page: http://mrisco.accesus.com   
 
 **Notes**   

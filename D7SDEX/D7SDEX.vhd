@@ -4,8 +4,8 @@
 --
 -- Title: 7Segment Display Module for Terasic DE0 y DE1
 --
--- Version 0.2
--- Date: 2015/06/14
+-- Version 0.3
+-- Date: 2015/06/21
 -- Author: Miguel A. Risco-Castillo
 --
 -- sba webpage: http://sba.accesus.com
@@ -21,9 +21,12 @@
 --
 -- Release Notes:
 --
+-- v0.3 2015/06/21
+-- * Invert default value of dpmask at reset, before was 0 (0n) now 1 (off)
+--
 -- v0.2 2015/06/14
--- Name change, remove dependency of SBAconfig
--- adapt to SBA v1.1 guidelines
+-- * Name change, remove dependency of SBAconfig
+-- * Adapt to SBA v1.1 guidelines
 --
 -- v0.1 20110616
 --
@@ -107,7 +110,7 @@ begin
     if rising_edge(CLK_I) then
       if (RST_I='1') then
         DATi <= (others =>'0');
-        dpmask <= (others =>'0');
+        dpmask <= (others =>'1');
       elsif (STB_I='1') and (WE_I='1') then
         if (ADR_I(0)='0') then
           DATi <= DAT_I;

@@ -4,8 +4,8 @@
 --
 -- Title: 7Segment Display Module for RVI
 --
--- Version 4.1
--- Date: 2015/06/14
+-- Version 4.2
+-- Date: 2015/06/19
 -- Author: Miguel A. Risco-Castillo
 --
 -- sba webpage: http://sba.accesus.com
@@ -20,6 +20,9 @@
 -- Follow SBA v1.1 Guidelines
 --
 -- Release Notes:
+--
+-- v4.2 2014/06/19
+-- Minor change, rename output port DIG_SEG to SEG
 --
 -- v4.1 2015/06/14
 -- Name change, remove dependency of SBAconfig
@@ -80,13 +83,13 @@ port (
 -- Interface for inside FPGA
    RST_I : in std_logic;        -- active high reset
    CLK_I : in std_logic;        -- Main clock
-   DAT_I : in std_logic_vector; -- Data input Bus
    STB_I : in std_logic;        -- ChipSel, active high
-   ADR_I : in std_logic;        -- Register Select, Data and decimal point.
    WE_I  : in std_logic;        -- write, active high
+   ADR_I : in std_logic;        -- Register Select, Data and decimal point.
+   DAT_I : in std_logic_vector; -- Data input Bus
 -- Interface for RVI 4 digits 7 seg Display
    DCLK    : in  std_logic;     -- Clock for Digit Multiplexing
-   DIG_SEG : out std_logic_vector(8 downto 0)
+   SEG     : out std_logic_vector(8 downto 0)
 );
 end D7SRVI;
 

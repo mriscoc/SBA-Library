@@ -10,9 +10,10 @@
 -- sba webpage: http://sba.accesus.com
 -- core webpage: https://github.com/mriscoc/SBA-Library/tree/master/RSRX
 -- 
--- Description:
--- 16 bits minimum width Data Interface
---
+-- Description: RS232 Serial reception IP Core. Flag RXready is read in bit 15
+-- of Data bus. The length of input FIFO buffer is configurable. 
+-- Read on ADR_I(0)='1' give status of RXready, on ADR_I(0)='0' pull data from
+-- fifo. Rxready flag is clear when fifo is empty.
 --
 -- Release Notes:
 --
@@ -79,9 +80,9 @@ port (
       -- SBA Bus Interface
       CLK_I : in std_logic;
       RST_I : in std_logic;
+      STB_I : in std_logic;
       WE_I  : in std_logic;
       ADR_I : in std_logic_vector;
-      STB_I : in std_logic;
       DAT_O : out std_logic_vector;
       -- UART Interface;
       RX    : in std_logic    -- RX UART input
@@ -116,8 +117,6 @@ begin
 
 RxFifoProc: process (RST_I,CLK_I)
 Variable cnt : integer range 0 to BaudDV/2;
---Variable InP, OutP : natural range 0 to buffsize-1;
---Variable BufLen : natural range 0 to buffsize;
 Variable BufEmpt, BufFull : Boolean;
 
 -- FIFO Procedures -------------
