@@ -23,8 +23,8 @@ generic (
 );
 port (
       -- SBA Bus Interface
-      RST_I : in std_logic;
       CLK_I : in std_logic;
+      RST_I : in std_logic;
       STB_I : in std_logic;
       WE_I  : in std_logic;
       ADR_I : in std_logic_vector;      -- Control/Status and Data reg select
