@@ -25,15 +25,15 @@ port (
       CLK_I  : in std_logic;
       RST_I  : in std_logic;
       -- Output Port 0
-      WE0_I  : in std_logic;
       STB0_I : in std_logic;
       ACK0_O : out std_logic;         -- Strobe Acknoledge
+      WE0_I  : in std_logic;
       ADR0_I : in std_logic_vector;
       DAT0_O : out std_logic_vector;
       -- Input Port 1
-      WE1_I  : in std_logic;
       STB1_I : in std_logic;
       ACK1_O : out std_logic;         -- Strobe Acknoledge
+      WE1_I  : in std_logic;
       ADR1_I : in std_logic_vector;
       DAT1_I : in std_logic_vector
      );
