@@ -23,14 +23,14 @@ generic (
 );
 port (
       -- SBA Bus Interface
-      CLK_I : in std_logic;
       RST_I : in std_logic;
-      WE_I  : in std_logic;
-      INT_O : out std_logic;            -- Interrupt request
+      CLK_I : in std_logic;
       STB_I : in std_logic;
+      WE_I  : in std_logic;
       ADR_I : in std_logic_vector;      -- Control/Status and Data reg select
       DAT_I : in std_logic_vector;
       DAT_O : out std_logic_vector;
+      INT_O : out std_logic;            -- Interrupt request
       -- UART Interface;
       TX     :out std_logic;
       RX     : in std_logic
