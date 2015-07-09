@@ -1,8 +1,8 @@
-# **Demo Ini for IP Cores**
+# **Demo for IP Cores**
 - - - 
 ![](image.png)   
 
-This file is a demostration of the INI files for IP Cores
+This file is a demostration of the files for IP Cores
 
 Version: 0.1.1  
 Date: 2015/06/14  
