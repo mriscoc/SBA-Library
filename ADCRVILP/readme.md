@@ -20,10 +20,10 @@ port(
 -- Interface for inside FPGA
    RST_I : in  std_logic;       -- active high reset
    CLK_I : in  std_logic;       -- Main clock
-   DAT_O : out std_logic_vector;-- ADC Data Bus
    STB_I : in  std_logic;       -- ADC ChipSelect, active high
-   ADR_I : in  std_logic;       -- Select internal Register Channel I or Q 
    WE_I  : in  std_logic;       -- ADC read at low
+   ADR_I : in  std_logic;       -- Select internal Register Channel I or Q 
+   DAT_O : out std_logic_vector;-- ADC Data Bus
 -- Interface for AD9201
    CLOCK : out std_logic;       -- ADC Sample Rate Clock
    SLECT : out std_logic;       -- Hi I Channel Out, Lo Q Channel Out
