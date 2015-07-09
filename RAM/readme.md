@@ -19,9 +19,9 @@ port (
       -- SBA Bus Interface
       CLK_I : in std_logic;
       RST_I : in std_logic;
-      WE_I  : in std_logic;
       STB_I : in std_logic;
       ACK_O : out std_logic;         -- Strobe Acknoledge
+      WE_I  : in std_logic;
       ADR_I : in std_logic_vector;
       DAT_I : in std_logic_vector;
       DAT_O : out std_logic_vector
