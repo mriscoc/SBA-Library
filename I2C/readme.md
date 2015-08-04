@@ -37,7 +37,7 @@ end I2C_Adapter;
 **Basic Registers in I2C_Adapter**
 
 ```vhdl
-   constant I2C_TXSTA   : integer:=15;				        --Tx Ready
+   constant I2C_TXSTA   : integer:=15; 				        --Tx Ready
    constant I2C_RXSTA   : integer:=14;				        --Rx Ready
    constant I2C_ReadMEMORY   : unsigned(7 downto 0):=x"08"; --Enable Read Data from internal memory
    variable I2C_DEVICE_ADR   : unsigned(7 downto 0);     	--I2C Address Device
