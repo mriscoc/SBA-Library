@@ -60,12 +60,12 @@ generic(
 port(
 -- SBA Interface
    RST_I : in  std_logic;       -- active high reset
-   CLK_I : in  std_logic;       -- Main clock
+   CLK_I : in  std_logic;       -- Main System clock
    STB_I : in  std_logic;       -- Strobe/ChipSelect, active high
-   WE_I  : in  std_logic;       -- Write enable: active high, Read: active low
+   WE_I  : in  std_logic;       -- Bus write enable: active high, Read: active low
    ADR_I : in  std_logic_vector;-- Address bus
-   DAT_I : in  std_logic_vector;-- Data in bus
-   DAT_O : out std_logic_vector;-- Data Out bus
+   DAT_I : in  std_logic_vector;-- Data input bus
+   DAT_O : out std_logic_vector;-- Data Output bus
 -- Aditional Interface
    P_O   : out std_logic_vector(7 downto 0);
    P_I   : in  std_logic_vector(7 downto 0)
