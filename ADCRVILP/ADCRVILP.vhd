@@ -4,8 +4,8 @@
 --
 -- Title: ADC RVI low performance daughter board
 --
--- Version: 7.1
--- Date: 2015/06/14
+-- Version: 7.1.2
+-- Date: 2015/09/08
 -- Author: Miguel A. Risco-Castillo
 --
 -- sba webpage: http://sba.accesus.com
@@ -17,6 +17,9 @@
 -- Follow SBA v1.1 Guidelines
 --
 -- Release Notes:
+--
+-- 7.1.2 2015/09/08
+-- adapt to SBA v1.1 guidelines: ADR_I is vector
 --
 -- v7.1 2015/06/14
 -- Name change, adapt to SBA v1.1 guidelines
@@ -80,10 +83,10 @@ port(
 -- Interface for inside FPGA
    RST_I : in  std_logic;       -- active high reset
    CLK_I : in  std_logic;       -- Main clock
-   DAT_O : out std_logic_vector;-- ADC Data Bus
    STB_I : in  std_logic;       -- ADC ChipSelect, active high
-   ADR_I : in  std_logic;       -- Select internal Register Channel I or Q 
+   ADR_I : in  std_logic_vector;-- Select internal Register Channel I or Q
    WE_I  : in  std_logic;       -- ADC read at low
+   DAT_O : out std_logic_vector;-- ADC Data Bus
 -- Interface for AD9201
    CLOCK : out std_logic;       -- ADC Sample Rate Clock
    SLECT : out std_logic;       -- Hi I Channel Out, Lo Q Channel Out
@@ -136,7 +139,7 @@ end process;
 
   CLOCK <= CLKi;
   SLECT <= CLKi;
-  DATOi <= AD0L when ADR_I='0' else AD1L;
+  DATOi <= AD0L when ADR_I(0)='0' else AD1L;
   DAT_O <= std_logic_vector(resize(DATOi,DAT_O'length));
   SLEEP <= '0';
   CHPSEL<= '0';
