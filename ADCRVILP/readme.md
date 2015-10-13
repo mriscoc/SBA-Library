@@ -5,8 +5,8 @@
 ADCRVILP Analog to Digital converter Adapter for RVI board.  
 
 Description: Dual Channel, 16bits Data interface, 10bits resolution right aligned ADC. SBA Slave adapter for ADC: AD9201, this ADC is included in the low performance daughter board of the RVI board.  
-Version: 7.1  
-Date: 2015/06/14  
+Version: 7.1.2  
+Date: 2015/09/08  
 Author: Miguel A. Risco-Castillo  
 CodeURL: https://github.com/mriscoc/SBA_Library/blob/master/ADCRVILP/ADCRVILP.vhd  
 
@@ -21,8 +21,8 @@ port(
    RST_I : in  std_logic;       -- active high reset
    CLK_I : in  std_logic;       -- Main clock
    STB_I : in  std_logic;       -- ADC ChipSelect, active high
+   ADR_I : in  std_logic_vector;-- Select internal Register Channel I or Q
    WE_I  : in  std_logic;       -- ADC read at low
-   ADR_I : in  std_logic;       -- Select internal Register Channel I or Q 
    DAT_O : out std_logic_vector;-- ADC Data Bus
 -- Interface for AD9201
    CLOCK : out std_logic;       -- ADC Sample Rate Clock
