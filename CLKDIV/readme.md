@@ -8,6 +8,8 @@ Date: 2015/05/26
 Author: Miguel A. Risco-Castillo  
 CodeURL: https://github.com/mriscoc/SBA_Library/blob/master/CLKDIV/CLKDIV.vhd  
 
+Based upon SBA v1.1 guidelines
+
 ```vhdl
 entity ClkDiv is
 generic (
