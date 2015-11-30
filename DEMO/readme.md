@@ -9,6 +9,8 @@ Date: 2015/06/14
 Author: Miguel A. Risco-Castillo  
 CodeURL: https://github.com/mriscoc/SBA_Library/blob/master/DEMO/DEMO.vhd  
 
+Based upon SBA v1.1 guidelines
+
 ```vhdl
 entity DEMO is
 generic(
