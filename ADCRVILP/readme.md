@@ -10,10 +10,10 @@ Date: 2015/09/08
 Author: Miguel A. Risco-Castillo  
 CodeURL: https://github.com/mriscoc/SBA_Library/blob/master/ADCRVILP/ADCRVILP.vhd  
 
-<<<<<<< HEAD
+
 =======
 Based upon SBA v1.1 guidelines
->>>>>>> 6c7751bd3b5e0df34a940b5eaeb9875fbe1025a3
+
 
 ```vhdl
 entity ADCRVILP is
