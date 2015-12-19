@@ -2,7 +2,7 @@
 - - - 
 ![](image.png)
 
-versión 1.0 20150605   
+versión 0.2 20150605   
 
 I2C is an IPCore designed to send data using the [I2C Bus Specification](http://www.nxp.com/documents/user_manual/UM10204.pdf "I2C Bus Specification").  
    
@@ -11,27 +11,27 @@ I2C is an IPCore designed to send data using the [I2C Bus Specification](http://
 email: juan.vega25@gmail.com   
 
 **Notes**   
-v1.0 SBA 1.1 compliant  
-
+v0.2 SBA 1.1 compliant  
+v0.1 SBA 1.0 compliant  
 
 ```vhdl
 entity I2C is
-generic (sysfrec : integer:= 50e6;
-                FREQ_SCL: natural:= 100e3); 
+generic ( sysfrec : integer:= 50e6;
+                  FREQ_SCL: natural:= 100e3); 
 port (
-  -- SBA Bus Interface
-  CLK_I : in std_logic;
-  RST_I : in std_logic;
-  WE_I  : in std_logic;
-  STB_I : in std_logic;
-  ACK_O : out std_logic;
-  ADR_I : in std_logic_vector(1 downto 0);
-  DAT_I : in DATA_Type;
-  DAT_O : out DATA_Type;
-  -- I2C Interface
-  I2C_SCL : inout std_logic;
-  I2C_SDA : inout std_logic
-  );
+      -- SBA Bus Interface
+      CLK_I : in std_logic;
+      RST_I : in std_logic;
+      WE_I  : in std_logic;
+      STB_I : in std_logic;
+      ACK_O : out std_logic;        
+      ADR_I : in std_logic_vector;
+      DAT_I : in std_logic_vector;
+      DAT_O : out std_logic_vector;
+      -- I2C Interface
+      I2C_SCL : inout std_logic;
+      I2C_SDA : inout std_logic
+      );
 end I2C;
 ```
 
@@ -118,14 +118,14 @@ Example:
 -- /L:ReadBucle
 => I2C_NumberBytesRead:=x"06";   -- Numbers bytes to Read
    SBACall(I2CReadbytes);        -- Call I2CReadBytes Routine
-=> SBARead(I2C);
+=> SBARead(I2C_REG0);
 => SBAwait;  reg1:= x"00" & dati(7 downto 0);  -- first data    X (LSB)
 => SBAwait;  reg2:= x"00" & dati(7 downto 0);  -- second data   X (MSB)
 => SBAwait;  reg3:= x"00" & dati(7 downto 0);  -- third data    Y (LSB)
 => SBAwait;  reg4:= x"00" & dati(7 downto 0);  -- Fourth data   Y (MSB)
 => SBAwait;  reg5:= x"00" & dati(7 downto 0);  -- fifth data    Z (LSB)
 => SBAwait;  reg6:= x"00" & dati(7 downto 0);  -- sixth data    Z (MSB)
-=> SBARead(GPIO2);					           -- Read the status of the switches
+=> SBARead(GPIO);					           -- Read the status of the switches
 => reg7:= dati(2 downto 0);      
 => case reg7 is                                -- Evaluating the status of the switches
 	  when "000" => SBAWrite(GPIO,reg1);       -- Displaying X(LSB) data to the LEDs
