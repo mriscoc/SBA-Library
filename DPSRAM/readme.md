@@ -2,7 +2,7 @@
 - - - 
 ![](image.png)   
 
-version 0.1 20120612   
+version 0.3 2016/02/07   
 
 DPSRAM is an double port single clock RAM, it can be used to join multiple SBA systems.   
    
@@ -10,9 +10,18 @@ DPSRAM is an double port single clock RAM, it can be used to join multiple SBA s
 (c) Miguel A. Risco Castillo   
 web page: http://mrisco.accesus.com   
 
-**Notes**   
-v0.1 Initial release  
+**Release Notes:**   
+
+v0.3 2016/02/07
+Add RST_I line, for SBA v.1.1 compliant
+
+v0.2 2015/05/28
+remove ACK lines: not in use
+
+v0.1 2012/06/12
+Initial release
 Inspirated in Altera examples  
+
 
 ```vhdl
 entity SBADPSram is
@@ -22,17 +31,13 @@ generic(
      );
 port (
       -- SBA Bus Interface
-      CLK_I  : in std_logic;
       RST_I  : in std_logic;
+      CLK_I  : in std_logic;
       -- Output Port 0
-      STB0_I : in std_logic;
-      ACK0_O : out std_logic;         -- Strobe Acknoledge
-      WE0_I  : in std_logic;
       ADR0_I : in std_logic_vector;
       DAT0_O : out std_logic_vector;
       -- Input Port 1
       STB1_I : in std_logic;
-      ACK1_O : out std_logic;         -- Strobe Acknoledge
       WE1_I  : in std_logic;
       ADR1_I : in std_logic_vector;
       DAT1_I : in std_logic_vector
