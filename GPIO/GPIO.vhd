@@ -3,17 +3,20 @@
 -- GPIO
 --
 -- Title: Generic GPIO for SBA
--- Version 2.3
--- Date: 2015/06/14
+-- Version 2.4.1
+-- Date: 2016/09/23
 -- Author: Miguel A. Risco-Castillo
 --
 -- sba webpage: http://sba.accesus.com
 -- core webpage: https://github.com/mriscoc/SBA-Library/tree/master/GPIO
 --
--- Description: Generic Input/Output parallel port
+-- Description: Generic Input/Output parallel port, Inputs and Outputs are latched on rising edge of CLK
 --
 --
 -- Release Notes:
+--
+-- v2.4.1 2016/09/23
+-- Added Latch for the input port 
 --
 -- v2.3 2015/06/14
 -- Rename of entity removing "Adapter"
@@ -75,7 +78,7 @@ end GPIO;
 Architecture GPIO_Arch of GPIO is
 begin
 
-process (CLK_I,RST_I)
+OutputProcess : process (CLK_I,RST_I)
 begin
   if rising_edge(CLK_I) then
     if RST_I='1' then
@@ -84,8 +87,13 @@ begin
       P_O <= DAT_I(P_O'range);
     end if;
   end if;
-end process;
+end process OutputProcess;
 
-DAT_O <= std_logic_vector(resize(unsigned(P_I),DAT_O'length));
+InputProcess : process (CLK_I,RST_I)
+begin
+  if rising_edge(CLK_I) then
+    DAT_O <= std_logic_vector(resize(unsigned(P_I),DAT_O'length));
+  end if;
+end process InputProcess;
 
 end GPIO_Arch;
