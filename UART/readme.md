@@ -3,8 +3,11 @@
 ![](image.png)   
 
 **Version:** 3.5
+
 **Date:** 2016/11/03
+
 **Author:** Miguel A. Risco-Castillo
+
 **CodeURL:** https://github.com/mriscoc/SBA_Library/blob/master/UART/UART.vhd
 
 **Description:**
