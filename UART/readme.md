@@ -17,6 +17,7 @@ Read on ADR_I(0)='1' give status of RXready, on ADR_I(0)='0' pull data from RX f
 Rxready flag is clear when fifo is empty. Flag TXready in bit 14 of Data bus.
 
 **Release Notes**
+
 v3.5 2016/11/03
 - Bug corrections in snippet
 
