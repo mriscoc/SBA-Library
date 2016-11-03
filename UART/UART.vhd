@@ -3,8 +3,8 @@
 -- UART
 --
 -- Title: RS232 Universal Asynchronous Receiver Transmitter IPCore for SBA
--- Version: 3.4
--- Date: 2015/06/06
+-- Version: 3.5
+-- Date: 2016/11/03
 -- Author: Miguel A. Risco-Castillo
 --
 -- sba webpage: http://sba.accesus.com
@@ -15,6 +15,9 @@
 -- Requires RSTX and RSRX IPCores
 --
 -- Release Notes:
+--
+-- v3.5 2016/11/03
+-- Bug corrections in snippet
 --
 -- v3.4 2015/06/06
 -- Entities name change, remove "adapter"
