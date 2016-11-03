@@ -4,8 +4,8 @@
 --
 -- Title: Serial Transmitter IPCore for SBA (Simple Bus Architecture)
 --
--- Version 0.6
--- Date: 2016/06/09
+-- Version 0.7
+-- Date: 2016/11/03
 -- Description: RS232 Serial transmitter IP Core, Flag TXready to read in bit 14
 -- of Data bus.
 --
@@ -30,6 +30,9 @@
 --
 --
 -- Notes:
+--
+-- v0.7 2016/11/03
+-- Added Snippet for RSTX
 --
 -- v0.6 2016/06/09
 -- Remove dependency of SBAconfig
@@ -64,15 +67,15 @@ generic (
   baud:positive:=57600
   );
 port (
-      -- SBA Bus Interface
-      CLK_I : in std_logic;
-      RST_I : in std_logic;
-      STB_I : in std_logic;
-      WE_I  : in std_logic;
-      DAT_I : in std_logic_vector;
-      DAT_O : out std_logic_vector;
-      -- UART Interface;
-      TX     :out std_logic
+  -- SBA Bus Interface
+  CLK_I : in std_logic;
+  RST_I : in std_logic;
+  STB_I : in std_logic;
+  WE_I  : in std_logic;
+  DAT_I : in std_logic_vector;
+  DAT_O : out std_logic_vector;
+  -- UART Interface;
+  TX    : out std_logic
    );
 end RSTX;
 --------------------------------------------------
@@ -116,7 +119,7 @@ begin
       TxC<=0;
       TxRun<='1';
     elsif BDclk='1' then
-      if (TxC=9) then TxRun<='0'; else TxC<=TxC+1; end if;
+      if (TxC=9) then TxRun<='0'; else Inc(TxC); end if;
     end if;
   end if;
 end process TxProc;
@@ -133,7 +136,7 @@ begin
       cnt := 0;
     else   
       BDclk <= '0';
-      cnt:=cnt+1;
+      Inc(cnt);
     end if;
   end if;
 end process BaudGen;
