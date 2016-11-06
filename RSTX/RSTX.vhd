@@ -1,38 +1,24 @@
------------------------------------------------------------
+--------------------------------------------------------------------------------
 --
 -- RSTX
 --
 -- Title: Serial Transmitter IPCore for SBA (Simple Bus Architecture)
---
--- Version 0.7
+-- Version: 0.7
 -- Date: 2016/11/03
+-- Author: Miguel A. Risco Castillo
+--
+-- sba webpage: http://sba.accesus.com
+-- Core webpage: https://github.com/mriscoc/SBA_Library/blob/master/RSTX
+--
 -- Description: RS232 Serial transmitter IP Core, Flag TXready to read in bit 14
 -- of Data bus.
 --
--- Author:
--- (c) Miguel A. Risco Castillo
--- sba webpage: http://sba.accesus.com
--- Core URL: https://github.com/mriscoc/SBA_Library/blob/master/RSTX
---
--- This code, modifications, derivate
--- work or based upon, can not be used
--- or distributed without the
--- complete credits on this header and
--- the consent of the author.
---
--- This version is released under the GNU/GLP license
--- http://www.gnu.org/licenses/gpl.html
--- if you use this component for your research please
--- include the appropriate credit of Author.
---
--- For commercial purposes request the appropriate
--- license from the author.
---
---
--- Notes:
+-- Release Notes:
 --
 -- v0.7 2016/11/03
 -- Added Snippet for RSTX
+-- Added INT_O outport, this signal is active when RSTX is ready to send
+-- Remove dependency of SBAPackage
 --
 -- v0.6 2016/06/09
 -- Remove dependency of SBAconfig
@@ -43,7 +29,7 @@
 -- Make SBA buses generic std_logic_vectors
 -- remove unused bits of DAT_O.
 --
--- v0.4 20120621
+-- v0.4 2012/06/21
 -- Timing improvements
 --
 -- v0.3
@@ -54,11 +40,36 @@
 --
 -- v0.2
 -- Initial Release
------------------------------------------------------------
+--
+--------------------------------------------------------------------------------
+-- Copyright:
+--
+-- (c) 2008-2015 Miguel A. Risco Castillo
+--
+-- This code, modifications, derivate work or based upon, can not be used or
+-- distributed without the complete credits on this header.
+--
+-- This version is released under the GNU/GLP license
+-- http://www.gnu.org/licenses/gpl.html
+-- if you use this component for your research please include the appropriate
+-- credit of Author.
+--
+-- The code may not be included into ip collections and similar compilations
+-- which are sold. If you want to distribute this code for money then contact me
+-- first and ask for my permission.
+--
+-- These copyright notices in the source code may not be removed or modified.
+-- If you modify and/or distribute the code to any third party then you must not
+-- veil the original author. It must always be clearly identifiable.
+--
+-- Although it is not required it would be a nice move to recognize my work by
+-- adding a citation to the application's and/or research.
+--
+-- FOR COMMERCIAL PURPOSES REQUEST THE APPROPRIATE LICENSE FROM THE AUTHOR.
+--------------------------------------------------------------------------------
 
 Library IEEE;
 use IEEE.std_logic_1164.all;
-use work.SBApackage.all;
 
 entity RSTX is
 generic (
@@ -74,6 +85,7 @@ port (
   WE_I  : in std_logic;
   DAT_I : in std_logic_vector;
   DAT_O : out std_logic_vector;
+  INT_O : out std_logic;
   -- UART Interface;
   TX    : out std_logic
    );
@@ -119,7 +131,7 @@ begin
       TxC<=0;
       TxRun<='1';
     elsif BDclk='1' then
-      if (TxC=9) then TxRun<='0'; else Inc(TxC); end if;
+      if (TxC=9) then TxRun<='0'; else TxC<=TxC+1; end if;
     end if;
   end if;
 end process TxProc;
@@ -136,7 +148,7 @@ begin
       cnt := 0;
     else   
       BDclk <= '0';
-      Inc(cnt);
+      cnt := cnt+1;
     end if;
   end if;
 end process BaudGen;
@@ -144,6 +156,7 @@ end process BaudGen;
 TX     <= TxData(0);
 WENi   <= (STB_I and WE_I and not RST_I);
 TXRDYi <= not (WENi or TxRun);
-DAT_O(14) <= TXRDYi;
+INT_O  <= TXRDYi;
+DAT_O(14)<=TXRDYi;
 
 end RSTX_arch1;
