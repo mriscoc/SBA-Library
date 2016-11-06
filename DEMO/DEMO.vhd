@@ -4,8 +4,8 @@
 --
 -- Title: DEMO IP Core for SBA
 --
--- Version 0.1.1
--- Date: 2015/06/19
+-- Version: 0.2.1
+-- Date: 2016/11/04
 -- Author: Miguel A. Risco-Castillo
 --
 -- sba webpage: http://sba.accesus.com
@@ -17,6 +17,9 @@
 -- Follow SBA v1.1 Guidelines
 --
 -- Release Notes:
+--
+-- v0.2.1 2016/11/04
+-- Added INT_O output and REQUERIMENTS/UserFiles in Ini file
 --
 -- v0.1.1 2015/06/19
 -- * First release
@@ -66,6 +69,7 @@ port(
    ADR_I : in  std_logic_vector;-- Address bus
    DAT_I : in  std_logic_vector;-- Data input bus
    DAT_O : out std_logic_vector;-- Data Output bus
+   INT_O : out std_logic;       -- Interrupt request output
 -- Aditional Interface
    P_O   : out std_logic_vector(7 downto 0);
    P_I   : in  std_logic_vector(7 downto 0)
