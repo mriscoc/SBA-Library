@@ -3,8 +3,11 @@
 ![](image.png)   
 
 **Version:** 3.5
+
 **Date:** 2016/11/03
+
 **Author:** Miguel A. Risco-Castillo
+
 **CodeURL:** https://github.com/mriscoc/SBA_Library/blob/master/UART/UART.vhd
 
 **Description:**
@@ -14,6 +17,7 @@ Read on ADR_I(0)='1' give status of RXready, on ADR_I(0)='0' pull data from RX f
 Rxready flag is clear when fifo is empty. Flag TXready in bit 14 of Data bus.
 
 **Release Notes**
+
 v3.5 2016/11/03
 - Bug corrections in snippet
 

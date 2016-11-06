@@ -18,6 +18,7 @@
 --
 -- v3.5 2016/11/03
 -- Bug corrections in snippet
+-- Added connections for INT lines of RSTX and RSRX
 --
 -- v3.4 2015/06/06
 -- Entities name change, remove "adapter"
@@ -79,19 +80,19 @@ generic (
   rxbuff:positive:=8
 );
 port (
-      -- SBA Bus Interface
-      CLK_I : in std_logic;
-      RST_I : in std_logic;
-      WE_I  : in std_logic;
-      INT_O : out std_logic;            -- Interrupt request
-      STB_I : in std_logic;
-      ADR_I : in std_logic_vector;      -- Control/Status and Data reg select
-      DAT_I : in std_logic_vector;
-      DAT_O : out std_logic_vector;
-      -- UART Interface;
-      TX     :out std_logic;
-      RX     : in std_logic
-   );
+  -- SBA Bus Interface
+  CLK_I : in std_logic;
+  RST_I : in std_logic;
+  WE_I  : in std_logic;
+  STB_I : in std_logic;
+  ADR_I : in std_logic_vector;      -- Control/Status and Data reg select
+  DAT_I : in std_logic_vector;
+  DAT_O : out std_logic_vector;
+  INT_O : out std_logic;            -- Interrupt request
+  -- UART Interface;
+  TX    : out std_logic;
+  RX    : in std_logic
+  );
 end UART;
 --------------------------------------------------
 
@@ -101,39 +102,43 @@ signal TXDATi : std_logic_vector(DAT_O'Range);
 alias  TXRDYi : std_logic is TXDATi(14);
 signal RXDATi : std_logic_vector(DAT_I'Range);
 alias  RXRDYi : std_logic is RXDATi(15);
+signal TXINTi : std_logic;
+signal RXINTi : std_logic;
 
 begin
 
 TXCore: entity work.RSTX
 generic map(baud=>baud)
 port map(
-      -- SBA Bus Interface
-      CLK_I => CLK_I,
-      RST_I => RST_I,
-      WE_I  => WE_I,
-      STB_I => STB_I,
-      DAT_I => DAT_I,  
-      DAT_O => TXDATi,  
-      -- UART Interface;
-      TX    => TX       -- TX UART Output
-   );
+  -- SBA Bus Interface
+  CLK_I => CLK_I,
+  RST_I => RST_I,
+  WE_I  => WE_I,
+  STB_I => STB_I,
+  DAT_I => DAT_I,
+  DAT_O => TXDATi,
+  INT_O => TXINTi,
+  -- UART Interface;
+  TX    => TX       -- TX UART Output
+  );
 
 RXCore: entity work.RSRX
 generic map(baud=>baud, buffsize=>rxbuff)
 port map(
-      -- SBA Bus Interface
-      CLK_I => CLK_I,
-      RST_I => RST_I,
-      WE_I  => WE_I,
-      ADR_I => ADR_I,
-      STB_I => STB_I,
-      DAT_O => RXDATi,  
-      -- UART Interface;
-      RX    => RX       -- RX UART input
-   );
+  -- SBA Bus Interface
+  CLK_I => CLK_I,
+  RST_I => RST_I,
+  WE_I  => WE_I,
+  ADR_I => ADR_I,
+  STB_I => STB_I,
+  DAT_O => RXDATi,
+  INT_O => RXINTi,
+  -- UART Interface;
+  RX    => RX       -- RX UART input
+  );
 
 DAT_O (15 downto 8) <= (15=>RXRDYi, 14=>TXRDYi,others=>'0');
 DAT_O (7 downto 0) <= RXDATi(7 downto 0);
-INT_O <= RXRDYi or TXRDYi;
+INT_O <= RXINTi or TXINTi;
 
 end UART_structural;
