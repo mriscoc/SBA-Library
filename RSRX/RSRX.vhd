@@ -3,8 +3,8 @@
 -- RSRX
 --
 -- Title: Buffered RX IPCore for SBA
--- Version: 0.7
--- Date: 2015/06/14
+-- Version: 0.8
+-- Date: 2016/11/03
 -- Author: Miguel A. Risco-Castillo
 --
 -- sba webpage: http://sba.accesus.com
@@ -16,6 +16,11 @@
 -- fifo. Rxready flag is clear when fifo is empty.
 --
 -- Release Notes:
+--
+-- v0.8 2016/11/03
+-- Added Snippet for RSRX
+-- Added INT_O outport, this signal is active when RSRX buffer have data
+-- Remove dependency of SBAPackage
 --
 -- v0.7 2015/06/14
 -- Entities rename, remove "adapter"
@@ -67,7 +72,6 @@
 
 library IEEE;
 use IEEE.std_logic_1164.all;
-use work.SBApackage.all;
 
 entity RSRX is
 generic (
@@ -77,15 +81,16 @@ generic (
   buffsize:positive:=8
 );
 port (
-      -- SBA Bus Interface
-      CLK_I : in std_logic;
-      RST_I : in std_logic;
-      STB_I : in std_logic;
-      WE_I  : in std_logic;
-      ADR_I : in std_logic_vector;
-      DAT_O : out std_logic_vector;
-      -- UART Interface;
-      RX    : in std_logic    -- RX UART input
+  -- SBA Bus Interface
+  CLK_I : in std_logic;
+  RST_I : in std_logic;
+  STB_I : in std_logic;
+  WE_I  : in std_logic;
+  ADR_I : in std_logic_vector;
+  DAT_O : out std_logic_vector;
+  INT_O : out std_logic;
+  -- UART Interface;
+  RX    : in std_logic    -- RX UART input
 );
 end RSRX;
 
@@ -285,6 +290,7 @@ begin
   end if;
 end process BaudGen;
 
+INT_O <= RXRDYi;
 DAT_O(15) <= RXRDYi;
 
 end architecture RX_Arch;

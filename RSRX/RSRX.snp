@@ -1,0 +1,27 @@
+-- /SBA: Program Details -------------------------------------------------------
+-- Rutines for RSTX IP core
+-- Version: 0.7
+-- Date: 2016/11/03
+-- Author: Miguel A. Risco-Castillo
+-- Description: Snippet for RS232 Transmission, for transmit a char first fill
+-- the RSTmp register, then SBACall(UARTSendChar).
+-- /SBA: End -------------------------------------------------------------------
+
+-- /SBA: User Registers and Constants ------------------------------------------
+  constant RXRDY   : integer:=15;                -- RXRDY Flag is bit 15
+  variable UARTFlg : std_logic;                  -- aux bit for UART flags
+  variable RSTmp   : unsigned(7 downto 0);       -- Temporal register for UART
+-- /SBA: End -------------------------------------------------------------------
+
+-- /SBA: User Program ----------------------------------------------------------
+-- /L:UARTGetChar
+=> SBARead(RXDAT);               -- Read UART Status
+=> UARTFlg := dati(RXRDY);       -- Read RXRDY flag
+   RSTmp:= dati(7 downto 0);     -- Read possible char in to RSTmp
+=> if UARTFlg ='0' then          -- Test RXRDY
+     SBARead(RXDAT);             -- Continue read UART Status
+     SBAjump(UARTGetChar+1);
+   else
+     SBARet;
+   end if;
+-- /SBA: End -------------------------------------------------------------------
