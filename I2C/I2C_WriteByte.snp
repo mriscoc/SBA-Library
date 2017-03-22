@@ -1,0 +1,21 @@
+-- /SBA: Program Details -------------------------------------------------------
+-- Snippet: Write byte Snippet for I2C IPCORE
+-- Version: 0.1
+-- Date: 20151218
+-- Author: Juan S. Vega Martinez
+-- Description: Writing simple routine . Before calling, you must add the I2C
+--              routines of I2C snippet.
+-- /SBA: End -------------------------------------------------------------------
+
+-- /SBA: User Registers and Constants ------------------------------------------
+
+-- /SBA: End -------------------------------------------------------------------
+
+-- /SBA: User Program ----------------------------------------------------------
+
+=> I2C_DEVICE_ADR:=x"  ";   -- Set Address Device.Example DS1307 address is 1101000 then I2C_DEVICE_ADR:=x"68"
+   I2C_ADR_REG:=x"  ";      -- Set Register to write
+   I2C_DAT:=x"  ";          -- Value to write
+   SBAcall(I2CWritebyte);   -- Call I2CWritebyte Routine
+
+-- /SBA: End -------------------------------------------------------------------
