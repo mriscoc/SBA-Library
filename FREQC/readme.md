@@ -41,7 +41,7 @@ port (
   W_O	  : out std_logic	                      -- Window output signal
   );
 end FREQC; 
-vhdl
+```
 
 **Description:**
 Generic Frequency converter for use with Voltage to Frequency
