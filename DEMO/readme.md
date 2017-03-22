@@ -44,4 +44,4 @@ port(
    P_I   : in  std_logic_vector(7 downto 0)
 );
 end DEMO;
-vhdl
+```
