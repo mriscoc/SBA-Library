@@ -4,8 +4,8 @@
 --
 -- Title=CLKDIV is an IPCore for divide an Input clock signal
 --
--- Version: 4.4
--- Date: 2015/05/26
+-- Version: 4.5
+-- Date: 2017/03/22
 -- Author: Miguel A. Risco-Castillo
 --
 -- sba webpage: http://sba.accesus.com
@@ -17,6 +17,9 @@
 -- Follow SBA v1.1 Guidelines
 --
 -- Release Notes:
+--
+-- v4.5 2017/03/22
+-- Correct bug in debug generic type (positive to natural)
 --
 -- v4.4 2015/05/26
 -- Start to follow SBA v1.1 guidelines, remove SBAconfig dependency
@@ -72,7 +75,7 @@ entity ClkDiv is
 generic (
  infrec:positive:=50E6;         -- 50MHz default system frequency
  outfrec:positive:=1000;        -- 1KHz output frequency
- debug:positive:=1              -- Debug mode 1=on, 0:off
+ debug:natural:=0               -- Debug mode 1=on, 0:off
 );
 port (
     CLK_I : in std_logic;
