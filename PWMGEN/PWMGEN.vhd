@@ -90,7 +90,7 @@ signal E:std_logic;
 
 begin
 
-StepProcess :process (CLK_I,RST_I)             -- Window generator process
+StepProcess :process (CLK_I,RST_I)               -- PWM step process
 variable Wcnt : integer range 0 to MAXCOUNT;
 begin
   if RST_I='1' then
@@ -110,7 +110,7 @@ begin
   end if;
 end process StepProcess;
 
-DCRegProcess : process (CLK_I,RST_I,STB_I,WE_I)
+DCRegProcess : process (CLK_I,RST_I,STB_I,WE_I)  -- SBA write to DC process
 variable Ch:integer range 0 to chans-1;
 begin
   if RST_I='1' then
@@ -125,7 +125,7 @@ end process DCRegProcess;
 
 CHANSGEN : for i in 0 to chans-1 generate
 
-  CountProcess : process (CLK_I,RST_I,E)   -- Count process
+  CountProcess : process (CLK_I,RST_I,E)         -- Count process
   begin
     if RST_I='1' then
       CNT(i) <= (others=>'0');
@@ -136,7 +136,7 @@ CHANSGEN : for i in 0 to chans-1 generate
     end if;
   end process CountProcess;
 
---  PWMProcess : process (CNT,DC)
+--  PWMProcess : process (CNT,DC)                -- BAD alternative PWM output process
 --  begin
 --    if (CNT(i)<DC(i)) then
 --      PWM_O(i)<='1';
@@ -145,7 +145,7 @@ CHANSGEN : for i in 0 to chans-1 generate
 --    end if;
 --  end process PWMProcess;
 
-  PWMProcess : process (CLK_I,RST_I,CNT,DC)
+  PWMProcess : process (CLK_I,RST_I)             -- PWM output process
   begin
     if RST_I='1' then
       PWM_O(i)<='0';
@@ -158,8 +158,6 @@ CHANSGEN : for i in 0 to chans-1 generate
       end if;
     end if;
   end process PWMProcess;
-
-
 
 end generate CHANSGEN;
 
