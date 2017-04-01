@@ -3,8 +3,8 @@
 -- FREQC
 --
 -- Title: Frequency converter for SBA
--- Version 1.0
--- Date: 2017/03/15
+-- Version 1.3
+-- Date: 2017/03/30
 -- Author: Miguel A. Risco-Castillo
 --
 -- sba webpage: http://sba.accesus.com
@@ -28,6 +28,15 @@
 -- DAT_O: has the data of the count for the selected channel
 --
 -- Release Notes:
+--
+-- v1.3
+-- Added interrupt capability
+--
+-- v1.2
+-- Implementation of process for channel request
+--
+-- v1.1
+-- OutProcess to avoid out of range of REG(ADR_I) in channel request
 --
 -- v1.0
 -- Initial release
@@ -68,7 +77,7 @@ generic (
   chans:positive:=16;
   wsizems:positive:=100;
   sysfrec:positive:=50E6;
-  debug:natural:=1
+  debug:integer:=1
   );
 port (
   -- SBA Bus Interface
@@ -78,9 +87,9 @@ port (
   STB_I : in std_logic;            -- SBA Strobe/chip select
   ADR_I : in std_logic_vector;     -- SBA Address bus / Register select
   DAT_O : out std_logic_vector;    -- SBA Data output bus / Register data
+  INT_O	: out std_logic;           -- Interrupt request output
   -- PORT Interface;
-  C_I   : in std_logic_vector(chans-1 downto 0);  -- Input Channels
-  W_O	  : out std_logic	                      -- Window output signal
+  C_I   : in std_logic_vector(chans-1 downto 0) -- Input Channels
   );
 end FREQC;
 
@@ -91,6 +100,7 @@ type tCNT is array (0 to chans-1) of unsigned(DAT_O'range);
 signal REG,CNT:tCNT;
 signal T1,T2:std_logic_vector(C_I'range);
 signal W:std_logic;
+signal CH:integer range 0 to chans-1;
 
 begin
 
@@ -98,18 +108,18 @@ WindowProcess :process (CLK_I,RST_I)             -- Window generator process
 variable Wcnt : integer range 0 to MAXCOUNT;
 begin
   if RST_I='1' then
-    W <= '0';
+    W <= '1';
     Wcnt := 0;
     if (debug=1) then
      report "Clock Window: " & integer'image(MAXCOUNT) & " time: " & real'image(real(MAXCOUNT)/real(sysfrec));
     end if;
   elsif rising_edge(CLK_I) then
-    if Wcnt < MAXCOUNT then
-       W <= '1';
-       Wcnt := Wcnt+1;
-    else
+    if Wcnt = MAXCOUNT then
        W <= '0';
        Wcnt := 0;
+    else
+       W <= '1';
+       Wcnt := Wcnt+1;
     end if;
   end if;
 end process WindowProcess;
@@ -144,7 +154,26 @@ CHANSGEN : for i in 0 to chans-1 generate
 
 end generate CHANSGEN;
 
-DAT_O <= std_logic_vector(REG(to_integer(unsigned(ADR_I))));
-W_O <= W;
+IntProcess : process(CLK_I,RST_I,W,STB_I,WE_I)
+begin
+  if (RST_I='1') or ((STB_I='1') and (WE_I='0')) then
+    INT_O <= '0';
+  elsif rising_edge(CLK_I) then
+    if W='0' then
+      INT_O <= '1';
+    end if;
+  end if;
+end process IntProcess;
+
+selectCHProcess : process(STB_I,WE_I,ADR_I)
+begin
+  if ((STB_I='1') and (WE_I='0')) then
+    CH <= to_integer(unsigned(ADR_I));
+  else
+    CH <= 0;
+  end if;
+end process selectCHProcess;
+
+DAT_O <= std_logic_vector(REG(CH));
 
 end FREQC_Arch;

@@ -4,9 +4,9 @@
 
 FREQC Frequency converter for SBA
 
-**Version:** 1.0  
+**Version:** 1.3  
 
-**Date:** 2017/03/15  
+**Date:** 2017/03/30  
 
 **Author:** Miguel A. Risco-Castillo  
 
@@ -16,17 +16,27 @@ Based upon SBA v1.1 guidelines
 
 **Release Notes:**
 
+v1.3 2017/03/30
+- Added interrupt capability
+
+v1.2 2017/03/20
+- Remove OutProcess implemented in v1.1
+- Implementation of process for channel request
+
+v1.1 2017/03/17
+- OutProcess to avoid out of range of REG(ADR_I) in channel request
+
 v1.0 2017/03/15
 - First release
  
 
 ```vhdl
-Entity FREQC is
+entity FREQC is
 generic (
   chans:positive:=16;
   wsizems:positive:=100;
   sysfrec:positive:=50E6;
-  debug:natural:=1
+  debug:integer:=1
   );
 port (
   -- SBA Bus Interface
@@ -36,11 +46,12 @@ port (
   STB_I : in std_logic;            -- SBA Strobe/chip select
   ADR_I : in std_logic_vector;     -- SBA Address bus / Register select
   DAT_O : out std_logic_vector;    -- SBA Data output bus / Register data
+  INT_O	: out std_logic;           -- Interrupt request output
   -- PORT Interface;
-  C_I   : in std_logic_vector(chans-1 downto 0);  -- Input Channels
-  W_O	  : out std_logic	                      -- Window output signal
+  C_I   : in std_logic_vector(chans-1 downto 0) -- Input Channels
   );
-end FREQC; 
+end FREQC;
+           
 ```
 
 **Description:**
