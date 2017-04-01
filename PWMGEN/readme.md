@@ -46,7 +46,8 @@ end PWMGEN;
 Generic Pulse Width Modulation Generator for use with SBA, the
 duty cycle value is choosen by writting in to the DC register of the
 corresponding channel. Use ADR_I to select the channel and DAT_I to write to
-the DC register. The resolution of the PWM is 10 bits = 1024 
+the DC register. The resolution of the PWM is 10 bits = 1024.
+Change the address range in SBAdecoder according to the numbers of channels.
 
 *Generics:*
 - chans: number of output channels PWM_O
