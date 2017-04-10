@@ -69,8 +69,3 @@ new position. The IP Core controls the STEP speed and acceleration.
 - ADR_I = 0 : Read: Status Register; Write: Set Position
 - ADR_I = 1 : Read: Current Position; Write: Control Register  
 
-
-- chans: number of output channels PWM_O
-- pwmfreq: frequency of the output PWM signal
-- sysfrec: frequency of the main clock in hertz
-- debug: debug flag, 1:print debug information, 0:hide debug information
