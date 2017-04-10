@@ -2,11 +2,11 @@
 - - - 
 ![](image.png)   
 
-EASYDRV Frequency converter for SBA
+EASYDRV step motor adapter SBA
 
-**Version:** 1.0  
+**Version:** 1.1  
 
-**Date:** 2017/04/07  
+**Date:** 2017/04/10
 
 **Author:** Miguel A. Risco-Castillo  
 
@@ -15,6 +15,9 @@ EASYDRV Frequency converter for SBA
 Based upon SBA v1.1 guidelines
 
 **Release Notes:**
+
+v1.1 2017/04/10
+- Added SBARead process 
 
 v1.0 2017/04/07
 - First release
