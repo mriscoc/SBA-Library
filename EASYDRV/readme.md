@@ -73,3 +73,13 @@ register is readed. The IP Core controls the STEP speed and acceleration.
 *SBA interface:*
 - ADR_I = 0 : Read: Status Register; Write: Set Position
 - ADR_I = 1 : Read: Current Position; Write: Control Register
+
+*CONTROL and STATUS register bits:*
+-- RSTCTRL : is control register bit 0;  Soft Reset IP Core
+-- ENACTRL : is control register bit 1;  Enable outputs
+
+-- RSTSTUS : is status register bit 0;  Reset status
+-- ENASTUS : is status register bit 1;  IP Core is enable
+-- ACTSTUS : is status register bit 2;  IP Core is active (moving motor)
+-- DIRSTUS : is status register bit 3;  Direction bit
+-- INTSTUS : is status register bit 4;  Interrupt/Arrive flag
