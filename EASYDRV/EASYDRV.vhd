@@ -2,8 +2,8 @@
 --
 -- EASYDRV
 --
--- Title: Easy Driver step motor adapter SBA
--- Version 1.1
+-- Title: Easy Driver step motor adapter for SBA
+-- Version 1.2
 -- Date: 2017/04/10
 -- Author: Miguel A. Risco-Castillo
 --
@@ -16,9 +16,9 @@
 -- in the control register or externally using the input port RSTPOS.
 -- Writing to the set position register (setpos) instruct to the adapter to
 -- source the appropriate signals trough the DIR and STEP outputs to achieve the
--- new position. When the step motor arrive to the destiny position a flag is
--- set to '1' in the status register. The IP Core controls the STEP speed and
--- acceleration.
+-- new position. When the step motor arrive to the destiny position a flag
+-- (INTSTUS) is set to '1' in the status register and reset when the status
+-- register is readed. The IP Core controls the STEP speed and acceleration.
 --
 -- Generics:
 -- minspd: minimum step/second speed
@@ -31,6 +31,9 @@
 -- ADR_I = 1 : Read: Current Position; Write: Control Register
 --
 -- Release Notes:
+--
+-- v1.2 2017/04/10
+-- ENABLE output is active low, added INTSTUS flag.
 --
 -- v1.1 2017/04/10
 -- Added SBARead process
@@ -87,7 +90,7 @@ port (
   DAT_O : out std_logic_vector;   -- SBA Data output bus / Read Status/Position
   INT_O	: out std_logic;          -- Interrupt request output
   -- PORT Interface;
-  ENABLE : out std_logic;         -- EASYDRIVER enable
+  nENABLE: out std_logic;         -- EASYDRIVER enable outputs, active low
   DIR    : out std_logic;         -- EASYDRIVER direction
   STEP   : out std_logic;         -- EASYDRIVER step
   RSTPOS : in std_logic           -- Force reset position input
@@ -114,6 +117,7 @@ alias RSTSTUS : std_logic is statusReg(0);
 alias ENASTUS : std_logic is statusReg(1);
 alias ACTSTUS : std_logic is statusReg(2);
 alias DIRSTUS : std_logic is statusReg(3);
+alias INTSTUS : std_logic is statusReg(4);
 
 impure function deltaPos return integer is
 begin
@@ -231,13 +235,15 @@ begin
   end case;
 end process SBAReadProcess;
 
-IntProcess : process(CLK_I,RST_I,STB_I,WE_I)
+IntProcess : process(CLK_I,RST_I,STB_I,WE_I,ADR_I(0))
 begin
-  if (RST_I='1') or ((STB_I='1') and (WE_I='0')) then
-    INT_O <= '0';
+  if (RST_I='1') then
+    INTSTUS <= '0';
   elsif rising_edge(CLK_I) then
     if (MotSt=MArrive) then
-      INT_O <= '1';
+      INTSTUS <= '1';
+    elsif ((STB_I='1') and (WE_I='0') and (ADR_I(0)='0')) then
+      INTSTUS <= '0';
     end if;
   end if;
 end process IntProcess;
@@ -250,8 +256,9 @@ ENASTUS <= enablei;
 DIRSTUS <= diri;
 ACTSTUS <= '0' When (MotSt=MIdle) else '1';
 
-STEP <= stepi;
-DIR  <= diri;
-ENABLE <= enablei;
+INT_O <= INTSTUS;
+STEP  <= stepi;
+DIR   <= diri;
+nENABLE <= not enablei;
 
 end EASYDRV_Arch;

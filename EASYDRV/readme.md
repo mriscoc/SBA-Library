@@ -1,30 +1,33 @@
 # **EASYDRV**
-- - - 
-![](image.png)   
+- - -
+![](image.png)
 
-EASYDRV step motor adapter SBA
+EASYDRV Easy Driver step motor adapter for SBA
 
-**Version:** 1.1  
+**Version:** 1.2
 
 **Date:** 2017/04/10
 
-**Author:** Miguel A. Risco-Castillo  
+**Author:** Miguel A. Risco-Castillo
 
-**CodeURL:** https://github.com/mriscoc/SBA_Library/blob/master/EASYDRV/EASYDRV.vhd  
+**CodeURL:** https://github.com/mriscoc/SBA_Library/blob/master/EASYDRV/EASYDRV.vhd
 
 Based upon SBA v1.1 guidelines
 
 **Release Notes:**
 
+v1.2 2017/04/10
+- ENABLE output is active low, added INTSTUS flag,
+
 v1.1 2017/04/10
-- Added SBARead process 
+- Added SBARead process
 
 v1.0 2017/04/07
 - First release
- 
+
 
 ```vhdl
-entity EASYDRV is
+Entity EASYDRV is
 generic (
   minspd:positive:=5;             -- Minimum step/second speed
   maxspd:positive:=1000;          -- Maximum step/second speed
@@ -42,22 +45,24 @@ port (
   DAT_O : out std_logic_vector;   -- SBA Data output bus / Read Status/Position
   INT_O	: out std_logic;          -- Interrupt request output
   -- PORT Interface;
-  ENABLE : out std_logic;         -- EASYDRIVER enable
+  nENABLE: out std_logic;         -- EASYDRIVER enable outputs, active low
   DIR    : out std_logic;         -- EASYDRIVER direction
   STEP   : out std_logic;         -- EASYDRIVER step
   RSTPOS : in std_logic           -- Force reset position input
   );
-end EASYDRV; 
+end EASYDRV;
 ```
 
 **Description:**
-SBA Simple step motor adapter for Easy Driver and similar
-hardware. The IP Core have a register where the current position (currpos) is
+SBA Simple step motor adapter for Easy Driver and similar hardware.
+The IP Core have a register where the current position (currpos) is
 storage, this register can be reset internally using the corresponding bit
 in the control register or externally using the input port RSTPOS.
 Writing to the set position register (setpos) instruct to the adapter to
 source the appropriate signals trough the DIR and STEP outputs to achieve the
-new position. The IP Core controls the STEP speed and acceleration.
+new position. When the step motor arrive to the destiny position a flag
+(INTSTUS) is set to '1' in the status register and reset when the status
+register is readed. The IP Core controls the STEP speed and acceleration.
 
 *Generics:*
 - minspd: minimum step/second speed
@@ -67,5 +72,4 @@ new position. The IP Core controls the STEP speed and acceleration.
 
 *SBA interface:*
 - ADR_I = 0 : Read: Status Register; Write: Set Position
-- ADR_I = 1 : Read: Current Position; Write: Control Register  
-
+- ADR_I = 1 : Read: Current Position; Write: Control Register
