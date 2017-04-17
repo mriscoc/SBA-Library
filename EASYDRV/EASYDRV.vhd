@@ -226,7 +226,7 @@ begin
   end if;
 end process SBAWriteProcess;
 
-SBAReadProcess : process(ADR_I(0))
+SBAReadProcess : process(ADR_I(0),statusReg,currPos)
 begin
   case ADR_I(0) is
       When '0' => DAT_O <= statusReg;
