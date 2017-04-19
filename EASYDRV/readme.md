@@ -4,9 +4,9 @@
 
 EASYDRV Easy Driver step motor adapter for SBA
 
-**Version:** 1.2
+**Version:** 1.3
 
-**Date:** 2017/04/10
+**Date:** 2017/04/18
 
 **Author:** Miguel A. Risco-Castillo
 
@@ -15,6 +15,9 @@ EASYDRV Easy Driver step motor adapter for SBA
 Based upon SBA v1.1 guidelines
 
 **Release Notes:**
+
+v1.3 2017/04/18
+- Change in ThrottleProcess
 
 v1.2 2017/04/10
 - ENABLE output is active low, added INTSTUS flag,

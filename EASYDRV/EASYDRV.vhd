@@ -3,8 +3,8 @@
 -- EASYDRV
 --
 -- Title: Easy Driver step motor adapter for SBA
--- Version 1.2
--- Date: 2017/04/10
+-- Version 1.3
+-- Date: 2017/04/18
 -- Author: Miguel A. Risco-Castillo
 --
 -- sba webpage: http://sba.accesus.com
@@ -31,6 +31,9 @@
 -- ADR_I = 1 : Read: Current Position; Write: Control Register
 --
 -- Release Notes:
+--
+-- v1.3 2017/04/18
+-- Change in ThrottleProcess
 --
 -- v1.2 2017/04/10
 -- ENABLE output is active low, added INTSTUS flag.
@@ -155,8 +158,10 @@ begin
   if (MotSt=MIdle) then
     currdly<=maxdly;
   elsif rising_edge(stepi) then
-    if currdly>mindly then
+    if currdly>mindly+incdly then
       currdly<=currdly-incdly;
+    else
+      currdly<=mindly;
     end if;
   end if;
 end process ThrottleProcess;
@@ -226,7 +231,7 @@ begin
   end if;
 end process SBAWriteProcess;
 
-SBAReadProcess : process(ADR_I(0),statusReg,currPos)
+SBAReadProcess : process(ADR_I(0))
 begin
   case ADR_I(0) is
       When '0' => DAT_O <= statusReg;
