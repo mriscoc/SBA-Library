@@ -75,7 +75,7 @@ use ieee.numeric_std.all;
 entity UART is
 generic (
   debug:positive:=1;
-  sysfrec:positive:=50E6;
+  sysfreq:positive:=50E6;
   baud:positive:=115200;
   rxbuff:positive:=8
 );
