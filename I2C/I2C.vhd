@@ -28,8 +28,9 @@ use IEEE.Numeric_std.all;
 use work.SBApackage.all;
 
 Entity I2C is
-generic ( sysfrec : integer:= 50e6;
-			 FREQ_SCL: natural:= 100e3); 
+generic ( 
+  sysfreq : integer:= 50e6;
+  FREQ_SCL: natural:= 100e3); 
 port (
       -- SBA Bus Interface
       CLK_I : in std_logic;
