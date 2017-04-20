@@ -76,7 +76,7 @@ use IEEE.std_logic_1164.all;
 entity RSRX is
 generic (
   debug:positive:=1;
-  sysfrec:positive:=50E6;
+  sysfreq:positive:=50E6;
   baud:positive:=57600;
   buffsize:positive:=8
 );
