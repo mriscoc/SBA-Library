@@ -72,7 +72,7 @@ use ieee.numeric_std.all;
 entity PMODDA1 is
 generic(
   debug:positive:=1;
-  sysfrec:positive:=50E6
+  sysfreq:positive:=50E6
 );
 port(
 -- SBA Interface
