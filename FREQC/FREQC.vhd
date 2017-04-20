@@ -76,7 +76,7 @@ Entity FREQC is
 generic (
   chans:positive:=16;
   wsizems:positive:=100;
-  sysfrec:positive:=50E6;
+  sysfreq:positive:=50E6;
   debug:integer:=1
   );
 port (
