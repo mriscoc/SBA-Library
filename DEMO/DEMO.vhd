@@ -58,7 +58,7 @@ use ieee.numeric_std.all;
 entity DEMO is
 generic(
   debug:positive:=1;
-  sysfrec:positive:=25E6
+  sysfreq:positive:=25E6
 );
 port(
 -- SBA Interface
