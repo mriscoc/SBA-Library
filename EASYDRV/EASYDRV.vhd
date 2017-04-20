@@ -79,7 +79,7 @@ Entity EASYDRV is
 generic (
   minspd:positive:=5;             -- Minimum step/second speed
   maxspd:positive:=1000;          -- Maximum step/second speed
-  sysfrec:positive:=50E6;         -- System frequency
+  sysfreq:positive:=50E6;         -- System frequency
   debug:natural:=1                -- Debug
   );
 port (
