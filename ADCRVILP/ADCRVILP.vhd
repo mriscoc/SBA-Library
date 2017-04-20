@@ -77,7 +77,7 @@ use ieee.numeric_std.all;
 entity ADCRVILP is
 generic(
   debug:positive:=1;
-  sysfrec:positive:=25E6
+  sysfreq:positive:=25E6
 );
 port(
 -- Interface for inside FPGA
