@@ -65,7 +65,7 @@ Entity PWMGEN is
 generic (
   chans:positive:=16;
   pwmfreq:positive:=10E3;
-  sysfrec:positive:=50E6;
+  sysfreq:positive:=50E6;
   debug:natural:=1
   );
 port (
