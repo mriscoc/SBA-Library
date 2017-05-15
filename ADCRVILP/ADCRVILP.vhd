@@ -4,8 +4,8 @@
 --
 -- Title: ADC RVI low performance daughter board
 --
--- Version: 7.1.2
--- Date: 2015/09/08
+-- Version: 7.2
+-- Date: 2017/04/21
 -- Author: Miguel A. Risco-Castillo
 --
 -- sba webpage: http://sba.accesus.com
@@ -18,7 +18,10 @@
 --
 -- Release Notes:
 --
--- 7.1.2 2015/09/08
+-- v7.2 2017/04/21
+-- Change sysfrec to sysfreq
+--
+-- v7.1.2 2015/09/08
 -- adapt to SBA v1.1 guidelines: ADR_I is vector
 --
 -- v7.1 2015/06/14
@@ -46,7 +49,7 @@
 --------------------------------------------------------------------------------
 -- Copyright:
 --
--- (c) 2008-2015 Miguel A. Risco-Castillo
+-- (c) Miguel A. Risco-Castillo
 --
 -- This code, modifications, derivate work or based upon, can not be used or
 -- distributed without the complete credits on this header.
@@ -105,14 +108,14 @@ Signal DATOi: unsigned(9 downto 0);  -- Intermediate aux signal
 
 begin
 
-CLK1: if (sysfrec>20E6) generate
+CLK1: if (sysfreq>20E6) generate
 
 --CLK Div process (CLKi max 20MHz)
 
   CLK_Div : entity work.ClkDiv
   Generic map (
     debug  => debug,
-    infrec => sysfrec,
+    infrec => sysfreq,
     outfrec=> 20E6
   )
   Port Map(
@@ -123,7 +126,7 @@ CLK1: if (sysfrec>20E6) generate
 
 end generate;
 
-CLK2: if (sysfrec<=20E6) generate
+CLK2: if (sysfreq<=20E6) generate
   CLKi <= CLK_I;
 end generate;
 

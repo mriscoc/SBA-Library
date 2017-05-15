@@ -75,7 +75,7 @@ entity ClkDiv is
 generic (
  infrec:positive:=50E6;         -- 50MHz default system frequency
  outfrec:positive:=1000;        -- 1KHz output frequency
- debug:natural:=0               -- Debug mode 1=on, 0:off
+ debug:natural:=1               -- Debug mode 1=on, 0:off
 );
 port (
     CLK_I : in std_logic;

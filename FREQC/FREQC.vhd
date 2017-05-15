@@ -3,8 +3,8 @@
 -- FREQC
 --
 -- Title: Frequency converter for SBA
--- Version 1.3
--- Date: 2017/03/30
+-- Version 1.4
+-- Date: 2017/04/21
 -- Author: Miguel A. Risco-Castillo
 --
 -- sba webpage: http://sba.accesus.com
@@ -13,12 +13,12 @@
 -- Description: Generic Frequency converter for use with Voltage to Frequency
 -- converters. The IP Core counts the pulses comming in to a port for a
 -- specified time window. The value of count is storaged into a internal
--- register. For example, if the input frequency at C_I(0) is 10KHz and the
+-- register. For example, if the input frequency at FC(0) is 10KHz and the
 -- window time is setup to 100ms = 0.1s then, the register at ADR_I=0 will have
 -- 10,000 Hz / 0.1 s = 1,000 counts.
 --
 -- Generics:
--- chans: number of input channels C_I
+-- chans: number of input channels FC
 -- wsizems: size in miliseconds of the counting window
 -- sysfrec: frequency of the main clock in hertz
 -- debug: debug flag, 1:print debug information, 0:hide debug information
@@ -29,16 +29,19 @@
 --
 -- Release Notes:
 --
--- v1.3
+-- v1.4 2017/04/21
+-- Change sysfrec to sysfreq, C_I to FC
+--
+-- v1.3 2017/03/30
 -- Added interrupt capability
 --
--- v1.2
+-- v1.2 2017/03/20
 -- Implementation of process for channel request
 --
--- v1.1
+-- v1.1 2017/03/17
 -- OutProcess to avoid out of range of REG(ADR_I) in channel request
 --
--- v1.0
+-- v1.0 2017/03/15
 -- Initial release
 --
 --------------------------------------------------------------------------------
@@ -89,16 +92,16 @@ port (
   DAT_O : out std_logic_vector;    -- SBA Data output bus / Register data
   INT_O	: out std_logic;           -- Interrupt request output
   -- PORT Interface;
-  C_I   : in std_logic_vector(chans-1 downto 0) -- Input Channels
+  FC    : in std_logic_vector(chans-1 downto 0) -- Frequency Converter Input Channels
   );
 end FREQC;
 
 Architecture FREQC_Arch of FREQC is
 
-constant MAXCOUNT:integer:=wsizems*integer(real(sysfrec)/real(1000));
+constant MAXCOUNT:integer:=wsizems*integer(real(sysfreq)/real(1000));
 type tCNT is array (0 to chans-1) of unsigned(DAT_O'range);
 signal REG,CNT:tCNT;
-signal T1,T2:std_logic_vector(C_I'range);
+signal T1,T2:std_logic_vector(FC'range);
 signal W:std_logic;
 signal CH:integer range 0 to chans-1;
 
@@ -111,7 +114,7 @@ begin
     W <= '1';
     Wcnt := 0;
     if (debug=1) then
-     report "Clock Window: " & integer'image(MAXCOUNT) & " time: " & real'image(real(MAXCOUNT)/real(sysfrec));
+     report "Clock Window: " & integer'image(MAXCOUNT) & " time: " & real'image(real(MAXCOUNT)/real(sysfreq));
     end if;
   elsif rising_edge(CLK_I) then
     if Wcnt = MAXCOUNT then
@@ -132,7 +135,7 @@ CHANSGEN : for i in 0 to chans-1 generate
       T1(i) <= '0';
       T2(i) <= '0';
     elsif rising_edge(CLK_I) then
-      T1(i) <= C_I(i);
+      T1(i) <= FC(i);
       T2(i) <= T1(i);
     end if;
   end process InputProcess;

@@ -4,9 +4,9 @@
 
 EASYDRV Easy Driver step motor adapter for SBA
 
-**Version:** 1.3
+**Version:** 1.4
 
-**Date:** 2017/04/18
+**Date:** 2017/04/21
 
 **Author:** Miguel A. Risco-Castillo
 
@@ -15,6 +15,9 @@ EASYDRV Easy Driver step motor adapter for SBA
 Based upon SBA v1.1 guidelines
 
 **Release Notes:**
+
+v1.4 2017/04/21
+- Change sysfrec to sysfreq
 
 v1.3 2017/04/18
 - Change in ThrottleProcess
@@ -34,7 +37,7 @@ Entity EASYDRV is
 generic (
   minspd:positive:=5;             -- Minimum step/second speed
   maxspd:positive:=1000;          -- Maximum step/second speed
-  sysfrec:positive:=50E6;         -- System frequency
+  sysfreq:positive:=50E6;         -- System frequency
   debug:natural:=1                -- Debug
   );
 port (
@@ -70,7 +73,7 @@ register is readed. The IP Core controls the STEP speed and acceleration.
 *Generics:*
 - minspd: minimum step/second speed
 - maxspd: maximum step/second speed
-- sysfrec: frequency of the main clock in hertz
+- sysfreq: frequency of the main clock in hertz
 - debug: debug flag, 1:print debug information, 0:hide debug information
 
 *SBA interface:*

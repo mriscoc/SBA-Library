@@ -3,8 +3,8 @@
 -- EASYDRV
 --
 -- Title: Easy Driver step motor adapter for SBA
--- Version 1.3
--- Date: 2017/04/18
+-- Version 1.4
+-- Date: 2017/04/21
 -- Author: Miguel A. Risco-Castillo
 --
 -- sba webpage: http://sba.accesus.com
@@ -23,7 +23,7 @@
 -- Generics:
 -- minspd: minimum step/second speed
 -- maxspd: maximum step/second speed
--- sysfrec: frequency of the main clock in hertz
+-- sysfreq: frequency of the main clock in hertz
 -- debug: debug flag, 1:print debug information, 0:hide debug information
 --
 -- SBA interface:
@@ -31,6 +31,9 @@
 -- ADR_I = 1 : Read: Current Position; Write: Control Register
 --
 -- Release Notes:
+--
+-- v1.4 2017/04/21
+-- Change sysfrec to sysfreq
 --
 -- v1.3 2017/04/18
 -- Change in ThrottleProcess
@@ -102,8 +105,8 @@ end EASYDRV;
 
 Architecture EASYDRV_Arch of EASYDRV is
 
-constant maxdly:integer:=integer(real(sysfrec)/(2.0*real(minspd)));
-constant mindly:integer:=integer(real(sysfrec)/(2.0*real(maxspd)));
+constant maxdly:integer:=integer(real(sysfreq)/(2.0*real(minspd)));
+constant mindly:integer:=integer(real(sysfreq)/(2.0*real(maxspd)));
 constant incdly:integer:=integer(real(maxdly-mindly)/300.0);
 
 type tMotSt is (MIdle, MUp, MDw, MArrive);
@@ -132,8 +135,8 @@ begin
 DebugProcess:process(RST_I)
 begin
   if (debug=1) and (RST_I='0') then
-     report "Min steps by second: " & real'image(real(sysfrec)/(2.0*real(maxdly))) & " Max delay:" & integer'image(maxdly);
-     report "Max steps by second: " & real'image(real(sysfrec)/(2.0*real(mindly))) & " Min delay:" & integer'image(mindly);
+     report "Min steps by second: " & real'image(real(sysfreq)/(2.0*real(maxdly))) & " Max delay:" & integer'image(maxdly);
+     report "Max steps by second: " & real'image(real(sysfreq)/(2.0*real(mindly))) & " Min delay:" & integer'image(mindly);
   end if;
 end process DebugProcess;
 

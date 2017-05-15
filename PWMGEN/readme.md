@@ -4,9 +4,9 @@
 
 PWMGEN Frequency converter for SBA
 
-**Version:** 1.0  
+**Version:** 1.1
 
-**Date:** 2017/03/15  
+**Date:** 2017/04/21
 
 **Author:** Miguel A. Risco-Castillo  
 
@@ -15,6 +15,9 @@ PWMGEN Frequency converter for SBA
 Based upon SBA v1.1 guidelines
 
 **Release Notes:**
+
+v1.1 2017/04/21
+- Change sysfrec to sysfreq, PWM_O to PWM
 
 v1.0 2017/03/15
 - First release
@@ -25,7 +28,7 @@ Entity PWMGEN is
 generic (
   chans:positive:=16;
   pwmfreq:positive:=10E3;
-  sysfrec:positive:=50E6;
+  sysfreq:positive:=50E6;
   debug:natural:=1
   );
 port (
@@ -37,7 +40,7 @@ port (
   ADR_I : in std_logic_vector;     -- SBA Address bus / Register select
   DAT_I : in std_logic_vector;     -- SBA Data input bus / Duty cycle register
   -- PORT Interface;
-  PWM_O : out std_logic_vector(chans-1 downto 0)  -- PWM output Channels
+  PWM   : out std_logic_vector(chans-1 downto 0)  -- PWM output Channels
   );
 end PWMGEN; 
 ```
@@ -52,7 +55,7 @@ Change the address range in SBAdecoder according to the numbers of channels.
 *Generics:*
 - chans: number of output channels PWM_O
 - pwmfreq: frequency of the output PWM signal
-- sysfrec: frequency of the main clock in hertz
+- sysfreq: frequency of the main clock in hertz
 - debug: debug flag, 1:print debug information, 0:hide debug information
 
 *SBA interface:*

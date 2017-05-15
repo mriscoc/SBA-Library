@@ -3,8 +3,8 @@
 -- PWMGEN
 --
 -- Title: PWM Generator for SBA
--- Version 1.0
--- Date: 2017/03/27
+-- Version 1.1
+-- Date: 2017/04/21
 -- Author: Miguel A. Risco-Castillo
 --
 -- sba webpage: http://sba.accesus.com
@@ -18,7 +18,7 @@
 -- Generics:
 -- chans: number of output channels PWM_O
 -- pwmfreq: frequency of the output PWM signal
--- sysfrec: frequency of the main clock in hertz
+-- sysfreq: frequency of the main clock in hertz
 -- debug: debug flag, 1:print debug information, 0:hide debug information
 --
 -- SBA interface:
@@ -27,7 +27,10 @@
 --
 -- Release Notes:
 --
--- v1.0
+-- v1.1 2017/04/21
+-- Change sysfrec to sysfreq, PWM_O to PWM
+--
+-- v1.0 2017/03/27
 -- Initial release
 --
 --------------------------------------------------------------------------------
@@ -77,13 +80,13 @@ port (
   ADR_I : in std_logic_vector;     -- SBA Address bus / Register select
   DAT_I : in std_logic_vector;     -- SBA Data input bus / Duty cycle register
   -- PORT Interface;
-  PWM_O : out std_logic_vector(chans-1 downto 0)  -- PWM output Channels
+  PWM   : out std_logic_vector(chans-1 downto 0)  -- PWM output Channels
   );
 end PWMGEN;
 
 Architecture PWMGEN_Arch of PWMGEN is
 
-constant MAXCOUNT:integer:=integer(real(sysfrec)/(1024.0*real(pwmfreq)))-1;
+constant MAXCOUNT:integer:=integer(real(sysfreq)/(1024.0*real(pwmfreq)))-1;
 type tCNT is array (0 to chans-1) of unsigned(9 downto 0);
 signal DC,CNT:tCNT;
 signal E:std_logic;
@@ -97,7 +100,7 @@ begin
     E <= '0';
     Wcnt := 0;
     if (debug=1) then
-     report "Real PWM frequency: " & real'image(  real(sysfrec)/(1024.0*real(MAXCOUNT+1))   );
+     report "Real PWM frequency: " & real'image(  real(sysfreq)/(1024.0*real(MAXCOUNT+1))   );
     end if;
   elsif rising_edge(CLK_I) then
     if Wcnt < MAXCOUNT then
@@ -139,22 +142,22 @@ CHANSGEN : for i in 0 to chans-1 generate
 --  PWMProcess : process (CNT,DC)                -- BAD alternative PWM output process
 --  begin
 --    if (CNT(i)<DC(i)) then
---      PWM_O(i)<='1';
+--      PWM(i)<='1';
 --    else
---      PWM_O(i)<='0';
+--      PWM(i)<='0';
 --    end if;
 --  end process PWMProcess;
 
   PWMProcess : process (CLK_I,RST_I)             -- PWM output process
   begin
     if RST_I='1' then
-      PWM_O(i)<='0';
+      PWM(i)<='0';
     elsif rising_edge(CLK_I) then
       if (CNT(i)=0) then
-        PWM_O(i)<='1';
+        PWM(i)<='1';
       end if;
       if (CNT(i)=DC(i)) then
-        PWM_O(i)<='0';
+        PWM(i)<='0';
       end if;
     end if;
   end process PWMProcess;
