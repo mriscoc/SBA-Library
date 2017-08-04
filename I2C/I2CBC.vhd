@@ -9,6 +9,9 @@
 -- (c)Juan Vega
 -- e-mail: juan.vega25@gmail.com
 --
+-- v0.3
+-- Delete extra parenthesis around aggregate in line 99
+--
 -- v0.2
 -- Optimized Core I2C-SBA
 --
@@ -93,7 +96,7 @@ DATi <= DAT_I(15 downto 0);
 Ctrl_SysReg:process(CLK_I,RST_I)
 begin
   if (RST_I='1') then
-    I2C_REG <= ((others=> (others=>'0'))); 
+    I2C_REG <= (others=> (others=>'0'));
     i2c_st <= Minit; 
     DataRcv <='0';
     WrRdi<='0';
