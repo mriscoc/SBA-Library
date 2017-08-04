@@ -3,8 +3,8 @@
 -- PWMGEN
 --
 -- Title: PWM Generator for SBA
--- Version 1.1
--- Date: 2017/04/21
+-- Version 1.2
+-- Date: 2017/05/24
 -- Author: Miguel A. Risco-Castillo
 --
 -- sba webpage: http://sba.accesus.com
@@ -26,6 +26,10 @@
 -- DAT_I: the value of the duty cycle in steps of 10 bits
 --
 -- Release Notes:
+--
+-- v1.2
+-- Added function nbits to calculate and use only the less significant bits of
+-- ADR_I accord to chans
 --
 -- v1.1 2017/04/21
 -- Change sysfrec to sysfreq, PWM_O to PWM
@@ -115,12 +119,25 @@ end process StepProcess;
 
 DCRegProcess : process (CLK_I,RST_I,STB_I,WE_I)  -- SBA write to DC process
 variable Ch:integer range 0 to chans-1;
+
+function nbits( i : natural) return integer is
+variable temp    : integer := i;
+variable ret_val : integer := 0;
+begin
+  if to_unsigned(i,1)(0)='1' then temp:=temp+1;end if;
+  while temp > 1 loop
+    ret_val := ret_val + 1;
+    temp    := temp / 2;
+  end loop;
+  return ret_val;
+end function;
+
 begin
   if RST_I='1' then
     DC <=(others=>(others=>'0'));
   elsif rising_edge(CLK_I) then
     if (STB_I='1') and (WE_I='1') then
-      Ch := to_integer(unsigned(ADR_I));
+      Ch := to_integer(unsigned(ADR_I(nbits(chans) downto 0)));
       DC(Ch) <= unsigned(DAT_I(DC(0)'range));
     end if;
   end if;

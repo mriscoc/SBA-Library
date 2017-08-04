@@ -4,25 +4,28 @@
 --
 -- Title: 7Segment Display Module for RVI
 --
--- Version 4.2
--- Date: 2015/06/19
+-- Version 5.0
+-- Date: 2017/04/21
 -- Author: Miguel A. Risco-Castillo
 --
 -- sba webpage: http://sba.accesus.com
 -- core webpage: https://github.com/mriscoc/SBA-Library/tree/master/D7SRVI
 --
--- Description: Seven segments four digits LED display
--- It requires Data Bus of 16 bits and low speed <1KHz clock (DCLK) for
+-- Description: Seven segments four Hexadecimal digits LED display
+-- It requires Data Bus of 16 bits and low speed <1KHz clock (DCLKi) for
 -- digit multiplexing. Use two positions on address map :
--- ADR_I=0 Write Segments Data
--- ADR_I=1 Write Decimal Point Data
+-- ADR_I=0 Write Hexadecimal Data
+-- ADR_I=1 Write Decimal Point Data Mask
 --
 -- Follow SBA v1.1 Guidelines
 --
 -- Release Notes:
 --
+-- v5.0 2017/04/21
+-- Insert sysfreq generic and CLKDIV into IP Core and remove DCLK port
+--
 -- v4.2 2014/06/19
--- Minor change, rename output port DIG_SEG to SEG
+-- Minor change, rename output port SEG to SEG
 --
 -- v4.1 2015/06/14
 -- Name change, remove dependency of SBAconfig
@@ -38,7 +41,7 @@
 -- Now is possible to control the position of
 -- the decimal point using an additional register
 --
--- Rev 3.6
+-- Rev 3.6 2008
 -- Change to SBA Compliant
 --
 -- Rev 3.5
@@ -50,7 +53,7 @@
 --------------------------------------------------------------------------------
 -- Copyright:
 --
--- (c) 2008-2015 Miguel A. Risco-Castillo
+-- (c) Miguel A. Risco-Castillo
 --
 -- This code, modifications, derivate work or based upon, can not be used or
 -- distributed without the complete credits on this header.
@@ -79,29 +82,32 @@ Use ieee.std_logic_1164.all;
 Use ieee.numeric_std.all;
 
 entity D7SRVI is
-port (
+  generic (
+    sysfreq:positive:=50E6;       -- System frequency
+    debug:natural:=1              -- Debug mode 1=on, 0:off
+  );
+  port (
 -- Interface for inside FPGA
-   RST_I : in std_logic;        -- active high reset
-   CLK_I : in std_logic;        -- Main clock
-   STB_I : in std_logic;        -- ChipSel, active high
-   WE_I  : in std_logic;        -- write, active high
-   ADR_I : in std_logic;        -- Register Select, Data and decimal point.
-   DAT_I : in std_logic_vector; -- Data input Bus
+    RST_I : in std_logic;         -- active high reset
+    CLK_I : in std_logic;         -- Main clock
+    STB_I : in std_logic;         -- ChipSel, active high
+    WE_I  : in std_logic;         -- write, active high
+    ADR_I : in std_logic;         -- Register Select, Data and decimal point.
+    DAT_I : in std_logic_vector;  -- Data input Bus
 -- Interface for RVI 4 digits 7 seg Display
-   DCLK    : in  std_logic;     -- Clock for Digit Multiplexing
-   SEG     : out std_logic_vector(8 downto 0)
-);
+    SEG     : out std_logic_vector(8 downto 0)
+  );
 end D7SRVI;
 
-
 architecture D7SRVI_arch of D7SRVI is
-type tstate is (OffSt, OnSt);  -- Segments States
+type tstate is (OffSt, OnSt);     -- Segments States
 subtype tsegimg is std_logic_vector(6 downto 0);
 type tsegments  is Array (0 to 15) of tsegimg;
 
-signal state : tstate;
-signal DATi : std_logic_vector(DAT_I'range);
+signal state  : tstate;
+signal DATi   : std_logic_vector(DAT_I'range);
 signal dpmask : std_logic_vector(3 downto 0);
+signal DCLKi  : std_logic;        -- Clock for Digit Multiplexing
 
 constant dig2seg : tsegments := (
  "111111Z",
@@ -129,6 +135,20 @@ end function getZ;
 
 begin
  
+  CLKDIV: entity work.CLKDIV
+  generic map(
+    infrec  => sysfreq,
+    outfrec => 500,
+    debug   => debug
+  )
+  port map(
+    -------------
+    RST_I => RST_I,
+    CLK_I => CLK_I,
+    -------------
+    CLK_O   => DCLKi
+  );
+
   SBA_Interface: process (CLK_I)
   begin
     if rising_edge(CLK_I) then
@@ -147,20 +167,20 @@ begin
     end if;
   end process;
 
-  Internal: process (DCLK, state)
+  Internal: process (DCLKi, state)
   variable n:integer range 0 to 3;
   variable segimg : tsegimg;
   begin
     if (state = OffSt) then
-      DIG_SEG<= (others => '0');
+      SEG <= (others => '0');
       n:=0;
-    elsif rising_edge(DCLK) then
+    elsif rising_edge(DCLKi) then
       segimg := dig2seg(to_integer(unsigned(DATi(3+4*n downto 4*n))));
       case n is
-        when 0 => DIG_SEG <= segimg(6 downto 2) &'0'& segimg(1 downto 0) & getZ(dpmask(0)) ;
-        when 1 => DIG_SEG <= segimg(6 downto 1) &'0'& segimg(0) & getZ(dpmask(1)) ;
-        when 2 => DIG_SEG <= segimg(6 downto 0) &'0'& getZ(dpmask(2)) ;
-        when 3 => DIG_SEG <= segimg(6 downto 0) & getZ(dpmask(3)) &'0';
+        when 0 => SEG <= segimg(6 downto 2) &'0'& segimg(1 downto 0) & getZ(dpmask(0)) ;
+        when 1 => SEG <= segimg(6 downto 1) &'0'& segimg(0) & getZ(dpmask(1)) ;
+        when 2 => SEG <= segimg(6 downto 0) &'0'& getZ(dpmask(2)) ;
+        when 3 => SEG <= segimg(6 downto 0) & getZ(dpmask(3)) &'0';
       end case;
       if n=3 then n:=0; else n:= n+1; end if;
     end if;

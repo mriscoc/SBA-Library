@@ -3,8 +3,8 @@
 -- RSRX
 --
 -- Title: Buffered RX IPCore for SBA
--- Version: 0.8
--- Date: 2016/11/03
+-- Version: 0.9
+-- Date: 2017/08/04
 -- Author: Miguel A. Risco-Castillo
 --
 -- sba webpage: http://sba.accesus.com
@@ -16,6 +16,9 @@
 -- fifo. Rxready flag is clear when fifo is empty.
 --
 -- Release Notes:
+--
+-- v0.9 2017/08/04
+-- Change sysfrec to sysfreq
 --
 -- v0.8 2016/11/03
 -- Added Snippet for RSRX
@@ -96,7 +99,7 @@ end RSRX;
 
 architecture RX_Arch of RSRX is
 
-constant BaudDV : integer := integer(real(sysfrec)/real(baud))-1;
+constant BaudDV : integer := integer(real(sysfreq)/real(baud))-1;
 type tstate  is (IdleSt, CheckSt ,StartSt, DataSt, StopSt);   -- Rx Serial Communication States
 
 signal RXSt   : tstate;
@@ -157,7 +160,7 @@ begin
     BufLen<=0;
 
     if (debug=1) then
-      Report "RX Baud: " &  integer'image(baud) & " real: " &integer'image(integer(real(sysfrec)/real((BaudDV+1))));
+      Report "RX Baud: " &  integer'image(baud) & " real: " &integer'image(integer(real(sysfreq)/real((BaudDV+1))));
     end if;
 
   elsif rising_edge(CLK_I) then
@@ -211,7 +214,7 @@ begin
     cnt := 0;
 
     if (debug=1) then
-      Report "RX Baud: " &  integer'image(baud) & " real: " &integer'image(integer(real(sysfrec)/real((BaudDV+1))));
+      Report "RX Baud: " &  integer'image(baud) & " real: " &integer'image(integer(real(sysfreq)/real((BaudDV+1))));
     end if;
 
   elsif rising_edge(CLK_I) then

@@ -4,8 +4,8 @@
 --
 -- Title: SBA Slave IP Core adapter for Digilent Pmod DA1 module
 --
--- Version: 0.3.2
--- Date: 2015/09/06
+-- Version: 0.4.1
+-- Date: 2017/08/04
 -- Author: Miguel A. Risco-Castillo
 --
 -- sba webpage: http://sba.accesus.com
@@ -21,7 +21,10 @@
 --
 -- Release Notes:
 --
--- v0.3.2 2015/09/06 
+-- v0.4.1 2017/08/04
+-- Change sysfrec to sysfreq
+
+-- v0.3.2 2015/09/06
 -- Release for SBA library
 -- Remove SBA_Config dependency
 -- Follow SBA v1.1 guidelines
@@ -134,10 +137,10 @@ begin
 --              30MHz max
 -------------------------------------------------------------------------------- 
 
-SCK1: if (sysfrec>30E6) generate
+SCK1: if (sysfreq>30E6) generate
   clkDiv : entity work.ClkDiv
   Generic map (
-    infrec=>sysfrec,
+    infrec=>sysfreq,
     outfrec=>30E6
     )
   Port Map(
@@ -147,7 +150,7 @@ SCK1: if (sysfrec>30E6) generate
   );
 end generate;
 
-SCK2: if (sysfrec<=30E6) generate
+SCK2: if (sysfreq<=30E6) generate
   clk_div <= CLK_I;
 end generate;
 

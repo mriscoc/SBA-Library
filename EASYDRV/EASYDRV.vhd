@@ -269,4 +269,6 @@ STEP  <= stepi;
 DIR   <= diri;
 nENABLE <= not enablei;
 
+statusReg(statusReg'high downto 5) <= (others=>'0');
+
 end EASYDRV_Arch;

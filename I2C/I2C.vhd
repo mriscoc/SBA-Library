@@ -2,16 +2,17 @@
 -- I2C.vhd
 -- I2C Adapter for SBA v1.1 (Simple Bus Architecture)
 --
--- Version 0.2
--- Date: 20150521
+-- Version 0.3
+-- Date: 2017/08/04
 -- 16 bits Data Interface
 --
 -- (c)Juan Vega Martinez
 -- e-mail: juan.vega25@gmail.com
 --
--- 
+-- v0.3 2017/08/04
+-- Change sysfrec to sysfreq
 --
--- v0.2
+-- v0.2 2015/05/21
 -- Code Optimized
 --
 -- v0.1
@@ -90,7 +91,7 @@ U1: entity work.I2CBC
 
 U2: entity work.I2CSG 
 generic map(
-      sysfrec		  => sysfrec,	
+      sysfreq		=> sysfreq,
       I2C_ADDRESS   => I2C_ADDRESS,
       I2C_CLK       => FREQ_SCL      -- Frequency KHZ
   )  

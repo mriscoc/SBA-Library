@@ -3,8 +3,8 @@
 -- UART
 --
 -- Title: RS232 Universal Asynchronous Receiver Transmitter IPCore for SBA
--- Version: 3.5
--- Date: 2016/11/03
+-- Version: 4.0
+-- Date: 2017/08/04
 -- Author: Miguel A. Risco-Castillo
 --
 -- sba webpage: http://sba.accesus.com
@@ -15,6 +15,10 @@
 -- Requires RSTX and RSRX IPCores
 --
 -- Release Notes:
+--
+-- v4.0 2017/08/04
+-- Change sysfrec to sysfreq
+-- complete generic map for RSTX and RSRX
 --
 -- v3.5 2016/11/03
 -- Bug corrections in snippet
@@ -108,7 +112,11 @@ signal RXINTi : std_logic;
 begin
 
 TXCore: entity work.RSTX
-generic map(baud=>baud)
+generic map(
+  debug   => debug,
+  sysfreq => sysfreq,
+  baud    => baud
+  )
 port map(
   -- SBA Bus Interface
   CLK_I => CLK_I,
@@ -123,7 +131,12 @@ port map(
   );
 
 RXCore: entity work.RSRX
-generic map(baud=>baud, buffsize=>rxbuff)
+generic map(
+  debug   => debug,
+  sysfreq => sysfreq,
+  baud    => baud,
+  buffsize=> rxbuff
+  )
 port map(
   -- SBA Bus Interface
   CLK_I => CLK_I,

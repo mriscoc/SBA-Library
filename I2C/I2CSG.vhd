@@ -3,7 +3,7 @@
 -- I2C Signal Generation
 --
 -- Version 0.2
--- Date: 20150521
+-- Date: 2017/08/04
 -- 16 bits Data Interface
 --
 -- Juan Vega
@@ -16,7 +16,10 @@
 --
 -- Notes:
 --
--- v0.2
+-- v0.3 2017/08/04
+-- Change sysfrec to sysfreq
+--
+-- v0.2 2015/05/21
 -- Code Optimized for SBA
 --
 -- v0.1
@@ -35,8 +38,8 @@ use work.SBApackage.all;
 
 entity I2CSG is
 
-generic ( sysfrec			: integer:=50e6;
-			 I2C_ADDRESS   : natural:=7;
+generic ( sysfreq		: integer:=50e6;
+		  I2C_ADDRESS   : natural:=7;
           I2C_CLK       : natural:=100e3); 
 port (
     CLK_I   : in std_logic;
@@ -62,7 +65,7 @@ end I2CSG;
 architecture arch_I2C_CORE of I2CSG is
 
 --______________________ Generation Clock for SCL ________________________
-constant M : integer:= integer(real(sysfrec)/real(4*I2C_CLK)+0.499)-1;
+constant M : integer:= integer(real(sysfreq)/real(4*I2C_CLK)+0.499)-1;
 signal 	I2C_CLKi : std_logic;
 signal 	Y : integer range 0 to M+1;
 signal 	YP: integer range 0 to M+1;

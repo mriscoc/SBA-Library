@@ -3,8 +3,8 @@
 -- RSTX
 --
 -- Title: Serial Transmitter IPCore for SBA (Simple Bus Architecture)
--- Version: 0.7
--- Date: 2016/11/03
+-- Version: 0.8
+-- Date: 2017/08/04
 -- Author: Miguel A. Risco Castillo
 --
 -- sba webpage: http://sba.accesus.com
@@ -14,6 +14,9 @@
 -- of Data bus.
 --
 -- Release Notes:
+--
+-- v0.8 2017/08/04
+-- Change sysfrec to sysfreq
 --
 -- v0.7 2016/11/03
 -- Added Snippet for RSTX
@@ -101,7 +104,7 @@ signal TxData: std_logic_vector(9 downto 0);
 signal TxC   : integer range 0 to 9;
 signal TxRun : std_logic;  
 
-constant BaudDV : integer := integer(real(sysfrec)/real(baud))-1;
+constant BaudDV : integer := integer(real(sysfreq)/real(baud))-1;
 
 begin
 
@@ -109,7 +112,7 @@ ShifData: process (RST_I,WENi,CLK_I)
 begin
   if (RST_I='1') then
     if (debug=1) then
-      Report "TX Baud: " &  integer'image(baud) & " real: " &integer'image(integer(real(sysfrec)/real((BaudDV+1))));
+      Report "TX Baud: " &  integer'image(baud) & " real: " &integer'image(integer(real(sysfreq)/real((BaudDV+1))));
     end if;
     TxData <= (others=>'1');
   elsif rising_edge(CLK_I) then
