@@ -1,17 +1,50 @@
-# **Demo for IP Cores**
-- - - 
+PMODDA1
+=======
 ![](image.png)   
 
-*SBA Slave IP Core adapter for Digilent Pmod DA1 module*
+**Title:** SBA Slave IP Core adapter for Digilent Pmod DA1 module
 
-The PMod DA1 module have two AD7303, this chip is a dual 8-bit voltage out DAC SPI interface. 
-Write 16 bits word: MSB:LSB = DAC2:DAC1, 
-Read 16 bits word: LSbit (bit0) is '0' after write into register and '1' at the end of conversion.
+**Description:**  
+The PMODDA1 is an SBA IPCore designed to driver the [PmodDA1™] module.
+It has two AD7303, this chip is a dual 8-bit voltage out DAC SPI interface.  
+DAT Write: 16 bits word: MSB:LSB = DAC2:DAC1,  
+DAT Read: 16 bits word: LSbit (bit0) is '0' after writing into the register and
+'1' at the end of conversion.
 
-Version: 0.3.2  
-Date: 2015/09/06  
-Author: Miguel A. Risco-Castillo  
-CodeURL: https://github.com/mriscoc/SBA_Library/blob/master/PMODDA1/PMODDA1.vhd  
+[PmodDA1™]:pmodda1_rm.pdf
+
+**Version:** 0.4.1
+
+**Date:** 2017/08/04
+
+**Author:** Miguel A. Risco-Castillo
+
+**RepositoryURL:** <https://github.com/mriscoc/SBA_Library/blob/master/PMODDA1>
+
+Based on SBA v1.1 guidelines
+
+Release Notes:
+--------------
+
+- v0.4.1 2017/08/04  
+ Change sysfrec to sysfreq  
+
+- v0.3.2 2015/09/06  
+ Release for SBA library  
+ Remove SBA_Config dependency  
+ Follow SBA v1.1 guidelines  
+
+- v0.3.1 2013/04/02  
+ Follow SBA v1.0 guidelines  
+
+- v0.2 20121205  
+ Adapted for ICTP FPGA Course  
+
+- v0.1 20120610  
+ Initial release  
+
+Interface of the VHDL module
+----------------------------
 
 ```vhdl
 entity PMODDA1 is
@@ -34,4 +67,4 @@ port(
    SCLK  : out std_logic
    );
 end PMODDA1;
-vhdl
+```

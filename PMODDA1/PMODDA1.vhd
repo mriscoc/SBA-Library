@@ -11,10 +11,10 @@
 -- sba webpage: http://sba.accesus.com
 -- core webpage: https://github.com/mriscoc/SBA-Library/tree/master/PMODDA1
 --
--- Description: The PMod DA1 module have two AD7303, this chip is a dual 8-bit
+-- Description: The PMod DA1 module has two AD7303, this chip is a dual 8-bit
 -- voltage out DAC SPI interface.
 -- Write 16 bits word: MSB:LSB = DAC2:DAC1
--- Read 16 bits word: LSbit (bit0) is '0' after write into register and
+-- Read 16 bits word: LSbit (bit0) is '0' after writing into the register and
 -- '1' at the end of conversion.
 --
 -- Follow SBA v1.1 guidelines
