@@ -6,11 +6,12 @@ PMODDA1
 
 **Description:**  
 The PMODDA1 is an SBA IPCore designed to driver the [PmodDA1™] module.
-It has two AD7303, this chip is a dual 8-bit voltage out DAC SPI interface.  
+It has two [AD7303], this chip is a dual 8-bit voltage out DAC SPI interface.  
 DAT Write: 16 bits word: MSB:LSB = DAC2:DAC1,  
 DAT Read: 16 bits word: LSbit (bit0) is '0' after writing into the register and
 '1' at the end of conversion.
 
+[AD7303]:AD7303.pdf
 [PmodDA1™]:pmodda1_rm.pdf
 
 **Version:** 0.4.1
