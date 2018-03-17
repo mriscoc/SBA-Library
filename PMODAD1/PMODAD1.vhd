@@ -21,6 +21,7 @@
 --
 -- v0.2 2018/03/16
 -- Adapt to SBA v1.1
+-- Pin CS changed to nCS (Active low)
 --
 -- v0.1 2012/06/14
 -- Initial release
@@ -68,7 +69,7 @@ port(
    ADR_I : in  std_logic_vector; -- Register AD0/AD1 selector
    DAT_O : out std_logic_vector; -- Data output Bus
 -- Interface for PMODAD1
-   CS    : out std_logic;        -- chipselect active low
+   nCS   : out std_logic;        -- chipselect active low
    D0    : in  std_logic;        -- AD1 Input data 0
    D1    : in  std_logic;        -- AD1 Input data 1
    SCK   : out std_logic         -- SPI Clock
@@ -113,11 +114,11 @@ SPIState:process (SCKi, RST_I)
   begin
     if (RST_I='1') then
       state   <= IniSt;
-      CS      <= '1';
+      nCS      <= '1';
       SCKN    <= (others => '0');
     elsif rising_edge(SCKi) then
       case State is
-        when IniSt => CS    <='0';
+        when IniSt => nCS    <='0';
                       state <= GetD;
                       SCKN  <= (others => '0');
 
@@ -127,7 +128,7 @@ SPIState:process (SCKi, RST_I)
                         SCKN <= SCKN+1;
                       end if;
 
-        when EndSt => CS <='1';
+        when EndSt => nCS <='1';
                       state <= IniSt;
       end case;
     end if;
