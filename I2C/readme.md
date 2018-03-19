@@ -2,15 +2,15 @@
 - - - 
 ![](image.png)
 
-versión 0.2 20150605   
+versiÃ³n 0.2 20150605   
 
 I2C is an IPCore designed to send data using the [I2C Bus Specification](http://www.nxp.com/documents/user_manual/UM10204.pdf "I2C Bus Specification").  
    
 **Author:**   
-(c) Juan S. Vega Martinez   
-email: juan.vega25@gmail.com   
+(C) Juan S. Vega Martinez   
+email: <juan.vega25@gmail.com>   
 
-**Notes**   
+**Release Notes**   
 v0.2 SBA 1.1 compliant  
 v0.1 SBA 1.0 compliant  
 

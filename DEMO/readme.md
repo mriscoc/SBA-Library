@@ -1,8 +1,12 @@
-# **Demo for IP Cores**
-- - - 
+Demo for IP Cores
+=================
+
 ![](image.png)   
 
-This file is a demostration of the files for IP Cores
+**Title:** Demo IPCore for use as template
+
+**Description:**  
+The folder Demo contains template files for construct IPCores for SBA.
 
 **Version:** 0.2.1  
 
@@ -10,7 +14,7 @@ This file is a demostration of the files for IP Cores
 
 **Author:** Miguel A. Risco-Castillo  
 
-**CodeURL:** https://github.com/mriscoc/SBA_Library/blob/master/DEMO/DEMO.vhd  
+**CodeURL:** <https://github.com/mriscoc/SBA_Library/blob/master/DEMO/DEMO.vhd>  
 
 Based upon SBA v1.1 guidelines
 
@@ -22,6 +26,8 @@ v0.2.1 2016/11/04
 v0.1.1 2015/06/19
 - First release
  
+Interface of the VHDL module
+----------------------------
 
 ```vhdl
 entity DEMO is
