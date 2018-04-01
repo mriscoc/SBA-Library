@@ -2,8 +2,8 @@
 -- DPSRam.vhd
 -- Generic Dual Port Single clock RAM for SBA v1.1 (Simple Bus Architecture)
 --
--- Version 0.3
--- Date: 2016/02/07
+-- Version 0.4
+-- Date: 2018/03/30
 --
 -- Author:
 -- (c) Miguel A. Risco Castillo
@@ -32,6 +32,9 @@
 --
 -- Release Notes:
 --
+-- v0.4 2018/03/30
+-- Add generics for generate registered and unregistered data output versions
+--
 -- v0.3 2016/02/07
 -- Add RST_I line, for SBA v.1.1 compliant
 --
@@ -51,7 +54,8 @@ use IEEE.Numeric_Std.all;
 entity DPSram is
 generic(
       width:positive:=8;
-      depth:positive:=8
+      depth:positive:=8;
+      registered:boolean:=true
      );
 port (
       -- SBA Bus Interface
@@ -76,29 +80,34 @@ signal RAM : TRam;
 signal ADR0i,ADR1i : integer range 0 to iMax;
 
 begin
-	-- Input Process Port 1
-	process(CLK_I,RST_I)
-	begin
-	  if(rising_edge(CLK_I)) then
-		if (RST_I='0') and (STB1_I='1') and (WE1_I = '1') then
-			RAM(ADR1i) <= DAT1_I(width-1 downto 0);
-		end if;
+  -- Input Process Port 1
+  process(CLK_I,RST_I)
+  begin
+    if(rising_edge(CLK_I)) then
+	  if (RST_I='0') and (STB1_I='1') and (WE1_I = '1') then
+	     RAM(ADR1i) <= DAT1_I(width-1 downto 0);
 	  end if;
-	end process;
+    end if;
+  end process;
 	
-	-- Output Process Port 0
-	process(CLK_I)
-	begin
-	  if(rising_edge(CLK_I)) then
-			DAT0_O <= std_logic_vector(resize(unsigned(RAM(ADR0i)),DAT0_O'length));
-      end if;
-	end process;
 
-	-- Output Process Port 0
---	process(ADR0i)
---	begin
---	  DAT0_O <= std_logic_vector(resize(unsigned(RAM(ADR0i)),DAT0_O'length));
---	end process;
+registered_output: if registered generate
+  -- Output Process Port 0
+  process(CLK_I)
+  begin
+    if(rising_edge(CLK_I)) then
+	  DAT0_O <= std_logic_vector(resize(unsigned(RAM(ADR0i)),DAT0_O'length));
+    end if;
+  end process;
+end generate;
+
+unregistered_output: if not registered generate
+  -- Output Process Port 0
+  process(ADR0i)
+  begin
+    DAT0_O <= std_logic_vector(resize(unsigned(RAM(ADR0i)),DAT0_O'length));
+  end process;
+end generate;
 
  ADR0i <= to_integer(unsigned(ADR0_I(depth-1 downto 0)));
  ADR1i <= to_integer(unsigned(ADR1_I(depth-1 downto 0)));
