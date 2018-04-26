@@ -3,8 +3,8 @@
 -- RAM
 --
 -- Title: Generic RAM for SBA v1.1
--- Version 0.4
--- Date: 2015/06/14
+-- Version 0.5
+-- Date: 2018/04/25
 -- Author: Miguel A. Risco-Castillo
 --
 -- sba webpage: http://sba.accesus.com
@@ -15,11 +15,14 @@
 --
 -- Release Notes:
 --
+-- v0.5 2018/04/25
+--  Minor bug correction in Ini file
+--
 -- v0.4 2015/06/14
 -- Entity rename from SBARam to RAM
 -- Remove false dependency of SBApackage
 -- Following SBA v1.1 guidelines
-
+--
 -- v0.3 2012/06/12
 -- Configurable width and depth bits, the width must be
 -- equal or lower the SBA Data bus width
@@ -33,7 +36,7 @@
 --------------------------------------------------------------------------------
 -- Copyright:
 --
--- (c) 2008-2015 Miguel A. Risco Castillo
+-- (c) Miguel A. Risco Castillo
 --
 -- This code, modifications, derivate work or based upon, can not be used or
 -- distributed without the complete credits on this header.
