@@ -83,13 +83,13 @@ generic(
   sysfreq:positive:=25E6
 );
 port(
--- Interface for inside FPGA
+-- SBA Bus Interface
    RST_I : in  std_logic;       -- active high reset
    CLK_I : in  std_logic;       -- Main clock
-   STB_I : in  std_logic;       -- ADC ChipSelect, active high
+   STB_I : in  std_logic;       -- Slave ChipSelect, active high
    ADR_I : in  std_logic_vector;-- Select internal Register Channel I or Q
-   WE_I  : in  std_logic;       -- ADC read at low
-   DAT_O : out std_logic_vector;-- ADC Data Bus
+   WE_I  : in  std_logic;       -- Bus Read at low
+   DAT_O : out std_logic_vector;-- Out Data Bus
 -- Interface for AD9201
    CLOCK : out std_logic;       -- ADC Sample Rate Clock
    SLECT : out std_logic;       -- Hi I Channel Out, Lo Q Channel Out
