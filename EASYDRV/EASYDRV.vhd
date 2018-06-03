@@ -10,15 +10,15 @@
 -- sba webpage: http://sba.accesus.com
 -- core webpage: https://github.com/mriscoc/SBA-Library/tree/master/EASYDRV
 --
--- Description: SBA Simple step motor adapter for Easy Driver and similar
--- hardware. The IP Core have a register where the current position (currpos) is
--- storage, this register can be reset internally using the corresponding bit
--- in the control register or externally using the input port RSTPOS.
--- Writing to the set position register (setpos) instruct to the adapter to
--- source the appropriate signals trough the DIR and STEP outputs to achieve the
--- new position. When the step motor arrive to the destiny position a flag
--- (INTSTUS) is set to '1' in the status register and reset when the status
--- register is readed. The IP Core controls the STEP speed and acceleration.
+-- Description: SBA simple step motor adapter for Easy Driver and similar
+-- hardware. The IP Core has a register where the current position (currpos)
+-- is stored, this register can be reset internally using the corresponding bit
+-- in the control register or externally using the input port RSTPOS. Writing to
+-- the set position register (setpos) instruct to the adapter to source the
+-- appropriate signals trough the DIR and STEP outputs to achieve the new
+-- position. When the step motor arrive at the destiny position a flag (INTSTUS)
+-- is set to '1' in the status register and reset when the status register is
+-- read. The IP Core controls the STEP speed and acceleration.
 --
 -- Generics:
 -- minspd: minimum step/second speed
@@ -140,7 +140,7 @@ begin
   end if;
 end process DebugProcess;
 
-StpDlyProcess:process(MotSt,enablei,CLK_I)               -- Step delay process
+StpDlyProcess:process(MotSt,enablei,CLK_I)       -- Step delay process
 variable cntdly:integer range 0 to maxdly;
 begin
   if (MotSt=MIdle) or (enablei='0') then
