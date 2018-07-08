@@ -14,9 +14,9 @@ DAT Read: 16 bits word: LSbit (bit0) is '0' after writing into the register and
 [AD7303]:AD7303.pdf
 [PmodDA1™]:pmodda1_rm.pdf
 
-**Version:** 0.4.1
+**Version:** 0.5.1
 
-**Date:** 2017/08/04
+**Date:** 2018/07/07
 
 **Author:** Miguel A. Risco-Castillo
 
@@ -26,6 +26,9 @@ Based on SBA v1.1 guidelines
 
 Release Notes:
 --------------
+
+- v0.5.1 2018/07/07
+ Complete rewrite
 
 - v0.4.1 2017/08/04  
  Change sysfrec to sysfreq  
