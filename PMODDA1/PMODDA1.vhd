@@ -220,7 +220,7 @@ SBA_intf : process (CLK_I, RST_I)
     end if;
   end process;
 
-  process (clk_div,RST_I)
+  process (clk_div,RST_I,START)
   begin
     if (RST_I='1') then
          DONE <= '1';
