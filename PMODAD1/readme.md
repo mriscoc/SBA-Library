@@ -13,9 +13,9 @@ to DAT_O width), ADR_I Selects the registers AD0 (ADR_I(0)=0) or AD1 (ADR_I(0)=1
 [AD7476A]:AD7476A_7477A_7478A.pdf
 [PmodAD1™]:pmodad1_rm.pdf
 
-**Version:** 0.2
+**Version:** 0.3
 
-**Date:** 2018/03/16
+**Date:** 2018/07/09
 
 **Author:** Miguel A. Risco-Castillo
 
@@ -25,6 +25,9 @@ Based on SBA v1.1 guidelines
 
 Release Notes:
 --------------
+
+- v0.3 2018/07/09  
+  Change infrec to infreq and outfrec to outfreq in CLK_DIV instantiation  
 
 - v0.2 2018/03/16  
   Adapt to SBA v1.1  

@@ -3,8 +3,8 @@
 --
 -- Title: SBA Slave IP Core adapter for Digilent Pmod AD1 module
 --
--- Versión 0.2
--- Date 2018/03/16
+-- Versión 0.3
+-- Date 2018/07/09
 -- Author: Miguel A. Risco-Castillo
 --
 -- sba webpage: http://sba.accesus.com
@@ -18,6 +18,9 @@
 -- Follow SBA v1.1 guidelines
 --
 -- Release Notes:
+--
+-- v0.3 2018/07/09
+-- Change infrec to infreq and outfrec to outfreq in CLK_DIV instantiation
 --
 -- v0.2 2018/03/16
 -- Adapt to SBA v1.1
@@ -94,8 +97,8 @@ begin
 SCK1: if (sysfreq>20E6) generate
   CLK_Div : entity work.ClkDiv
   Generic map (
-    infrec=>sysfreq,
-    outfrec=>20E6
+    infreq=>sysfreq,
+    outfreq=>20E6
     )
   Port Map(
     RST_I => RST_I,
