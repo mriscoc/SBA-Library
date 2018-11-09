@@ -2,7 +2,7 @@
 - - - 
 ![](image.png)   
 
-PWMGEN Frequency converter for SBA
+PWMGEN Pulse Width Modulation Generator for SBA
 
 **Version:** 1.1
 
