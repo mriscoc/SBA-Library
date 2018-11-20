@@ -1,5 +1,5 @@
 -- Generated on "03/20/2017 20:41:59"
--- Vhdl Test Bench template for design  :  FREQC
+-- Vhdl Test Bench template for design  :  PWMGEN
 
 
 LIBRARY ieee;                                               
