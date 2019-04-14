@@ -1,30 +1,28 @@
-Demo for IP Cores
-=================
-
+DEMO
+====
 ![](image.png)   
 
 **Title:** Demo IPCore for use as template
 
 **Description:**  
-The folder Demo contains template files for construct IPCores for SBA.
+The folder Demo contains template files for construct IPCores for SBA. Use this
+file as template for the datasheet.
 
 **Version:** 0.2.1  
-
 **Date:** 2016/11/04  
-
 **Author:** Miguel A. Risco-Castillo  
-
-**CodeURL:** <https://github.com/mriscoc/SBA_Library/blob/master/DEMO/DEMO.vhd>  
+**RepositoryURL:** <https://github.com/mriscoc/SBA_Library/tree/master/DEMO>  
 
 Based upon SBA v1.1 guidelines
 
-**Release Notes:**
+Release Notes:
+--------------
 
-v0.2.1 2016/11/04
-- Added INT_O output and REQUERIMENTS/UserFiles in Ini file
+- v0.2.1 2016/11/04  
+  Added INT_O output and REQUERIMENTS/UserFiles in Ini file
 
-v0.1.1 2015/06/19
-- First release
+- v0.1.1 2015/06/19  
+  First release
  
 Interface of the VHDL module
 ----------------------------
@@ -33,10 +31,10 @@ Interface of the VHDL module
 entity DEMO is
 generic(
   debug:positive:=1;
-  sysfrec:positive:=25E6
+  sysfreq:positive:=25E6
 );
 port(
--- SBA Interface
+-- SBA Bus Interface
    RST_I : in  std_logic;       -- active high reset
    CLK_I : in  std_logic;       -- Main clock
    STB_I : in  std_logic;       -- Strobe/ChipSelect, active high
@@ -51,3 +49,8 @@ port(
 );
 end DEMO;
 ```
+
+*Generics:*  
+- `sysfreq`: frequency of the main clock in hertz
+- `debug`: debug flag, 1:print debug information, 0:hide debug information
+

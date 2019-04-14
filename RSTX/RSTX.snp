@@ -8,8 +8,8 @@
 -- /SBA: End -------------------------------------------------------------------
 
 -- /SBA: User Registers and Constants ------------------------------------------
-  constant TXRDY   : integer:=14;                -- TXRDY Flag is bit 14
-  variable UARTFlg : std_logic;                  -- aux bit for UART flags
+  constant TXRDY   : integer:=14;                -- TX Ready Flag (bit 14)
+  variable UARTFlg : std_logic;                  -- aux bit register for UART flags
   variable RSTmp   : unsigned(7 downto 0);       -- Temporal register for UART
 -- /SBA: End -------------------------------------------------------------------
 

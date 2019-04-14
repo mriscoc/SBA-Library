@@ -66,7 +66,7 @@ port(
    ADR_I : in  std_logic_vector;-- Select internal Register Channel I or Q
    WE_I  : in  std_logic;       -- Bus Read at low
    DAT_O : out std_logic_vector;-- Out Data Bus
--- Interface for AD9201
+-- AD9201 Interface
    CLOCK : out std_logic;       -- ADC Sample Rate Clock
    SLECT : out std_logic;       -- Hi I Channel Out, Lo Q Channel Out
    DAT   : in  std_logic_vector(9 downto 0); -- Data Bus ADC
