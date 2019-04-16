@@ -2,23 +2,13 @@ EASYDRV
 =======
 ![](image.png)
 
-**Title:** Easy Driver step motor adapter for SBA
-
-**Description**:  
-SBA simple step motor adapter for Easy Driver and similar hardware. The IP Core 
-has a register where the current position (currpos) is stored, this register can
-be reset internally using the corresponding bit in the control register or
-externally using the input port RSTPOS. Writing to the set position register
-(setpos) instruct to the adapter to source the appropriate signals trough the
-DIR and STEP outputs to achieve the new position. When the step motor arrive at
-the destiny position a flag (INTSTUS) is set to '1' in the status register and
-reset when the status register is read. The IP Core controls the STEP speed and
-acceleration.  
+Easy Driver step motor adapter for SBA
+--------------------------------------
 
 **Version:** 1.4  
 **Date:** 2017/04/21  
 **Author:** Miguel A. Risco-Castillo  
-**RepositoryURL:** <https://github.com/mriscoc/SBA_Library/blob/master/EASYDRV>  
+**Repository URL:** <https://github.com/mriscoc/SBA_Library/blob/master/EASYDRV>  
 
 Based upon SBA v1.1 guidelines  
 
@@ -69,6 +59,18 @@ port (
   );
 end EASYDRV;
 ```
+
+Description
+-----------
+SBA simple step motor adapter for Easy Driver and similar hardware. The IP Core 
+has a register where the current position (currpos) is stored, this register can
+be reset internally using the corresponding bit in the control register or
+externally using the input port RSTPOS. Writing to the set position register
+(setpos) instruct to the adapter to source the appropriate signals trough the
+DIR and STEP outputs to achieve the new position. When the step motor arrive at
+the destiny position a flag (INTSTUS) is set to '1' in the status register and
+reset when the status register is read. The IP Core controls the STEP speed and
+acceleration.   
 
 *Generics:*
 - `minspd`: minimum step/second speed

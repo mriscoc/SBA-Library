@@ -16,7 +16,7 @@
 -- the DC register. The resolution of the PWM is 10 bits = 1024
 --
 -- Generics:
--- chans: number of output channels PWM_O
+-- chans: number of output channels PWM
 -- pwmfreq: frequency of the output PWM signal
 -- sysfreq: frequency of the main clock in hertz
 -- debug: debug flag, 1:print debug information, 0:hide debug information

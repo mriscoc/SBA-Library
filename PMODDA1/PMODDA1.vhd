@@ -4,7 +4,7 @@
 --
 -- Title: SBA Slave IP Core adapter for Digilent Pmod DA1 module
 --
--- Version: 0.5.1
+-- Version: 0.5
 -- Date: 2018/07/07
 -- Author: Miguel A. Risco-Castillo
 --
@@ -21,10 +21,10 @@
 --
 -- Release Notes:
 --
--- v0.5.1 2018/07/07
+-- v0.5 2018/07/07
 -- Complete rewrite
 --
--- v0.4.1 2017/08/04
+-- v0.4 2017/08/04
 -- Change sysfrec to sysfreq
 
 -- v0.3.2 2015/09/06

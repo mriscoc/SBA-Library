@@ -2,9 +2,48 @@ PMODTC1
 =======
 ![](image.png)
 
-**Title:** SBA Slave IP Core adapter for Digilent PmodTC1 module
+SBA Slave IP Core adapter for Digilent PmodTC1 module
+-----------------------------------------------------
 
-**Description:**  
+**Version:** 0.1  
+**Date:** 2019/04/13  
+**Author:** Miguel A. Risco-Castillo  
+**Repository URL:** <https://github.com/mriscoc/SBA_Library/blob/master/PMODTC1>  
+
+Based on SBA v1.1 guidelines
+
+Release Notes:
+--------------
+
+- v0.1 2019/04/13  
+  Initial release
+
+Interface of the VHDL module
+----------------------------
+
+```vhdl
+entity PMODTC1 is
+generic(
+  debug:positive:=1;
+  sysfreq:positive:=50E6
+);
+port(
+-- SBA Interface
+   RST_I : in  std_logic;        -- active high reset
+   CLK_I : in  std_logic;        -- Main clock
+   STB_I : in  std_logic;        -- Strobe
+   WE_I  : in  std_logic;        -- Bus write, active high
+   ADR_I : in  std_logic_vector; -- Register selector
+   DAT_O : out std_logic_vector; -- Data output Bus
+-- Interface for PMODTC1
+   nCS   : out std_logic;        -- chipselect active low
+   MISO  : in  std_logic;        -- Master In Slave Out
+   SCK   : out std_logic         -- SPI Clock
+);
+end PMODTC1; 
+```
+Description
+-----------
 The PMODTC1 is an SBA IPCore designed to driver the Digilent [PmodTC1™] module,
 a cold-juntion K-Type thermocouple to digital converter. It integrates the [MAX31855],
 this reports the measured temperature in 14 bits with 0.25°C resolution.
@@ -43,46 +82,4 @@ MAX31855, thermocuple ADR_I(0)=1 and reference junction temperatures ADR_I(0)=0.
 		<th>  Value  </th><td>  Sign Bit  </td><td>  MSB 2<sup>10</sup> (1024°C)  </td><td>  2<sup>9</sup> (512°C)  </td><td>  …  </td><td>  2<sup>-1</sup> (0.5°C)  </td><td>  2<sup>-2</sup> (0.25°C)  </td><td>  Reserved  </td><td>  1 = Fault Present  </td>
 	</tr>
 </tbody></table>
-
-
-**Version:** 0.1
-
-**Date:** 2019/04/13
-
-**Author:** Miguel A. Risco-Castillo
-
-**RepositoryURL:** <https://github.com/mriscoc/SBA_Library/blob/master/PMODTC1>
-
-Based on SBA v1.1 guidelines
-
-Release Notes:
---------------
-
-- v0.1 2012/06/14  
-  Initial release
-
-Interface of the VHDL module
-----------------------------
-
-```vhdl
-entity PMODTC1 is
-generic(
-  debug:positive:=1;
-  sysfreq:positive:=50E6
-);
-port(
--- SBA Interface
-   RST_I : in  std_logic;        -- active high reset
-   CLK_I : in  std_logic;        -- Main clock
-   STB_I : in  std_logic;        -- Strobe
-   WE_I  : in  std_logic;        -- Bus write, active high
-   ADR_I : in  std_logic_vector; -- Register selector
-   DAT_O : out std_logic_vector; -- Data output Bus
--- Interface for PMODTC1
-   nCS   : out std_logic;        -- chipselect active low
-   MISO  : in  std_logic;        -- Master In Slave Out
-   SCK   : out std_logic         -- SPI Clock
-);
-end PMODTC1; 
-```
 

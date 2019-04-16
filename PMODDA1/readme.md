@@ -2,35 +2,23 @@ PMODDA1
 =======
 ![](image.png)   
 
-**Title:** SBA Slave IP Core adapter for Digilent Pmod DA1 module
+SBA Slave IP Core adapter for Digilent Pmod DA1 module
+------------------------------------------------------
 
-**Description:**  
-The PMODDA1 is an SBA IPCore designed to driver the [PmodDA1™] module.
-It has two [AD7303], this chip is a dual 8-bit voltage out DAC SPI interface.  
-DAT Write: 16 bits word: MSB:LSB = DAC2:DAC1,  
-DAT Read: 16 bits word: LSbit (bit0) is '0' after writing into the register and
-'1' at the end of conversion.
-
-[AD7303]:AD7303.pdf
-[PmodDA1™]:pmodda1_rm.pdf
-
-**Version:** 0.5.1
-
-**Date:** 2018/07/07
-
-**Author:** Miguel A. Risco-Castillo
-
-**RepositoryURL:** <https://github.com/mriscoc/SBA_Library/blob/master/PMODDA1>
+**Version:** 0.5.1  
+**Date:** 2018/07/07  
+**Author:** Miguel A. Risco-Castillo  
+**Repository URL:** <https://github.com/mriscoc/SBA_Library/blob/master/PMODDA1>  
 
 Based on SBA v1.1 guidelines
 
 Release Notes:
 --------------
 
-- v0.5.1 2018/07/07
+- v0.5 2018/07/07
  Complete rewrite
 
-- v0.4.1 2017/08/04  
+- v0.4 2017/08/04  
  Change sysfrec to sysfreq  
 
 - v0.3.2 2015/09/06  
@@ -72,3 +60,15 @@ port(
    );
 end PMODDA1;
 ```
+Description
+-----------
+The PMODDA1 is an SBA IPCore designed to driver the [PmodDA1™] module.
+It has two [AD7303], this chip is a dual 8-bit voltage out DAC SPI interface.  
+DAT Write: 16 bits word: MSB:LSB = DAC2:DAC1,  
+DAT Read: 16 bits word: LSbit (bit0) is '0' after writing into the register and
+'1' at the end of conversion.
+
+[AD7303]:AD7303.pdf
+[PmodDA1™]:pmodda1_rm.pdf
+
+

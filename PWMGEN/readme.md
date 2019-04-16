@@ -1,26 +1,24 @@
-# **PWMGEN**
-- - - 
-![](image.png)   
+PWMGEN
+======
+![](image.png)
 
 PWMGEN Pulse Width Modulation Generator for SBA
+-----------------------------------------------
 
-**Version:** 1.1
-
-**Date:** 2017/04/21
-
+**Version:** 1.1  
+**Date:** 2017/04/21  
 **Author:** Miguel A. Risco-Castillo  
-
-**CodeURL:** https://github.com/mriscoc/SBA_Library/blob/master/PWMGEN/PWMGEN.vhd  
+**Repository URL:** <https://github.com/mriscoc/SBA_Library/blob/master/PWMGEN>  
 
 Based upon SBA v1.1 guidelines
 
 **Release Notes:**
 
-v1.1 2017/04/21
-- Change sysfrec to sysfreq, PWM_O to PWM
+- v1.1 2017/04/21  
+  Change sysfrec to sysfreq, PWM_O to PWM
 
-v1.0 2017/03/15
-- First release
+- v1.0 2017/03/15  
+  First release
  
 
 ```vhdl
@@ -45,7 +43,8 @@ port (
 end PWMGEN; 
 ```
 
-**Description:**
+Description
+-----------
 Generic Pulse Width Modulation Generator for use with SBA, the
 duty cycle value is choosen by writting in to the DC register of the
 corresponding channel. Use ADR_I to select the channel and DAT_I to write to
@@ -53,10 +52,10 @@ the DC register. The resolution of the PWM is 10 bits = 1024.
 Change the address range in SBAdecoder according to the numbers of channels.
 
 *Generics:*
-- chans: number of output channels PWM_O
-- pwmfreq: frequency of the output PWM signal
-- sysfreq: frequency of the main clock in hertz
-- debug: debug flag, 1:print debug information, 0:hide debug information
+- `chans`: number of output channels PWM
+- `pwmfreq`: frequency of the output PWM signal
+- `sysfreq`: frequency of the main clock in hertz
+- `debug`: debug flag, 1:print debug information, 0:hide debug information
 
 *SBA interface:*
 - ADR_I: select the channel to write Dutty cycle constant.

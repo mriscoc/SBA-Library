@@ -1,45 +1,30 @@
-# **FREQC**
-- - - 
+TIMER
+=====
 ![](image.png)   
 
-FREQC Frequency converter for SBA
+TIMER Module for SBA
+--------------------
 
-**Version:** 1.4
-
-**Date:** 2017/04/21
-
+**Version:** 0.2  
+**Date:** 2017/04/21  
 **Author:** Miguel A. Risco-Castillo  
+**Repository URL:** <https://github.com/mriscoc/SBA_Library/blob/master/TIMER>  
 
-**CodeURL:** https://github.com/mriscoc/SBA_Library/blob/master/FREQC/FREQC.vhd  
-
-Based upon SBA v1.1 guidelines
+Based on SBA v1.1 guidelines
 
 **Release Notes:**
 
-v1.4 2017/04/21
-- Change sysfreq to sysfreq, C_I to FC
+- v0.2 2017/05/22  
+  Added Output Enable control bit, change in IFprocess  
 
-v1.3 2017/03/30
-- Added interrupt capability
+- v0.1 2017/05/12  
+  Initial release  
 
-v1.2 2017/03/20
-- Remove OutProcess implemented in v1.1
-- Implementation of process for channel request
-
-v1.1 2017/03/17
-- OutProcess to avoid out of range of REG(ADR_I) in channel request
-
-v1.0 2017/03/15
-- First release
- 
 
 ```vhdl
-entity FREQC is
+Entity TIMER is
 generic (
-  chans:positive:=16;
-  wsizems:positive:=100;
-  sysfreq:positive:=50E6;
-  debug:integer:=1
+  chans:positive:=4
   );
 port (
   -- SBA Bus Interface
@@ -48,30 +33,33 @@ port (
   WE_I  : in std_logic;            -- SBA Write/Read Enable control signal
   STB_I : in std_logic;            -- SBA Strobe/chip select
   ADR_I : in std_logic_vector;     -- SBA Address bus / Register select
+  DAT_I : in std_logic_vector;     -- SBA Data input bus / Register data
   DAT_O : out std_logic_vector;    -- SBA Data output bus / Register data
   INT_O	: out std_logic;           -- Interrupt request output
   -- PORT Interface;
-  FC    : in std_logic_vector(chans-1 downto 0) -- Input Channels
+  TOUT  : out std_logic_vector(chans-1 downto 0) -- Frequency Converter Input Channels
   );
-end FREQC;
+end TIMER; 
            
 ```
 
-**Description:**
-Generic Frequency converter for use with Voltage to Frequency
-converters. The IP Core counts the pulses comming in to a port for a
-specified time window. The value of count is storaged into a internal
-register. For example, if the input frequency at FC(0) is 10KHz and the
-window time is setup to 100ms = 0.1s then, the register at ADR_I=0 will have
-10,000 Hz / 0.1 s = 1,000 counts.
+Description
+-----------
+Generic 32 bits Multiple Timer Module.  
+Base address + 0 is TMRDATL: Timer register less significant word.  
+Base address + 1 is TMRDATH: Timer register high significand word.  
+Base address + 2 is TMRCFG: Timer config: TMRIF & TMRIE & TMREN.  
+Base address + 3 is TMRCHS: Timer Channel select.  
+  
+Read TMRCFG bits: TOUT & TMROE & TMRIF & TMRIE & TMREN  
+Write TMRCFG bits: X & TMROE & X & TMRIE & TMREN  
+  
+TOUT : Timer Output  
+TMROE : Timer Output enable  
+TMRIF : Timer Interrupt flag  
+TMRIE : Timer Interrupt enable  
+TMREN : Timer Enable  
 
 *Generics:*
-- chans: number of input channels C_I
-- wsizems: size in miliseconds of the counting window
-- sysfreq: frequency of the main clock in hertz
-- debug: debug flag, 1:print debug information, 0:hide debug information
+- `chans`: number of channels 
 
-
-*SBA interface:*
-- ADR_I: select the channel to read.
-- DAT_O: has the data of the count for the selected channel
