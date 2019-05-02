@@ -13,7 +13,7 @@
 -- Description: The PMODTC1 is an SBA IPCore designed to driver the Digilent PmodTC1 module,
 -- a cold-juntion K-Type thermocouple to digital converter. It integrates the MAX31855,
 -- this reports the measured temperature in 14 bits with 0.25°C resolution.
--- The SBA core has 2 register, selectec by  ADR_I to access the 32 bits of the
+-- The SBA core has 2 register, selected by  ADR_I to access the 32 bits of the
 -- MAX31855, thermocuple ADR_I(0)=1 and reference junction temperatures ADR_I(0)=0.
 --
 -- Follow SBA v1.1 guidelines

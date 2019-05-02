@@ -3,8 +3,8 @@
 -- EASYDRV
 --
 -- Title: Easy Driver step motor adapter for SBA
--- Version 1.4
--- Date: 2017/04/21
+-- Version 1.5
+-- Date: 2019/05/01
 -- Author: Miguel A. Risco-Castillo
 --
 -- sba webpage: http://sba.accesus.com
@@ -18,7 +18,8 @@
 -- appropriate signals trough the DIR and STEP outputs to achieve the new
 -- position. When the step motor arrive at the destiny position a flag (INTSTUS)
 -- is set to '1' in the status register and reset when the status register is
--- read. The IP Core controls the STEP speed and acceleration.
+-- read. The IP Core controls the STEP speed and acceleration. Setpos and
+-- currpos are 16 bit signed registers range from -32768 to 32767
 --
 -- Generics:
 -- minspd: minimum step/second speed
@@ -31,6 +32,9 @@
 -- ADR_I = 1 : Read: Current Position; Write: Control Register
 --
 -- Release Notes:
+--
+-- v1.5 2019/05/01
+-- Correction in 16 bit signed range
 --
 -- v1.4 2017/04/21
 -- Change sysfrec to sysfreq
@@ -111,7 +115,7 @@ constant incdly:integer:=integer(real(maxdly-mindly)/300.0);
 
 type tMotSt is (MIdle, MUp, MDw, MArrive);
 signal MotSt:tMotSt;
-signal currPos,setPos:integer range -65535 to 65535;
+signal currPos,setPos:integer range -32768 to 32767;
 signal controlReg,statusReg:std_logic_vector(DAT_I'range);
 signal rsti,stepi,diri,enablei:std_logic;
 signal currdly:integer range mindly-incdly to maxdly;
@@ -238,7 +242,7 @@ SBAReadProcess : process(ADR_I(0),statusReg,currPos)
 begin
   case ADR_I(0) is
       When '0' => DAT_O <= statusReg;
-      When '1' => DAT_O <= std_logic_vector(to_unsigned(currPos,DAT_O'length));
+      When '1' => DAT_O <= std_logic_vector(to_signed(currPos,DAT_O'length));
       When Others => DAT_O <= (DAT_O'range=>'-');
   end case;
 end process SBAReadProcess;

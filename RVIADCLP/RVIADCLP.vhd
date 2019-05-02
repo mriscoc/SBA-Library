@@ -1,15 +1,15 @@
 --------------------------------------------------------------------------------
 --
--- ADCRVILP
+-- RVIADCLP
 --
 -- Title: ADC RVI low performance daughter board
 --
--- Version: 7.2
--- Date: 2017/04/21
+-- Version: 7.3
+-- Date: 2019/05/02
 -- Author: Miguel A. Risco-Castillo
 --
 -- sba webpage: http://sba.accesus.com
--- core webpage: https://github.com/mriscoc/SBA-Library/tree/master/ADCRVILP
+-- core webpage: https://github.com/mriscoc/SBA-Library/tree/master/RVIADCLP
 --
 -- Description: Dual Channel, 16bits Data interface, 10bits resolution right
 -- aligned ADC. SBA Slave adapter for ADC: AD9201
@@ -18,6 +18,9 @@
 --
 -- Release Notes:
 --
+-- v7.3 2019/05/01
+-- Rename RVIADCLP to RVIADCLP (Board-Function)
+
 -- v7.2 2017/04/21
 -- Change sysfrec to sysfreq
 --
@@ -77,7 +80,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-entity ADCRVILP is
+entity RVIADCLP is
 generic(
   debug:positive:=1;
   sysfreq:positive:=25E6
@@ -97,9 +100,9 @@ port(
    SLEEP : out std_logic;       -- Hi Power Down, Low Normal Operation
    CHPSEL: out std_logic        -- Chip Select
 );
-end ADCRVILP;
+end RVIADCLP;
 
-architecture ADCRVILP_Arch of ADCRVILP is
+architecture RVIADCLP_Arch of RVIADCLP is
 
 Signal CLKi : std_logic;             -- Internal Clock
 Signal AD0L : unsigned(9 downto 0);  -- AD0 Latch
@@ -147,6 +150,6 @@ end process;
   SLEEP <= '0';
   CHPSEL<= '0';
 
-end ADCRVILP_Arch;
+end RVIADCLP_Arch;
 
 

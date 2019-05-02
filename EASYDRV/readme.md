@@ -5,8 +5,8 @@ EASYDRV
 Easy Driver step motor adapter for SBA
 --------------------------------------
 
-**Version:** 1.4  
-**Date:** 2017/04/21  
+**Version:** 1.5  
+**Date:** 2019/05/01  
 **Author:** Miguel A. Risco-Castillo  
 **Repository URL:** <https://github.com/mriscoc/SBA_Library/blob/master/EASYDRV>  
 
@@ -14,6 +14,9 @@ Based upon SBA v1.1 guidelines
 
 Release Notes:
 --------------
+
+- v1.5 2019/05/01
+  Correction in 16 bit signed range  
 
 - v1.4 2017/04/21  
   Change sysfrec to sysfreq
@@ -70,7 +73,8 @@ externally using the input port RSTPOS. Writing to the set position register
 DIR and STEP outputs to achieve the new position. When the step motor arrive at
 the destiny position a flag (INTSTUS) is set to '1' in the status register and
 reset when the status register is read. The IP Core controls the STEP speed and
-acceleration.   
+acceleration. Setpos and currpos are 16 bit signed registers range from -32768
+to 32767.   
 
 *Generics:*
 - `minspd`: minimum step/second speed

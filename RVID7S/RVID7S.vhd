@@ -1,15 +1,15 @@
 --------------------------------------------------------------------------------
 --
--- D7SRVI
+-- RVID7S
 --
 -- Title: 7Segment Display Module for RVI
 --
--- Version 5.0
--- Date: 2017/04/21
+-- Version 5.1
+-- Date: 2019/05/02
 -- Author: Miguel A. Risco-Castillo
 --
 -- sba webpage: http://sba.accesus.com
--- core webpage: https://github.com/mriscoc/SBA-Library/tree/master/D7SRVI
+-- core webpage: https://github.com/mriscoc/SBA-Library/tree/master/RVID7S
 --
 -- Description: Seven segments four Hexadecimal digits LED display
 -- It requires Data Bus of 16 bits and low speed <1KHz clock (DCLKi) for
@@ -20,6 +20,9 @@
 -- Follow SBA v1.1 Guidelines
 --
 -- Release Notes:
+--
+-- v5.1 2019/05/02
+-- Rename RVID7S to RVID7S (Board-Function)
 --
 -- v5.0 2017/04/21
 -- Insert sysfreq generic and CLKDIV into IP Core and remove DCLK port
@@ -81,7 +84,7 @@ Library IEEE;
 Use ieee.std_logic_1164.all;
 Use ieee.numeric_std.all;
 
-entity D7SRVI is
+entity RVID7S is
   generic (
     sysfreq:positive:=50E6;       -- System frequency
     debug:natural:=1              -- Debug mode 1=on, 0:off
@@ -97,9 +100,9 @@ entity D7SRVI is
 -- Interface for RVI 4 digits 7 seg Display
     SEG     : out std_logic_vector(8 downto 0)
   );
-end D7SRVI;
+end RVID7S;
 
-architecture D7SRVI_arch of D7SRVI is
+architecture RVID7S_arch of RVID7S is
 type tstate is (OffSt, OnSt);     -- Segments States
 subtype tsegimg is std_logic_vector(6 downto 0);
 type tsegments  is Array (0 to 15) of tsegimg;
@@ -186,6 +189,6 @@ begin
     end if;
   end process;
 
-end D7SRVI_arch;
+end RVID7S_arch;
 
 
