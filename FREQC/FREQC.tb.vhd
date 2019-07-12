@@ -16,7 +16,7 @@ END FREQC_test;
 ARCHITECTURE FREQC_arch OF FREQC_test IS
 
 SIGNAL ADR_I : STD_LOGIC_VECTOR(15 DOWNTO 0) := (others=>'0');
-SIGNAL C_I : STD_LOGIC_VECTOR(15 DOWNTO 0);
+SIGNAL FC : STD_LOGIC_VECTOR(15 DOWNTO 0);
 SIGNAL CLK_I : STD_LOGIC;
 SIGNAL DAT_O : STD_LOGIC_VECTOR(15 DOWNTO 0);
 SIGNAL RST_I : STD_LOGIC := '1';
@@ -33,7 +33,7 @@ generic (
   );
 	PORT (
 	ADR_I : IN STD_LOGIC_VECTOR(15 DOWNTO 0);
-	C_I : IN STD_LOGIC_VECTOR(chans-1 DOWNTO 0);
+	FC : IN STD_LOGIC_VECTOR(chans-1 DOWNTO 0);
 	CLK_I : IN STD_LOGIC;
 	DAT_O : OUT STD_LOGIC_VECTOR(15 DOWNTO 0);
     INT_O : OUT STD_LOGIC;
@@ -52,7 +52,7 @@ BEGIN
     PORT MAP (
 -- list connections between master ports and signals
 	ADR_I => ADR_I,
-	C_I => C_I(chans-1 DOWNTO 0),
+	FC => FC(chans-1 DOWNTO 0),
 	CLK_I => CLK_I,
 	DAT_O => DAT_O,
 	RST_I => RST_I,
@@ -95,11 +95,11 @@ BEGIN
 END PROCESS control;
 
 InputStimuli: PROCESS
-variable COUNT:unsigned(C_I'range):=(others=>'0');
+variable COUNT:unsigned(FC'range):=(others=>'0');
 BEGIN
   COUNT := COUNT+1;
-  C_I <= STD_LOGIC_VECTOR(COUNT);
-  WAIT FOR 5 us;                                 -- 5 us for 100KHz en C_I(0)
+  FC <= STD_LOGIC_VECTOR(COUNT);
+  WAIT FOR 5 us;                                 -- 5 us for 100KHz en FC(0)
 END PROCESS InputStimuli;
 
 END FREQC_arch;

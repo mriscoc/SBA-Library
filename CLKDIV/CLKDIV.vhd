@@ -13,7 +13,7 @@
 --
 -- Description: CLKDIV is a simple Clock divider. It automatically calculates
 -- the divisor for giving a signal of 'outfreq' in Hz.
--- 'infrec' is the frequency of the input clock
+-- 'infreq' is the frequency of the input clock
 -- 'outfreq': is the frequency of the divided output clock
 -- 'debug': debug flag, 1:print debug information, 0:hide debug information
 --

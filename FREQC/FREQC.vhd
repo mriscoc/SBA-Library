@@ -20,7 +20,7 @@
 -- Generics:
 -- chans: number of input channels FC
 -- wsizems: size in miliseconds of the counting window
--- sysfrec: frequency of the main clock in hertz
+-- sysfreq: frequency of the main clock in hertz
 -- debug: debug flag, 1:print debug information, 0:hide debug information
 --
 -- SBA interface:

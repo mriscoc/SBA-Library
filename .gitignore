@@ -1,4 +1,4 @@
 *.bak
 work-obj93.cf
-/UART/readme.html
 readme.html
+heap.trc
