@@ -3,8 +3,8 @@
 --
 -- Title: SBA Slave IP Core adapter for the HX711 module
 --
--- Versión 0.1
--- Date 2019/07/12
+-- Versión 0.2
+-- Date 2019/07/16
 -- Author: Miguel A. Risco-Castillo
 --
 -- sba webpage: http://sba.accesus.com
@@ -32,8 +32,8 @@ use ieee.numeric_std.all;
 
 entity HX711 is
 generic(
-  debug:positive:=1;
-  sysfreq:positive:=25E6
+  debug:positive:=1;             -- debugging flag
+  sysfreq:positive:=25E6         -- CLK_I main clock frequency
 );
 port(
 -- SBA Interface
@@ -68,6 +68,7 @@ begin
 SCK1: if (sysfreq>500E3) generate
   CLK_Div : entity work.ClkDiv
   Generic map (
+    debug=>debug,
     infreq=>sysfreq,
     outfreq=>500E3
     )
@@ -95,7 +96,7 @@ SPIState:process (SCKi, RST_I)
                         state <= DataSt;
                       end if;
 
-        when DataSt=> if (SCKN = 23) then
+        when DataSt=> if (SCKN > 22) then
                         state <= EndSt;
                       end if;
 

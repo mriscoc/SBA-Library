@@ -18,8 +18,8 @@ Interface of the VHDL module
 ```vhdl
 entity HX711 is
 generic(
-  debug:positive:=1;
-  sysfreq:positive:=25E6
+  debug:positive:=1;             -- debugging flag
+  sysfreq:positive:=25E6         -- CLK_I main clock frequency
 );
 port(
 -- SBA Interface
@@ -38,13 +38,15 @@ end HX711;
 ```
 Description
 -----------
-The HX711 is an SBA IPCore designed to driver the [HX711] module, a precision 24-bit analog-to-digital converter (ADC) designed for weigh scales and industrial control applications to interface directly with a bridge sensor. The SBA core has 2 register of 16 bits, selected by  ADR_I to access the 24 bits of the HX711, MSW register:ADR_I(0)=1 and LSW register:ADR_I(0)=0, the INT flag can be readed in the bit 15 of the MSW, reading the MSW also clear the INT condition.
+The HX711 is an SBA IPCore designed to driver the [HX711] module, a precision 24-bit analog-to-digital converter (ADC) designed for weigh scales and industrial control applications to interface directly with a bridge sensor. The SBA core has 2 register of 16 bits, selected by  ADR_I to access the 24 bits of the HX711, MSW register:ADR_I(0)=1 and LSW register:ADR_I(0)=0, the INT flag can be readed in the bit 15 of the MSW, reading the MSW also clear the INT condition. INT is asserted when a new data is available.
 
 [HX711]:hx711_english-1022875.pdf
 
 Release Notes:
 --------------
-
+- v0.2  2019/07/16  
+  Improve Stability
+  
 - v0.1 2019/07/12  
   Initial release
 
@@ -54,7 +56,7 @@ Release Notes:
  (c) Miguel A. Risco-Castillo
 
  This code, modifications, derivate work or based upon, can not be used or
- distributed without the complete credits on this header.
+ distributed without the complete credits.
 
  This version is released under the GNU/GLP license
  http://www.gnu.org/licenses/gpl.html
