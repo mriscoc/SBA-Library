@@ -3,8 +3,8 @@
 --
 -- Title: MAX10 Single ADC IP Core adapter
 --
--- Versión 0.3
--- Date 2019/08/06
+-- Version: 0.3
+-- Date: 2019/08/06
 -- Author: Miguel A. Risco-Castillo
 --
 -- sba webpage: http://sba.accesus.com
@@ -15,6 +15,11 @@
 -- IP Catalog to Add a PLL and a Modular ADC core to your proyect, name the last
 -- as MAX10ADC and configure the core variant as ADC control core only.
 --
+-- Follow SBA v1.2 Guidelines
+--
+--------------------------------------------------------------------------------
+-- For Copyright and release notes please refer to:
+-- https://github.com/mriscoc/SBA-Library/tree/master/MAX10AD1/readme.md
 --------------------------------------------------------------------------------
 
 Library ieee;
