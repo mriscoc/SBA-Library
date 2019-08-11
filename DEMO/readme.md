@@ -10,17 +10,8 @@ Demo IPCore for use as template
 **Author:** Miguel A. Risco-Castillo  
 **Repository URL:** <https://github.com/mriscoc/SBA_Library/tree/master/DEMO>  
 
-Based upon SBA v1.1 guidelines
+Based upon SBA v1.2 guidelines
 
-Release Notes:
---------------
-
-- v0.2 2016/11/04  
-  Added INT_O output and REQUERIMENTS/UserFiles in Ini file
-
-- v0.1 2015/06/19  
-  First release
- 
 Interface of the VHDL module
 ----------------------------
 
@@ -56,6 +47,42 @@ file as template for the datasheet.
 - `sysfreq`: frequency of the main clock in hertz
 - `debug`: debug flag, 1:print debug information, 0:hide debug information
   
+
+Release Notes:
+--------------
+
+- v0.2 2016/11/04  
+  Added INT_O output and REQUERIMENTS/UserFiles in Ini file
+
+- v0.1 2015/06/19  
+  First release
+
+--------------------------------------------------------------------------------
+ **Copyright:**  
+
+ (c) Miguel A. Risco-Castillo  
+
+ This code, modifications, derivate work or based upon, can not be used or
+ distributed without the complete credits.
+
+ This version is released under the GNU/GLP license
+ http://www.gnu.org/licenses/gpl.html
+ if you use this component for your research please include the appropriate
+ credit of Author.
+
+ The code may not be included into ip collections and similar compilations
+ which are sold. If you want to distribute this code for money then contact me
+ first and ask for my permission.
+
+ These copyright notices in the source code may not be removed or modified.
+ If you modify and/or distribute the code to any third party then you must not
+ veil the original author. It must always be clearly identifiable.
+
+ Although it is not required it would be a nice move to recognize my work by
+ adding a citation to the application's and/or research.
+
+ FOR COMMERCIAL PURPOSES REQUEST THE APPROPRIATE LICENSE FROM THE AUTHOR.
+--------------------------------------------------------------------------------
   
 ==End of datasheet demo==  
   
@@ -69,7 +96,7 @@ Example of ini file
 [MAIN]
 ;Esta sección establece los valores principales del núcleo, el valor de "Title"
 ;se usará como una descripción corta del mismo, "Description" permite ampliar la
-;descripción del núcleo así como dar algunas breves indicaciones sobre su uso 
+;descripción del núcleo así como dar algunas breves indicaciones sobre su uso
 ;el valor "version" es muy importante, permite comparar la versión en la librería
 ;local con la del repositorio remoto. Usar el último digito de versión exclusivamente
 ;para forzar la actualización del núcleo, por ejemplo en correcciones de
@@ -91,15 +118,15 @@ Example of ini file
 ;alterar al archivo fuente (vhdl).
 Title=Demo Ini for IP Cores
 Description=This file is a demostration of the INI files for IP Cores
-Version=0.2.3
-Date=2016/11/04
+Version=0.3.1
+Date=2019/08/11
 Author=Miguel A. Risco-Castillo
 RepositoryURL=https://github.com/mriscoc/SBA_Library/tree/master/DEMO
 Testbench=DEMO.tb.vhd
 DataSheet=readme.md
 Image=image.png
 Categories= 
-SBAversion=1.1
+SBAversion=1.2
 ConfigApp=
 
 [CONFIG]
@@ -112,11 +139,12 @@ ConfigApp=
 ;un bus de datos de 16 bits, si el valor de DATILNES para éste IPCore se
 ;establece a 32, significa que el usuario deberá cambiar en correspondencia
 ;el valor de "Dat_width" en el archivo *_SBAcfg.vhd a un valor igual o mayor a 32.
-;La necesidad de un DataIntf es inferida del valor de DATOLINES>0. Si no se
+;La necesidad de un multiplexor es inferida del valor de DATOLINES>0. Si no se
 ;especifica explícitamente la anulación (=0) de un puerto, se considera que debe
 ;de existir y su valor es el por defecto del SBA, es decir, 1 bit para las
 ;líneas WE, STB, ADR y 16 bits para los datos. Si el núcleo usa la linea de
-;interrupción deberá adicionarse la línea: INT=1.
+;interrupción deberá adicionarse la línea: INT=1. Si usa la linea de reconocimiento
+;de transacción "acknowledge" de deberá adicionar ACK=1.
 ;Los núcleos con más de una interfaz SBA como la memoria dual port usan el valor
 ;de SBAPORTS. Si no existe SBAPORTS se asume que sólo hay un interfaz SBA.
 ;Si SBAPORTS>1 los buses se numerarán en la interfaz siguiendo la nomenclatura:
@@ -129,6 +157,8 @@ ConfigApp=
 SBAPORTS=1
 STB=1
 WE=1
+INT=0
+ACK=0
 ADRLINES=2
 DATILINES=16
 DATOLINES=16
