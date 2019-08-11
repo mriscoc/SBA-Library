@@ -13,6 +13,9 @@
 -- Description: RAM core, allows to infer internal RAM Blocks for most of FPGA
 -- families
 --------------------------------------------------------------------------------
+-- For Copyright and release notes please refer to:
+-- https://github.com/mriscoc/SBA-Library/tree/master/RAM/readme.md
+--------------------------------------------------------------------------------
 
 library IEEE;
 use IEEE.std_logic_1164.all;
