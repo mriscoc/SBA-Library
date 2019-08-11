@@ -2,62 +2,16 @@
 --
 -- RAM
 --
--- Title: Generic RAM for SBA v1.1
--- Version 0.5
--- Date: 2018/04/25
+-- Title: Generic RAM for SBA
+-- Version 1.0
+-- Date: 2019/07/29
 -- Author: Miguel A. Risco-Castillo
 --
 -- sba webpage: http://sba.accesus.com
 -- core webpage: https://github.com/mriscoc/SBA-Library/tree/master/RAM
 --
--- Description: RAM core, infer internal RAM Blocks for most of FPGA families
---
---
--- Release Notes:
---
--- v0.5 2018/04/25
---  Minor bug correction in Ini file
---
--- v0.4 2015/06/14
--- Entity rename from SBARam to RAM
--- Remove false dependency of SBApackage
--- Following SBA v1.1 guidelines
---
--- v0.3 2012/06/12
--- Configurable width and depth bits, the width must be
--- equal or lower the SBA Data bus width
---
--- v0.2
--- Minor changes in address and ACK_O signals
---
--- v0.1
--- Inspirated by DOULOS - designer: JK (2008)
---
---------------------------------------------------------------------------------
--- Copyright:
---
--- (c) Miguel A. Risco Castillo
---
--- This code, modifications, derivate work or based upon, can not be used or
--- distributed without the complete credits on this header.
---
--- This version is released under the GNU/GLP license
--- http://www.gnu.org/licenses/gpl.html
--- if you use this component for your research please include the appropriate
--- credit of Author.
---
--- The code may not be included into ip collections and similar compilations
--- which are sold. If you want to distribute this code for money then contact me
--- first and ask for my permission.
---
--- These copyright notices in the source code may not be removed or modified.
--- If you modify and/or distribute the code to any third party then you must not
--- veil the original author. It must always be clearly identifiable.
---
--- Although it is not required it would be a nice move to recognize my work by
--- adding a citation to the application's and/or research.
---
--- FOR COMMERCIAL PURPOSES REQUEST THE APPROPRIATE LICENSE FROM THE AUTHOR.
+-- Description: RAM core, allows to infer internal RAM Blocks for most of FPGA
+-- families
 --------------------------------------------------------------------------------
 
 library IEEE;
@@ -93,25 +47,30 @@ signal ACKi: std_logic;
 begin
 
 RAMProc: process(CLK_I) is
-variable ADRv : integer;
 begin
   if rising_edge(CLK_I) then
-    if (STB_I='1') then
-      ADRv := to_integer(resize(unsigned(ADR_I),depth));
-      if (WE_I = '1') then RAM(ADRv) <= DAT_I(width-1 downto 0); end if;
-      ADRI <= ADRv;
+    if (STB_I='1') and (WE_I='1') then
+      RAM(ADRI) <= DAT_I(width-1 downto 0);
     end if;
   end if;
 end process;
 
-STBProc: Process (RST_I,CLK_I)
+ACKProc: Process (RST_I,CLK_I) is
 begin
-  if (RST_I='1') then ACKi<='0';
-  elsif rising_edge(CLK_I) then ACKi <= STB_I; end if;
+  if (RST_I='1') then
+    ACKi <= '1';
+  elsif rising_edge(CLK_I) then
+    if (STB_I='1') and (WE_I='0') then     -- Wait 1 cycle when Read from RAM
+      ACKi <= '0';
+    else
+      ACKi <= '1';
+    end if;
+  end if;
 end process;
 
+ADRI  <= to_integer(resize(unsigned(ADR_I),depth));
 DAT_O <= std_logic_vector(resize(unsigned(RAM(ADRI)),DAT_O'length));
-ACK_O <= '1' When (ACKi='1' and STB_I='1') else '0';
+ACK_O <= ACKi;
 
 end architecture RAM_arch1;
 
