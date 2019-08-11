@@ -5,8 +5,8 @@ DEMO
 Demo IPCore for use as template
 -------------------------------
 
-**Version:** 0.2  
-**Date:** 2016/11/04  
+**Version:** 0.3  
+**Date:** 2019/08/11  
 **Author:** Miguel A. Risco-Castillo  
 **Repository URL:** <https://github.com/mriscoc/SBA_Library/tree/master/DEMO>  
 
@@ -50,9 +50,11 @@ file as template for the datasheet.
 
 Release Notes:
 --------------
+- v0.3 2019/08/11
+  Removed release notes and copyright text from vhdl file.  
 
 - v0.2 2016/11/04  
-  Added INT_O output and REQUERIMENTS/UserFiles in Ini file
+  Added INT_O output and REQUERIMENTS/UserFiles in Ini file  
 
 - v0.1 2015/06/19  
   First release
