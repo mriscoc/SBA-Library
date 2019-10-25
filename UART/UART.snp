@@ -4,40 +4,41 @@
 -- Date: 2016/11/03
 -- Author: Miguel A. Risco-Castillo
 -- Description: Snippet for the RS232 Reception and Transmission of a char.
--- for receive a char, call to the subroutine UARTGetChar using SBACall(UARTSendChar)
--- if there is a char in the buffer it will be placed in the RSTmp register,
--- if not, the subroutine waits until receipt a char. For transmit a char first
--- fill the RSTmp register, then SBACall(UARTSendChar).
+-- for receive a char, call to the subroutine SBACall(UARTGetChar), if there is
+-- a char in the buffer it will be placed in the RSTmp register, if not, the
+-- subroutine waits until receipt a char.
+-- For transmit a char first fill the RSTmp register, then use the subroutine
+-- SBACall(UARTSendChar).
 -- UART0 and UART1 addresses must be defined in SBA_config
 -- /SBA: End -------------------------------------------------------------------
 
 -- /SBA: User Registers and Constants ------------------------------------------
-  constant TXRDY   : integer:=14;                -- TX Ready Flag (bit 14)
-  constant RXRDY   : integer:=15;                -- RX Ready Flag (bit 15)
-  variable UARTFlg : std_logic;                  -- aux bit register for UART flags
-  variable RSTmp   : unsigned(7 downto 0);       -- Temporal register for UART
+   constant TXRDY   : integer:=14;                -- TX Ready Flag (bit 14)
+   constant RXRDY   : integer:=15;                -- RX Ready Flag (bit 15)
+   variable UARTFlg : std_logic;                  -- aux bit register for UART flags
+   variable RSTmp   : unsigned(7 downto 0);       -- Temporal register for UART
 -- /SBA: End -------------------------------------------------------------------
 
 -- /SBA: User Program ----------------------------------------------------------
 -- /L:UARTSendChar
-=> SBARead(UART1);               -- Read UART Status
+=> SBAread(UART1);               -- Read UART Status
 => UARTFlg := dati(TXRDY);       -- Read TXRDY flag
 => if UARTFlg ='0' then          -- Test TXRDY
-     SBARead(UART1);             -- if not continue read UART Status
+     SBAread(UART1);             -- if not continue read UART Status
      SBAjump(UARTSendChar+1);
    else
-     SBAWrite(UART0,RSTmp);      -- Write UART Tx
+     SBAwrite(UART0,RSTmp);      -- Write UART Tx
      SBARet;                     -- Return
    end if;
 
 -- /L:UARTGetChar
-=> SBARead(UART0);               -- Read UART Status
+=> SBAread(UART0);               -- Read UART Status
 => UARTFlg := dati(RXRDY);       -- Read RXRDY flag
    RSTmp:= dati(7 downto 0);     -- Read possible char in to RSTmp
 => if UARTFlg ='0' then          -- Test RXRDY
-     SBARead(UART0);             -- Continue read UART Status
+     SBAread(UART0);             -- Continue read UART Status
      SBAjump(UARTGetChar+1);
    else
-     SBARet;
+     SBAret;
    end if;
 -- /SBA: End -------------------------------------------------------------------
