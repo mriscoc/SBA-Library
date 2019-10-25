@@ -4,6 +4,9 @@
 
 Official SBA Repository
 
-http://sba.accesus.com
+<http://sba.accesus.com>
 
-SBA Guidelines version: 1.1
+SBA Library Manager (part of SBA System Creator)
+------------------------------------------------
+
+![](manager.png) 
