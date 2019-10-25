@@ -8,15 +8,10 @@ SBA Slave IP Core adapter for Digilent PmodTC1 module
 **Version:** 0.1  
 **Date:** 2019/04/13  
 **Author:** Miguel A. Risco-Castillo  
-**Repository URL:** <https://github.com/mriscoc/SBA_Library/blob/master/PMODTC1>  
+**Repository URL:** <https://github.com/mriscoc/SBA_Library/tree/master/PMODTC1>  
 
-Based on SBA v1.1 guidelines
+Based on SBA v1.2 guidelines
 
-Release Notes:
---------------
-
-- v0.1 2019/04/13  
-  Initial release
 
 Interface of the VHDL module
 ----------------------------
@@ -83,3 +78,35 @@ of the MAX31855, thermocuple ADR_I(0)=1 and reference junction temperatures ADR_
 	</tr>
 </tbody></table>
 
+Release Notes:
+--------------
+
+- v0.1 2019/04/13  
+  Initial release
+
+--------------------------------------------------------------------------------
+ Copyright:
+
+ (c) Miguel A. Risco-Castillo
+
+ This code, modifications, derivate work or based upon, can not be used or
+ distributed without the complete credits.
+
+ This version is released under the GNU/GLP license
+ http://www.gnu.org/licenses/gpl.html
+ if you use this component for your research please include the appropriate
+ credit of Author.
+
+ The code may not be included into ip collections and similar compilations
+ which are sold. If you want to distribute this code for money then contact me
+ first and ask for my permission.
+
+ These copyright notices in the source code may not be removed or modified.
+ If you modify and/or distribute the code to any third party then you must not
+ veil the original author. It must always be clearly identifiable.
+
+ Although it is not required it would be a nice move to recognize my work by
+ adding a citation to the application's and/or research.
+
+ FOR COMMERCIAL PURPOSES REQUEST THE APPROPRIATE LICENSE FROM THE AUTHOR.
+--------------------------------------------------------------------------------
