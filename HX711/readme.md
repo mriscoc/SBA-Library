@@ -1,5 +1,5 @@
 HX711
-=======
+=====
 ![](image.png)
 
 SBA Slave IP Core adapter for the HX711 module
