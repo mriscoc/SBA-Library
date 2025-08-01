@@ -12,7 +12,6 @@
 -- core webpage: https://github.com/mriscoc/SBA-Library/tree/master/D7SDEX
 --
 -- Description: Seven segments four digits LED display
--- It requires Data Bus of 16 bits and low speed <1KHz clock (DCLK) for
 -- digit multiplexing. Use two positions on address map :
 -- ADR_I=0 Write Segments Data
 -- ADR_I=1 Write Decimal Point Data
