@@ -1,6 +1,6 @@
 --------------------------------------------------------------------------------
 --
--- FIBONACCI
+-- FIBGEN
 --
 -- Title: Fibonacci IP-Core for SBA
 -- Version 1.0.0
@@ -8,7 +8,7 @@
 -- Author: Miguel A. Risco-Castillo
 --
 -- sba webpage: http://sba.accesus.com
--- core webpage: https://github.com/mriscoc/SBA-Library/tree/master/GPIO
+-- core webpage: https://github.com/mriscoc/SBA-Library/tree/master/FIBGEN
 --
 -- Description: Simple Fibonacci generator IP block, each member of the series
 -- is generated at each read cycle. This core doesn't implement a range check so
@@ -17,7 +17,7 @@
 --
 --------------------------------------------------------------------------------
 -- For Copyright and release notes please refer to:
--- https://github.com/mriscoc/SBA-Library/tree/master/GPIO/readme.md
+-- https://github.com/mriscoc/SBA-Library/tree/master/FIBGEN/readme.md
 --------------------------------------------------------------------------------
 
 Library IEEE;

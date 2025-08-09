@@ -1,8 +1,8 @@
 --------------------------------------------------------------------------------
--- Title: Testbench for Fibonacci_Top
+-- Title: Testbench for FIBGEN
 -- Version: 0.1.0
 -- Date: 2025/08/02
--- Description: Testbench for Fibonacci_Top entity with 10 MHz clock simulation
+-- Description: Testbench for FIBGEN entity with 10 MHz clock simulation
 --------------------------------------------------------------------------------
 
 Library IEEE;
