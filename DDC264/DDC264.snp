@@ -9,12 +9,12 @@
 -- SBAcall(DDC264_waitWTWR);
 -- SBAcall(DDC264_waitIDLE);
 --
--- DDC_Config_World := x"ABCD";
+-- DDC264_Config_World := x"ABCD";
 -- SBAcall(DDC264_sendConfig);
 -- /SBA: End -------------------------------------------------------------------
 
 -- /SBA: User Registers and Constants ------------------------------------------
-   variable DDC_Config_World : unsigned(15 downto 0); -- DDC264 configuration word
+   variable DDC264_Config_World : unsigned(15 downto 0); -- DDC264 configuration word
 -- /SBA: End -------------------------------------------------------------------
 
 -- /SBA: User Program ----------------------------------------------------------
@@ -38,7 +38,7 @@
    end if;
 
 -- /L:DDC264_sendConfig
-=> SBAwrite(DDC264_CFGW, DDC_Config_World);   -- Write Configuration word
+=> SBAwrite(DDC264_CFGW, DDC264_Config_World);   -- Write Configuration word
 => SBAwrite(DDC264_CTRL, x"1");      -- Start configuration
 => SBAret;
 

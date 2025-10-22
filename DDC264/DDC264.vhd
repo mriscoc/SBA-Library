@@ -14,14 +14,14 @@
 -- The minimum data bus width is 16 bits.
 -- The Register Select uses the four least significant bits of the address bus.
 --
--- Escritura:
+-- Write:
 -- 0000 : Control register
 --   bit(0) <- start to shift configuration word to DDC_DIN_CFG
 --   bit(1) <- set/reset DDC_CONV
 -- 0001 : Configuration Word
 --
--- Lectura:
--- 0000 : Status register (Estado de la FSM)
+-- Read:
+-- 0000 : Status register (FSM state)
 -- 0001 : Read back configuration word
 --
 --------------------------------------------------------------------------------
@@ -34,98 +34,97 @@ use ieee.math_real.all;
 entity DDC264 is
   generic (
     debug       : positive :=1;
-    infreq      : positive := 50E6         -- Frecuencia principal del CLK_I (50 MHz)
+    infreq      : positive := 50E6         -- Main frequency of CLK_I (50 MHz)
   );
   port (
-    -- PUERTOS DE LA INTERFAZ SBA (ESCLAVO)
-    RST_I       : in  std_logic;           -- Reset asíncrono del sistema FPGA
-    CLK_I       : in  std_logic;           -- Reloj principal del sistema FPGA (50 MHz)
-    STB_I       : in  std_logic;           -- Chip Select (Habilitación del esclavo)
-    WE_I        : in  std_logic;           -- Write Enable (Activo alto)
-    ADR_I       : in  std_logic_vector;    -- Dirección de entrada (del Maestro)
-    DAT_I       : in  std_logic_vector;    -- Datos de entrada (del Maestro)
-    DAT_O       : out std_logic_vector;    -- Datos de salida (hacia el Maestro)
+    -- SBA INTERFACE PORTS (SLAVE)
+    RST_I       : in  std_logic;           -- Asynchronous reset of the FPGA system
+    CLK_I       : in  std_logic;           -- Main clock of the FPGA system (50 MHz)
+    STB_I       : in  std_logic;           -- Chip Select (Slave enable)
+    WE_I        : in  std_logic;           -- Write Enable (Active high)
+    ADR_I       : in  std_logic_vector;    -- Input address (from Master)
+    DAT_I       : in  std_logic_vector;    -- Input data (from Master)
+    DAT_O       : out std_logic_vector;    -- Output data (to Master)
 
-    -- SEÑALES DE CONTROL DDC264
-    DDC_CLK     : out std_logic;           -- Reloj Maestro/Sistema
-    DDC_CONV    : out std_logic;           -- CONV DDC264 (Control de integración)
-    DDC_DIN_CFG : out std_logic;           -- Data de configuración serial
-    DDC_CLK_CFG : out std_logic;           -- Clock de configuración (Máx 20 MHz)
-    DDC_RESET   : out std_logic            -- RESET DDC264 (Activo bajo)
+    -- DDC264 CONTROL SIGNALS
+    DDC_CLK     : out std_logic;           -- Master/System clock
+    DDC_CONV    : out std_logic;           -- DDC264 CONV (Integration control)
+    DDC_DIN_CFG : out std_logic;           -- Serial configuration data
+    DDC_CLK_CFG : out std_logic;           -- Configuration clock (Max 20 MHz)
+    DDC_RESET   : out std_logic            -- DDC264 RESET (Active low)
   );
 end DDC264;
 
-
 architecture DDC264_arch of DDC264 is
 
-  -- Cálculo de constantes de tiempo dinámicas (Mínimo de ciclos requeridos)
-  -- El tiempo se basa en el periodo del CLK_I (1 / infreq).
+  -- Dynamic timing constants calculation (Minimum required cycles)
+  -- Time is based on the CLK_I period (1 / infreq).
   constant F_MHZ : integer := infreq / 1000000;
 
-  -- 1. tPOR: Tiempo entre el encendido y el primer reset = 250 ms = 250 000 µs.
-  -- Ciclos = (250 000 µs) / (1 / infreq) = 250 000 * infreq / 1,000,000
+  -- 1. tPOR: Time between power-up and first reset = 250 ms = 250,000 µs.
+  -- Cycles = (250,000 µs) / (1 / infreq) = 250,000 * infreq / 1,000,000
   constant T_POWER_UP_US : integer := 3;
   -- constant T_POWER_UP_US : integer := 250E3;
   constant POWER_UP_CYCLES : natural := T_POWER_UP_US * F_MHZ;
 
   -- 2. tRST: Minimum pulse width for RESET active = 1 µs.
-  -- Ciclos = (1 µs) / (1 / infreq) = infreq / 1,000,000
+  -- Cycles = (1 µs) / (1 / infreq) = infreq / 1,000,000
   constant T_RST_US : integer := 1;
   constant RST_PULSE_CYCLES : natural := T_RST_US * F_MHZ;
 
   -- 3. tWTRST: Wait Required from Reset High to First Rising Edge of CLK_CFG = 2 µs.
-  -- Ciclos = (2 µs) / (1 / infreq) = 2 * infreq / 1,000,000
+  -- Cycles = (2 µs) / (1 / infreq) = 2 * infreq / 1,000,000
   constant T_WTRST_US : integer := 2;
   constant WTRST_WAIT_CYCLES : natural := T_WTRST_US * F_MHZ;
 
   -- 4. tWTWR: Wait Required from Last CLK_CFG of Write Operation to First DCLK of Read Operation = 2 µs.
-  -- Ciclos = (2 µs) / (1 / infreq) = 2 * infreq / 1,000,000
+  -- Cycles = (2 µs) / (1 / infreq) = 2 * infreq / 1,000,000
   constant T_WTWR_US : integer := 2;
   constant WTWR_WAIT_CYCLES : natural := T_WTWR_US * F_MHZ;
 
-  -- Definición de Registros Internos SBA
+  -- SBA Internal Register Definitions
   constant ADDR_CTRL      : std_logic_vector(3 downto 0) := x"0";
   constant ADDR_CFG_WORD  : std_logic_vector(3 downto 0) := x"1";
 
-  -- Almacena la Palabra de Configuración de 16 bits
+  -- Stores the 16-bit Configuration Word
   signal Config_Word_Reg : std_logic_vector(15 downto 0) := (others => '0');
 
-  -- Señales de Control para el DDC264
+  -- DDC264 Control Signals
   signal s_ddc_clk_o     : std_logic;
   signal s_ddc_conv_o    : std_logic;
   signal s_ddc_clk_cfg_o : std_logic;
   signal s_ddc_reset_o   : std_logic;
   signal s_ddc_reg_sel   : std_logic_vector(3 downto 0);
 
-  -- FSM para la Secuencia de Configuración
+  -- FSM for Configuration Sequence
   type t_state is (
       POWER_UP, IDLE, RESET_PULSE, WAIT_WTRST, PREPARE_CFG, SHIFT_CFG, WAIT_WTWR
   );
   signal current_state : t_state := IDLE;
 
-  -- Contadores limitado por el máximo ciclo de espera
+  -- Counters limited by the maximum wait cycle
   signal cfg_counter   : natural range 0 to POWER_UP_CYCLES := 0;
 
-  -- Contador del registro de desplazamiento de la palabra de control
+  -- Bit counter for the configuration word shift register
   signal bit_counter   : natural range 0 to 16 := 0;
 
-  -- Registro de desplazamiento para la palabra de control
+  -- Shift register for the configuration word
   signal s_ddc_din_cfg_reg : std_logic_vector(15 downto 0) := (others => '0');
 
-  -- Comandos capturados desde el bus SBA
+  -- Commands captured from the SBA bus
   signal start_config_cmd : std_logic := '0';
 
-  -- Almacenamiento del estado previo de DDC_CLK_CFG
+  -- Storage of previous DDC_CLK_CFG state
   signal clk_cfg_prev : std_logic := '0';
 
 begin
 
-  -- DDC_CLK sebe ser un reloj de máximo 10 MHz para el caso del DDC264CK
-  -- Se habilitará el divisor del CLK para el DDC264 por lo que la frecuencia
-  -- máxima de DDC_CLK es 40MHz. Se deriva DDC_CLK desde CLK_I, si este último
-  -- es mayor a 40 MHz se le divide entre 2, sino, se le asigna directamente.
+  -- DDC_CLK must be a clock of maximum 10 MHz for the DDC264CK
+  -- A clock divider will be enabled for the DDC264 so the maximum
+  -- frequency of DDC_CLK is 40 MHz. DDC_CLK is derived from CLK_I;
+  -- if CLK_I is greater than 40 MHz, it is divided by 2, otherwise assigned directly.
 
-  -- División por 2 si infreq > 40 MHz
+  -- Divide by 2 if infreq > 40 MHz
   gen_clk_select : if infreq > 40000000 generate
   signal clkdiv2 : std_logic := '0';
   begin
@@ -138,13 +137,12 @@ begin
     s_ddc_clk_o <= clkdiv2;
   end generate;
 
-  -- Asignación directa si infreq ≤ 40 MHz
+  -- Direct assignment if infreq ≤ 40 MHz
   gen_clk_direct : if infreq <= 40000000 generate
     s_ddc_clk_o <= CLK_I;
   end generate;
 
-
-  -- Generador de la señal DDC_CLK_CFG = CLK_I/4
+  -- Generator for DDC_CLK_CFG = CLK_I/4
   process(RST_I, CLK_I)
     variable clk_cfg_div : unsigned(1 downto 0);
   begin
@@ -160,8 +158,7 @@ begin
     s_ddc_clk_cfg_o <= clk_cfg_div(1);
   end process;
 
-
-  -- Proceso de desplazamiento del registro de control
+  -- Shift process for the control register
   process(RST_I, CLK_I)
   begin
     if RST_I = '1' then
@@ -172,20 +169,18 @@ begin
         s_ddc_din_cfg_reg <= Config_Word_Reg;
         bit_counter <= 16;
       elsif current_state = SHIFT_CFG then
-        -- flanco de bajada (no se usa falling_edge, señal proviene de lógica)
+        -- falling edge (falling_edge not used, signal comes from logic)
         if s_ddc_clk_cfg_o = '0' and clk_cfg_prev = '1' then
           if bit_counter > 0 then
             s_ddc_din_cfg_reg <= s_ddc_din_cfg_reg(14 downto 0) & '0';
             bit_counter <= bit_counter - 1;
           end if;
         end if;
-
       end if;
     end if;
   end process;
 
-
-  -- Proceso de la señal DDC_RESET
+  -- Process for DDC_RESET signal
   process(RST_I, current_state)
   begin
     if RST_I = '1' then
@@ -197,8 +192,7 @@ begin
     end if;
   end process;
 
-
-  -- Máquina de Estados
+  -- State Machine
   process(RST_I, CLK_I)
   begin
     if RST_I = '1' then
@@ -264,7 +258,7 @@ begin
     end if;
   end process;
 
-  -- Proceso de interfaz SBA (Read/Write)
+  -- SBA Interface Process (Read/Write)
   process(CLK_I)
   begin
     if (RST_I='1') then
@@ -272,7 +266,7 @@ begin
       start_config_cmd <= '0';
       s_ddc_conv_o <= '0';
     elsif rising_edge(CLK_I) then
-      if STB_I = '1' and WE_I = '1' then -- Escritura SBA
+      if STB_I = '1' and WE_I = '1' then -- SBA Write
         case s_ddc_reg_sel is
           when ADDR_CTRL =>
             if DAT_I(0) = '1' then
@@ -291,21 +285,18 @@ begin
     end if;
   end process;
 
-  -- Mapeo de puertos de salida física
+  -- Physical output port mapping
   DDC_CLK     <= s_ddc_clk_o;
   DDC_CONV    <= s_ddc_conv_o;
   DDC_DIN_CFG <= s_ddc_din_cfg_reg(15);  -- MSB
   DDC_CLK_CFG <= s_ddc_clk_cfg_o;
   DDC_RESET   <= s_ddc_reset_o;
 
-  -- Lógica de Selección de registro y Salida de Datos (Read SBA)
+  -- Register selection logic and SBA Read Data Output
   s_ddc_reg_sel <= ADR_I(3 downto 0);
 
   DAT_O <= std_logic_vector(to_unsigned(t_state'pos(current_state), 16)) when s_ddc_reg_sel = ADDR_CTRL else
            std_logic_vector(resize(unsigned(Config_Word_Reg),DAT_O'length))  when s_ddc_reg_sel = ADDR_CFG_WORD else
            (DAT_O'range => '0');
 
-
 end DDC264_arch;
-
-
