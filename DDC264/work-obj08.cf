@@ -1,0 +1,7 @@
+v 4
+file . "DDC264.vhd" "e338263265b790a76f3bac18a7be7ba432d4dda7" "20251022134453.659":
+  entity ddc264 at 29( 899) + 0 on 13;
+  architecture ddc264_arch of ddc264 at 59( 2234) + 0 on 14;
+file . "DDC264.tb.vhd" "9a5c597678c43fa6147e2bb00c576634a9ee9fbe" "20251022134453.657":
+  entity testbench at 10( 362) + 0 on 11;
+  architecture ddc264_arch of testbench at 20( 536) + 0 on 12;
