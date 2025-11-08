@@ -19,7 +19,6 @@
 --   bit(0) <- start to shift configuration word to DDC_DIN_CFG
 --   bit(1) <- start to read data registers from DDC_DOUT
 --   bit(8) <- set/reset DDC_CONV
-
 --
 -- 0001 x"1" : Configuration Word
 -- 0010 x"2" : bit(5..0) <- Select data register to read (0 to 63)
