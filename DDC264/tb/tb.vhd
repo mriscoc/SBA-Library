@@ -177,7 +177,7 @@ begin
 
   -- Toggle DDC_CONV
   report "Changing CONV state to 1";
-  DAT_I <= x"00002";  -- Bit 1 high
+  DAT_I <= x"00100";  -- Bit 8 high
   ADR_I <= x"0000";   -- ADDR_CTRL
   STB_I <= '1';
   WE_I  <= '1';
@@ -190,7 +190,7 @@ begin
 
   -- Start read sequence (bit 2 = '1')
   report "Writing start read command (start_read_cmd)";
-  DAT_I <= x"00006";  -- start_read_cmd (bit 2) high + CONV (bit 1) high
+  DAT_I <= x"00102";  -- start_read_cmd (bit 1) high + CONV (bit 8) high
   ADR_I <= x"0000";   -- ADDR_CTRL
   STB_I <= '1';
   WE_I  <= '1';
@@ -210,7 +210,7 @@ begin
 
   -- Toggle DDC_CONV
   report "Changing CONV state to 0";
-  DAT_I <= x"00000";  -- Bit 1 low
+  DAT_I <= x"00000";  -- Bit 8 low
   ADR_I <= x"0000";   -- ADDR_CTRL
   STB_I <= '1';
   WE_I  <= '1';

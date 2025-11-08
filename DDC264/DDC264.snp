@@ -1,16 +1,20 @@
 -- /SBA: Program Details -------------------------------------------------------
 -- Snippet: DDC264 support routines
--- Version: 1.1
--- Date: 20251022
+-- Version: 2.2
+-- Date: 2025/11/08
 -- Author: Miguel A. Risco-Castillo
 -- Description: Routines to communicate with a DDC264
 -- Example of use:
 --
--- SBAcall(DDC264_waitCFGWTWR);
 -- SBAcall(DDC264_waitCFGIDLE);
 --
 -- DDC264_Config_World := x"ABCD";
 -- SBAcall(DDC264_sendConfig);
+--
+-- SBAcall(DDC264_waitCFGIDLE);      -- Wait for IDLE after configuration
+--
+-- DDC264_CTRL_bits(8) := '1';       -- Set CONV to '1'
+-- SBAwrite(DDC264_CTRL, DDC264_CTRL_bits);
 --
 -- SBAcall(DDC264_startDataRead);
 -- SBAcall(DDC264_waitDATARDY);
@@ -18,33 +22,27 @@
 
 -- /SBA: User Registers and Constants ------------------------------------------
    variable DDC264_Config_World : unsigned(15 downto 0) := x"0000"; -- DDC264 configuration word
-   variable DDC264_CTRL_bits    : std_logic := 0; -- Current value of the Control register
+   variable DDC264_CTRL_bits    : unsigned(15 downto 0) := x"0000"; -- Current value of the Control register
 -- /SBA: End -------------------------------------------------------------------
 
 -- /SBA: User Program ----------------------------------------------------------
 
 -- /L:DDC264_waitCFGIDLE
-=> SBAread(DDC264_CTRL);             -- Read DDC264 Status
+=> SBAread(DDC264_CTRL);                -- Read DDC264 Status
 -- /L:DDC264_waitCFGIDLE_loop
-=> if dati /= x"0001" then           -- Is status /= IDLE ?
-     SBAjump(DDC264_waitCFGIDLE_loop);         -- try again
-   else
-     SBAret;
-   end if;
-
--- /L:DDC264_waitCFGWTWR
-=> SBAread(DDC264_CTRL);             -- Read DDC264 Status
--- /L:DDC264_waitCFGWTWR_loop
-=> if dati /= x"0006" then           -- Is status /= WAIT_WTWR ?
-     SBAjump(DDC264_waitCFGWTWR_loop);         -- try again
+=> if dati(15 downto 12) /= x"1" then   -- Is status /= IDLE ?
+     SBAjump(DDC264_waitCFGIDLE_loop);  -- try again
    else
      SBAret;
    end if;
 
 -- /L:DDC264_sendConfig
 => SBAwrite(DDC264_CFGW, DDC264_Config_World);   -- Write Configuration word
-=> DDC264_CTRL_bits(1) := '1';                   -- Set start_config_cmd
-   SBAwrite(DDC264_CTRL, DDC264_CTRL_bits);      -- Start configuration
+=> SBAwrite(DDC264_CTRL, DDC264_CTRL_bits or x"0001"); -- Set start_config_cmd
+=> SBAret;
+
+-- /L:DDC264_startRead
+=> SBAwrite(DDC264_CTRL, DDC264_CTRL_bits or x"0002"); -- Set start_read_cmd
 => SBAret;
 
 -- /L:DDC264_waitDATARDY
@@ -55,7 +53,6 @@
    else
      SBAret;
    end if;
-
 
 -- /SBA: End User Program ------------------------------------------------------
 

@@ -3,7 +3,7 @@
 --
 -- Title: DDC264 IP Core
 --
--- Version: 2.1
+-- Version: 2.2
 -- Date: 2025/11/07
 -- Author: Miguel A. Risco-Castillo
 --
@@ -17,8 +17,9 @@
 -- Write:
 -- 0000 x"0": Control register
 --   bit(0) <- start to shift configuration word to DDC_DIN_CFG
---   bit(1) <- set/reset DDC_CONV
---   bit(2) <- start to read data registers from DDC_DOUT
+--   bit(1) <- start to read data registers from DDC_DOUT
+--   bit(8) <- set/reset DDC_CONV
+
 --
 -- 0001 x"1" : Configuration Word
 -- 0010 x"2" : bit(5..0) <- Select data register to read (0 to 63)
@@ -408,13 +409,13 @@ begin
             if DAT_I(0) = '1' then
               start_config_cmd <= '1'; -- Bit 0 starts configuration sequence
             end if;
-            s_ddc_conv_o <= DAT_I(1);
-            if DAT_I(2) = '1' then
-              start_read_cmd <= '1'; -- Bit 2 starts read sequence
+            if DAT_I(1) = '1' then
+              start_read_cmd <= '1';   -- Bit 1 starts read sequence
             end if;
+            s_ddc_conv_o <= DAT_I(8);  -- Bit 8 sets CONV state
           when ADDR_CFG_WORD =>
             Config_Word_Reg <= DAT_I(Config_Word_Reg'range);
-            data_format <= DAT_I(8);  -- Bit 8 defines data format
+            data_format <= DAT_I(8);   -- Bit 8 sets data format
           when ADDR_DATA_REG =>
             reg_to_read <= to_integer(unsigned(DAT_I(5 downto 0)));
           when others =>
