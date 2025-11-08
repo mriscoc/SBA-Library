@@ -1,8 +1,8 @@
 --------------------------------------------------------------------------------
 -- File Name: DDC264.tb.vhd
 -- Title: Testbench for IP Core DDC264
--- Version: 1.0
--- Date: 2025/10/20
+-- Version: 2.1
+-- Date: 2025/11/07
 -- Author: Miguel A. Risco Castillo
 -- Description: VHDL Test Bench for IP Core DDC264
 --------------------------------------------------------------------------------
@@ -19,14 +19,19 @@ end testbench;
 
 architecture DDC264_arch OF testbench IS
 
+-- System configuration
+Constant debug     : integer := 1;    -- '1' for Debug reports
+Constant Adr_width : integer := 16;   -- Width of address bus
+Constant Dat_width : integer := 20;   -- Width of data bus
+
 -- SBA signals
 signal RST_I : std_logic := '1';
 signal CLK_I : std_logic := '0';
 signal STB_I : std_logic := '0';
 signal WE_I  : std_logic := '0';
-signal ADR_I : std_logic_vector(15 DOWNTO 0) := (others=>'0');
-signal DAT_I : std_logic_vector(15 DOWNTO 0);
-signal DAT_O : std_logic_vector(15 DOWNTO 0);
+signal ADR_I : std_logic_vector(Adr_width - 1 DOWNTO 0) := (others=>'0');
+signal DAT_I : std_logic_vector(Dat_width - 1 DOWNTO 0);
+signal DAT_O : std_logic_vector(Dat_width - 1 DOWNTO 0);
 
 -- DDC264 testbench signals
 signal DDC_CLK     : std_logic;  -- Master/System Clock
@@ -34,6 +39,10 @@ signal DDC_CONV    : std_logic;  -- DDC264 CONV (Integration Control)
 signal DDC_DIN_CFG : std_logic;  -- Serial configuration data
 signal DDC_CLK_CFG : std_logic;  -- Configuration clock (Max 20 MHz)
 signal DDC_RESET   : std_logic;  -- DDC264 RESET (Active low)
+signal DDC_DVALID  : std_logic;  -- Data valid signal active low (indicates when DDC_DOUT is stable and can be sampled)
+signal DDC_DCLK    : std_logic;  -- Data clock signal (used to synchronize data transfer)
+signal DDC_DIN     : std_logic;  -- Serial data input to DDC264 (used for configuration or control)
+signal DDC_DOUT    : std_logic;  -- Serial data output from DDC264 (used to read conversion results)
 
 constant freq : positive := 40E6; -- Main clock: 40MHz
 --constant freq : positive := 50E6; -- Main clock: 50MHz
@@ -42,9 +51,15 @@ constant freq : positive := 40E6; -- Main clock: 40MHz
 --constant freq : positive := 80E6; -- Main clock: 80MHz
 constant CLKPERIOD : time := (real(1000000000)/real(freq)) * 1 ns;
 
+-- Aliases for Status_Reg bit fields
+alias cfg_fsm_state   : std_logic_vector(3 downto 0) is DAT_O(15 downto 12);
+alias read_fsm_state  : std_logic_vector(3 downto 0) is DAT_O(11 downto 8);
+alias status_data_rdy : std_logic is DAT_O(7);
+alias status_dvalid   : std_logic is DAT_O(6);
+
 component DDC264
 generic(
-  debug:positive:=1;
+  debug:positive:=debug;
   infreq:positive:=freq
 );
 port (
@@ -62,7 +77,13 @@ port (
     DDC_CONV    : out std_logic;           -- DDC264 CONV (Integration Control)
     DDC_DIN_CFG : out std_logic;           -- Serial configuration data
     DDC_CLK_CFG : out std_logic;           -- Configuration clock (Max 20 MHz)
-    DDC_RESET   : out std_logic            -- DDC264 RESET (Active low)
+    DDC_RESET   : out std_logic;           -- DDC264 RESET (Active low)
+
+    -- DDC264 DATA INTERFACE
+    DDC_DVALID  : in  std_logic;           -- Data valid signal active low (indicates when DDC_DOUT is stable and can be sampled)
+    DDC_DCLK    : out std_logic;           -- Data clock signal (used to synchronize data transfer)
+    DDC_DIN     : out std_logic;           -- Serial data input to DDC264 (used for configuration or control)
+    DDC_DOUT    : in  std_logic            -- Serial data output from DDC264 (used to read conversion results)
 );
 end component;
 
@@ -83,8 +104,15 @@ PORT MAP (
   DDC_CONV => DDC_CONV,
   DDC_DIN_CFG => DDC_DIN_CFG,
   DDC_CLK_CFG  => DDC_CLK_CFG,
-  DDC_RESET  => DDC_RESET
+  DDC_RESET  => DDC_RESET,
+  DDC_DVALID => DDC_DVALID,
+  DDC_DCLK => DDC_DCLK,
+  DDC_DIN => DDC_DIN,
+  DDC_DOUT => DDC_DOUT
 );
+
+DDC_DVALID <= '1';
+DDC_DOUT <= '0';    -- Dummy serial output value
 
 -- Reset control process
 reset : process
@@ -114,72 +142,86 @@ begin
   -- Read DDC264 state and wait for power-up sequence
   report "Reading state";
   ADR_I <= x"0000";  -- ADDR_FSM_STATUS
-  wait until rising_edge(CLK_I);
-  STB_I <= '1';
   WE_I  <= '0';
-  wait until DAT_O = x"0001"; -- State = IDLE
   wait until rising_edge(CLK_I);
-  STB_I <= '0';
+  wait until cfg_fsm_state = x"1"; -- State = IDLE
 
   -- Write configuration word
   report "Writing Config_Word_Reg with 0xABCD";
-  DAT_I <= x"ABCD";
-  ADR_I <= x"0001";  -- ADDR_CFG_WORD
-  wait until rising_edge(CLK_I);
+  DAT_I <= x"0ABCD";
+  ADR_I <= x"0001";   -- ADDR_CFG_WORD
   STB_I <= '1';
   WE_I  <= '1';
   wait until rising_edge(CLK_I);
   STB_I <= '0';
   WE_I  <= '0';
+  wait until rising_edge(CLK_I);
 
   -- Start configuration (bit 0 = '1')
   report "Writing start configuration command (start_config_cmd)";
-  DAT_I <= x"0001";  -- Bit 0 high
-  ADR_I <= x"0000";  -- ADDR_CTRL
-  wait until rising_edge(CLK_I);
+  DAT_I <= x"00001";  -- Bit 0 high
+  ADR_I <= x"0000";   -- ADDR_CTRL
   STB_I <= '1';
   WE_I  <= '1';
   wait until rising_edge(CLK_I);
   STB_I <= '0';
   WE_I  <= '0';
+  wait until rising_edge(CLK_I);
 
   -- Wait for configuration to complete
   report "Reading state";
   ADR_I <= x"0000";  -- ADDR_FSM_STATUS
-  wait until rising_edge(CLK_I);
-  STB_I <= '1';
   WE_I  <= '0';
-  wait until DAT_O = x"0001"; -- State = IDLE
   wait until rising_edge(CLK_I);
-  STB_I <= '0';
+  wait until cfg_fsm_state = x"1"; -- State = IDLE
 
   -- Toggle DDC_CONV
   report "Changing CONV state to 1";
-  DAT_I <= x"0002";  -- Bit 1 high
-  ADR_I <= x"0000";  -- ADDR_CTRL
-  wait until rising_edge(CLK_I);
+  DAT_I <= x"00002";  -- Bit 1 high
+  ADR_I <= x"0000";   -- ADDR_CTRL
   STB_I <= '1';
   WE_I  <= '1';
   wait until rising_edge(CLK_I);
   STB_I <= '0';
   WE_I  <= '0';
+  wait until rising_edge(CLK_I);
+
+  wait for 1 us;
+
+  -- Start read sequence (bit 2 = '1')
+  report "Writing start read command (start_read_cmd)";
+  DAT_I <= x"00006";  -- start_read_cmd (bit 2) high + CONV (bit 1) high
+  ADR_I <= x"0000";   -- ADDR_CTRL
+  STB_I <= '1';
+  WE_I  <= '1';
+  wait until rising_edge(CLK_I);
+  STB_I <= '0';
+  WE_I  <= '0';
+  wait until rising_edge(CLK_I);
+
+   -- Wait for read to complete
+  report "Reading state";
+  ADR_I <= x"0000";  -- ADDR_FSM_STATUS
+  WE_I  <= '0';
+  wait until rising_edge(CLK_I);
+  wait until status_data_rdy = '1'; -- Data ready?
 
   wait for 1 us;
 
   -- Toggle DDC_CONV
   report "Changing CONV state to 0";
-  DAT_I <= x"0000";  -- Bit 1 low
-  ADR_I <= x"0000";  -- ADDR_CTRL
-  wait until rising_edge(CLK_I);
+  DAT_I <= x"00000";  -- Bit 1 low
+  ADR_I <= x"0000";   -- ADDR_CTRL
   STB_I <= '1';
   WE_I  <= '1';
   wait until rising_edge(CLK_I);
   STB_I <= '0';
   WE_I  <= '0';
+  wait until rising_edge(CLK_I);
+
+  wait for 30 us;
 
   -- end simulation
-
-  wait for 1 us;
   report "Simulation completed successfully" severity note;
   stop(0); -- Stops the simulation and returns 0 (success)
   wait;

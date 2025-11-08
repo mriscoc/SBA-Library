@@ -6,41 +6,56 @@
 -- Description: Routines to communicate with a DDC264
 -- Example of use:
 --
--- SBAcall(DDC264_waitWTWR);
--- SBAcall(DDC264_waitIDLE);
+-- SBAcall(DDC264_waitCFGWTWR);
+-- SBAcall(DDC264_waitCFGIDLE);
 --
 -- DDC264_Config_World := x"ABCD";
 -- SBAcall(DDC264_sendConfig);
+--
+-- SBAcall(DDC264_startDataRead);
+-- SBAcall(DDC264_waitDATARDY);
 -- /SBA: End -------------------------------------------------------------------
 
 -- /SBA: User Registers and Constants ------------------------------------------
-   variable DDC264_Config_World : unsigned(15 downto 0); -- DDC264 configuration word
+   variable DDC264_Config_World : unsigned(15 downto 0) := x"0000"; -- DDC264 configuration word
+   variable DDC264_CTRL_bits    : std_logic := 0; -- Current value of the Control register
 -- /SBA: End -------------------------------------------------------------------
 
 -- /SBA: User Program ----------------------------------------------------------
 
--- /L:DDC264_waitIDLE
+-- /L:DDC264_waitCFGIDLE
 => SBAread(DDC264_CTRL);             -- Read DDC264 Status
--- /L:DDC264_waitIDLE_loop
+-- /L:DDC264_waitCFGIDLE_loop
 => if dati /= x"0001" then           -- Is status /= IDLE ?
-     SBAjump(DDC264_waitIDLE_loop);         -- try again
+     SBAjump(DDC264_waitCFGIDLE_loop);         -- try again
    else
      SBAret;
    end if;
 
--- /L:DDC264_waitWTWR
+-- /L:DDC264_waitCFGWTWR
 => SBAread(DDC264_CTRL);             -- Read DDC264 Status
--- /L:DDC264_waitWTWR_loop
+-- /L:DDC264_waitCFGWTWR_loop
 => if dati /= x"0006" then           -- Is status /= WAIT_WTWR ?
-     SBAjump(DDC264_waitWTWR_loop);         -- try again
+     SBAjump(DDC264_waitCFGWTWR_loop);         -- try again
    else
      SBAret;
    end if;
 
 -- /L:DDC264_sendConfig
 => SBAwrite(DDC264_CFGW, DDC264_Config_World);   -- Write Configuration word
-=> SBAwrite(DDC264_CTRL, x"1");      -- Start configuration
+=> DDC264_CTRL_bits(1) := '1';                   -- Set start_config_cmd
+   SBAwrite(DDC264_CTRL, DDC264_CTRL_bits);      -- Start configuration
 => SBAret;
+
+-- /L:DDC264_waitDATARDY
+=> SBAread(DDC264_CTRL);             -- Read DDC264 Status
+-- /L:DDC264_waitDATARDY_loop
+=> if dati(7) /= '1' then            -- Is status_data_rdy /= 1 ?
+     SBAjump(DDC264_waitDATARDY_loop);         -- try again
+   else
+     SBAret;
+   end if;
+
 
 -- /SBA: End User Program ------------------------------------------------------
 

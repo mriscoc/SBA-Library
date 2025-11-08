@@ -3,26 +3,35 @@
 --
 -- Title: DDC264 IP Core
 --
--- Version: 1.1
--- Date: 2025/10/21
+-- Version: 2.1
+-- Date: 2025/11/07
 -- Author: Miguel A. Risco-Castillo
 --
 -- sba webpage: http://sba.accesus.com
 -- core webpage: https://github.com/mriscoc/SBA-Library/tree/master/DDC264
 --
 -- Description: Preliminary version of SBA Slave IP Core adapter for the DDC264
--- The minimum data bus width is 16 bits.
+-- The minimum data bus width is 20 bits.
 -- The Register Select uses the four least significant bits of the address bus.
 --
 -- Write:
--- 0000 : Control register
+-- 0000 x"0": Control register
 --   bit(0) <- start to shift configuration word to DDC_DIN_CFG
 --   bit(1) <- set/reset DDC_CONV
--- 0001 : Configuration Word
+--   bit(2) <- start to read data registers from DDC_DOUT
+--
+-- 0001 x"1" : Configuration Word
+-- 0010 x"2" : bit(5..0) <- Select data register to read (0 to 63)
 --
 -- Read:
--- 0000 : Status register (FSM state)
--- 0001 : Read back configuration word
+-- 0000 x"0" : Status register (FSMs state, DVALID, Data Ready, etc.)
+--   bit(15..12) <- Configuration FSM state (0:POWER_UP, 1:IDLE, 2:RESET_PULSE, 3:WAIT_WTRST, 4:PREPARE_CFG, 5:SHIFT_CFG, 6:WAIT_WTWR)
+--   bit(11..8)  <- Read FSM state (0:IDLE, 1:START_SQNC, 2:SHIFT_READ, 3:END_SQNC)
+--   bit(7)      <- Data ready flag (1: all 64 data registers have been read, 0: not ready)
+--   bit(6)      <- DDC_DVALID signal (0: valid data available (active low), 1: data not valid)
+--   bit(5..0)   <- Reserved (always 0)
+-- 0001 x"1" : Read back configuration word
+-- 0010 x"2" : Read data register selected previously
 --
 --------------------------------------------------------------------------------
 
@@ -46,12 +55,18 @@ entity DDC264 is
     DAT_I       : in  std_logic_vector;    -- Input data (from Master)
     DAT_O       : out std_logic_vector;    -- Output data (to Master)
 
-    -- DDC264 CONTROL SIGNALS
+    -- DDC264 CONTROL INTERFACE
     DDC_CLK     : out std_logic;           -- Master/System clock
     DDC_CONV    : out std_logic;           -- DDC264 CONV (Integration control)
     DDC_DIN_CFG : out std_logic;           -- Serial configuration data
     DDC_CLK_CFG : out std_logic;           -- Configuration clock (Max 20 MHz)
-    DDC_RESET   : out std_logic            -- DDC264 RESET (Active low)
+    DDC_RESET   : out std_logic;           -- DDC264 RESET (Active low)
+
+    -- DDC264 DATA INTERFACE
+    DDC_DVALID  : in  std_logic;           -- Data valid signal active low (indicates when DDC_DOUT is stable and can be sampled)
+    DDC_DCLK    : out std_logic;           -- Data clock signal (used to synchronize data transfer)
+    DDC_DIN     : out std_logic;           -- Serial data input to DDC264 (used for configuration or control)
+    DDC_DOUT    : in  std_logic            -- Serial data output from DDC264 (used to read conversion results)
   );
 end DDC264;
 
@@ -63,8 +78,8 @@ architecture DDC264_arch of DDC264 is
 
   -- 1. tPOR: Time between power-up and first reset = 250 ms = 250,000 µs.
   -- Cycles = (250,000 µs) / (1 / infreq) = 250,000 * infreq / 1,000,000
-  constant T_POWER_UP_US : integer := 3;
-  -- constant T_POWER_UP_US : integer := 250E3;
+  constant T_POWER_UP_US : integer := 3;  -- 3 us
+  -- constant T_POWER_UP_US : integer := 250E3;  -- 250 ms
   constant POWER_UP_CYCLES : natural := T_POWER_UP_US * F_MHZ;
 
   -- 2. tRST: Minimum pulse width for RESET active = 1 µs.
@@ -82,12 +97,14 @@ architecture DDC264_arch of DDC264 is
   constant T_WTWR_US : integer := 2;
   constant WTWR_WAIT_CYCLES : natural := T_WTWR_US * F_MHZ;
 
-  -- SBA Internal Register Definitions
+  -- SBA Address Definitions
   constant ADDR_CTRL      : std_logic_vector(3 downto 0) := x"0";
   constant ADDR_CFG_WORD  : std_logic_vector(3 downto 0) := x"1";
+  constant ADDR_DATA_REG  : std_logic_vector(3 downto 0) := x"2";
 
-  -- Stores the 16-bit Configuration Word
+  -- Stores the 16-bit Configuration Word and status register
   signal Config_Word_Reg : std_logic_vector(15 downto 0) := (others => '0');
+  signal Status_Reg      : std_logic_vector(15 downto 0) := (others => '0');
 
   -- DDC264 Control Signals
   signal s_ddc_clk_o     : std_logic;
@@ -96,17 +113,23 @@ architecture DDC264_arch of DDC264 is
   signal s_ddc_reset_o   : std_logic;
   signal s_ddc_reg_sel   : std_logic_vector(3 downto 0);
 
+  -- DDC264 Data Signals
+  signal s_ddc_dvalid_i : std_logic;
+  signal s_ddc_dclk_o   : std_logic;
+  signal s_ddc_din_o    : std_logic;
+  signal s_ddc_dout_i   : std_logic;
+
   -- FSM for Configuration Sequence
-  type t_state is (
+  type t_cfg_state is (
       POWER_UP, IDLE, RESET_PULSE, WAIT_WTRST, PREPARE_CFG, SHIFT_CFG, WAIT_WTWR
   );
-  signal current_state : t_state := IDLE;
+  signal config_state : t_cfg_state := IDLE;
 
   -- Counters limited by the maximum wait cycle
   signal cfg_counter   : natural range 0 to POWER_UP_CYCLES := 0;
 
   -- Bit counter for the configuration word shift register
-  signal bit_counter   : natural range 0 to 16 := 0;
+  signal cfg_shift_counter   : natural range 0 to 16 := 0;
 
   -- Shift register for the configuration word
   signal s_ddc_din_cfg_reg : std_logic_vector(15 downto 0) := (others => '0');
@@ -116,6 +139,35 @@ architecture DDC264_arch of DDC264 is
 
   -- Storage of previous DDC_CLK_CFG state
   signal clk_cfg_prev : std_logic := '0';
+
+
+  -- FSM for Read Sequence
+  type t_read_state is (
+      IDLE, START_SQNC, SHIFT_READ, END_SQNC
+  );
+  signal read_state : t_read_state := IDLE;
+
+  -- Register counter
+  signal data_reg_counter   : natural range 0 to 64 := 0;
+
+  -- Bit counter for the data read shift register
+  signal read_shift_counter   : natural range 0 to 19 := 0;
+
+  -- Array for the data registers
+  type t_data_array is array (0 to 63) of std_logic_vector(19 downto 0);
+  signal s_ddc_din_reg : t_data_array := (others => (others => '0'));
+
+   -- Read sequence started from the SBA bus
+  signal start_read_cmd : std_logic := '0';
+
+  -- Data ready flag
+  signal data_ready : std_logic := '0';
+
+  -- Data format
+  signal data_format : std_logic := '1';
+
+  -- Select register to read
+  signal reg_to_read : natural range 0 to 63 := 0;
 
 begin
 
@@ -149,7 +201,7 @@ begin
     if RST_I = '1' then
       clk_cfg_div := (others => '0');
     elsif rising_edge(CLK_I) then
-      if (current_state = SHIFT_CFG) and (bit_counter > 0) then
+      if (config_state = SHIFT_CFG) and (cfg_shift_counter > 0) then
         clk_cfg_div := clk_cfg_div + 1;
       else
         clk_cfg_div := (others => '0');
@@ -163,17 +215,17 @@ begin
   begin
     if RST_I = '1' then
       s_ddc_din_cfg_reg <= (others => '0');
-      bit_counter <= 0;
+      cfg_shift_counter <= 0;
     elsif rising_edge(CLK_I) then
-      if current_state = PREPARE_CFG then
+      if config_state = PREPARE_CFG then
         s_ddc_din_cfg_reg <= Config_Word_Reg;
-        bit_counter <= 16;
-      elsif current_state = SHIFT_CFG then
+        cfg_shift_counter <= 16;
+      elsif config_state = SHIFT_CFG then
         -- falling edge (falling_edge not used, signal comes from logic)
         if s_ddc_clk_cfg_o = '0' and clk_cfg_prev = '1' then
-          if bit_counter > 0 then
+          if cfg_shift_counter > 0 then
             s_ddc_din_cfg_reg <= s_ddc_din_cfg_reg(14 downto 0) & '0';
-            bit_counter <= bit_counter - 1;
+            cfg_shift_counter <= cfg_shift_counter - 1;
           end if;
         end if;
       end if;
@@ -181,26 +233,26 @@ begin
   end process;
 
   -- Process for DDC_RESET signal
-  process(RST_I, current_state)
+  process(RST_I, config_state)
   begin
     if RST_I = '1' then
       s_ddc_reset_o <= '0';
-    elsif current_state = RESET_PULSE then
+    elsif config_state = RESET_PULSE then
       s_ddc_reset_o <= '0';
     else
       s_ddc_reset_o <= '1';
     end if;
   end process;
 
-  -- State Machine
+  -- Configuration State Machine
   process(RST_I, CLK_I)
   begin
     if RST_I = '1' then
-      current_state <= POWER_UP;
+      config_state <= POWER_UP;
       cfg_counter   <= 0;
     elsif rising_edge(CLK_I) then
       clk_cfg_prev <= s_ddc_clk_cfg_o;
-      case current_state is
+      case config_state is
 
         when POWER_UP =>
           -- tPOR >= 250 ms
@@ -208,12 +260,12 @@ begin
             cfg_counter <= cfg_counter + 1;
           else
             cfg_counter <= 0;
-            current_state <= IDLE;
+            config_state <= IDLE;
           end if;
 
         when IDLE =>
           if start_config_cmd = '1' then
-              current_state <= RESET_PULSE;
+              config_state <= RESET_PULSE;
           end if;
 
         when RESET_PULSE =>
@@ -222,7 +274,7 @@ begin
             cfg_counter <= cfg_counter + 1;
           else
             cfg_counter <= 0;
-            current_state <= WAIT_WTRST;
+            config_state <= WAIT_WTRST;
           end if;
 
         when WAIT_WTRST =>
@@ -231,15 +283,15 @@ begin
             cfg_counter <= cfg_counter + 1;
           else
             cfg_counter <= 0;
-            current_state <= PREPARE_CFG;
+            config_state <= PREPARE_CFG;
           end if;
 
         when PREPARE_CFG =>
-          current_state <= SHIFT_CFG;
+          config_state <= SHIFT_CFG;
 
         when SHIFT_CFG =>
-          if bit_counter = 0 then
-            current_state <= WAIT_WTWR;
+          if cfg_shift_counter = 0 then
+            config_state <= WAIT_WTWR;
           end if;
 
         when WAIT_WTWR =>
@@ -248,15 +300,99 @@ begin
             cfg_counter <= cfg_counter + 1;
           else
             cfg_counter <= 0;
-            current_state <= IDLE;
+            config_state <= IDLE;
           end if;
 
         when others =>
-          current_state <= IDLE;
+          config_state <= IDLE;
 
       end case;
     end if;
   end process;
+
+
+  -- Generator for DCLK = CLK_I/2
+  process(RST_I, CLK_I)
+  begin
+    if RST_I = '1' then
+      s_ddc_dclk_o <= '0';
+    elsif rising_edge(CLK_I) then
+      if (read_state = SHIFT_READ) and (read_shift_counter > 0) then
+        s_ddc_dclk_o <= not s_ddc_dclk_o;
+      else
+        s_ddc_dclk_o <= '0';
+      end if;
+    end if;
+  end process;
+
+  -- Shift process for the data register array
+  process(RST_I, CLK_I)
+  variable s_ddc_dclk_prev : std_logic := '0';
+  begin
+    if RST_I = '1' then
+      s_ddc_dclk_prev := '0';
+      s_ddc_din_reg <= (others => (others => '0'));
+      read_shift_counter <= 0;
+    elsif rising_edge(CLK_I) then
+
+      if read_state = START_SQNC then
+        s_ddc_din_reg <= (others => (others => '0'));
+        if data_format = '0' then
+          read_shift_counter <= 15;
+        else
+          read_shift_counter <= 19;
+        end if;
+      elsif read_state = SHIFT_READ then
+        if s_ddc_dclk_o = '0' and s_ddc_dclk_prev = '1' then -- falling edge
+          s_ddc_din_reg(data_reg_counter) <= s_ddc_din_reg(data_reg_counter)(18 downto 0) & s_ddc_dout_i;
+          read_shift_counter <= read_shift_counter - 1;
+        end if;
+      end if;
+
+      s_ddc_dclk_prev := s_ddc_dclk_o;
+    end if;
+  end process;
+
+  -- Read Data State Machine
+  process(RST_I, CLK_I)
+  begin
+    if RST_I = '1' then
+      read_state <= IDLE;
+      data_ready <= '0';
+      data_reg_counter <= 63;
+    elsif rising_edge(CLK_I) then
+      case read_state is
+
+        when IDLE =>
+          if start_read_cmd = '1' then
+              data_ready <= '0';
+              read_state <= START_SQNC;
+          end if;
+
+        when START_SQNC =>
+          read_state <= SHIFT_READ;
+
+        when SHIFT_READ =>
+          if read_shift_counter = 0 then
+            read_state <= END_SQNC;
+          end if;
+
+        when END_SQNC =>
+          if data_reg_counter > 0 then
+            read_state <= START_SQNC;
+            data_reg_counter <= data_reg_counter - 1;
+          else
+            data_ready <= '1';
+            read_state <= IDLE;
+          end if;
+
+        when others =>
+          read_state <= IDLE;
+
+      end case;
+    end if;
+  end process;
+
 
   -- SBA Interface Process (Read/Write)
   process(CLK_I)
@@ -270,33 +406,55 @@ begin
         case s_ddc_reg_sel is
           when ADDR_CTRL =>
             if DAT_I(0) = '1' then
-              start_config_cmd <= '1';
+              start_config_cmd <= '1'; -- Bit 0 starts configuration sequence
             end if;
             s_ddc_conv_o <= DAT_I(1);
+            if DAT_I(2) = '1' then
+              start_read_cmd <= '1'; -- Bit 2 starts read sequence
+            end if;
           when ADDR_CFG_WORD =>
             Config_Word_Reg <= DAT_I(Config_Word_Reg'range);
+            data_format <= DAT_I(8);  -- Bit 8 defines data format
+          when ADDR_DATA_REG =>
+            reg_to_read <= to_integer(unsigned(DAT_I(5 downto 0)));
           when others =>
             null;
         end case;
-      elsif current_state = RESET_PULSE then
-        start_config_cmd <= '0';
-        s_ddc_conv_o <= '0';
+      else
+        if config_state = RESET_PULSE then
+          start_config_cmd <= '0';
+          s_ddc_conv_o <= '0';
+        end if;
+        if read_state = START_SQNC then
+           start_read_cmd <= '0';
+        end if;
       end if;
     end if;
   end process;
 
   -- Physical output port mapping
-  DDC_CLK     <= s_ddc_clk_o;
-  DDC_CONV    <= s_ddc_conv_o;
-  DDC_DIN_CFG <= s_ddc_din_cfg_reg(15);  -- MSB
-  DDC_CLK_CFG <= s_ddc_clk_cfg_o;
-  DDC_RESET   <= s_ddc_reset_o;
+  DDC_CLK        <= s_ddc_clk_o;
+  DDC_CONV       <= s_ddc_conv_o;
+  DDC_DIN_CFG    <= s_ddc_din_cfg_reg(15);  -- MSB
+  DDC_CLK_CFG    <= s_ddc_clk_cfg_o;
+  DDC_RESET      <= s_ddc_reset_o;
+  s_ddc_dvalid_i <= DDC_DVALID;
+  DDC_DCLK       <= s_ddc_dclk_o;
+  DDC_DIN        <= s_ddc_din_o;
+  s_ddc_dout_i   <= DDC_DOUT;
 
   -- Register selection logic and SBA Read Data Output
   s_ddc_reg_sel <= ADR_I(3 downto 0);
 
-  DAT_O <= std_logic_vector(to_unsigned(t_state'pos(current_state), 16)) when s_ddc_reg_sel = ADDR_CTRL else
-           std_logic_vector(resize(unsigned(Config_Word_Reg),DAT_O'length))  when s_ddc_reg_sel = ADDR_CFG_WORD else
+  Status_Reg(15 downto 12) <= std_logic_vector(to_unsigned(t_cfg_state'pos(config_state), 4));
+  Status_Reg(11 downto 8)  <= std_logic_vector(to_unsigned(t_read_state'pos(read_state), 4));
+  Status_Reg(7)            <= data_ready;
+  Status_Reg(6)            <= s_ddc_dvalid_i;
+  Status_Reg(5 downto 0)   <= (others => '0');
+
+  DAT_O <= std_logic_vector(resize(unsigned(Status_Reg), DAT_O'length)) when s_ddc_reg_sel = ADDR_CTRL else
+           std_logic_vector(resize(unsigned(Config_Word_Reg), DAT_O'length))  when s_ddc_reg_sel = ADDR_CFG_WORD else
+           std_logic_vector(resize(unsigned(s_ddc_din_reg(reg_to_read)), DAT_O'length)) when s_ddc_reg_sel = ADDR_DATA_REG else
            (DAT_O'range => '0');
 
 end DDC264_arch;

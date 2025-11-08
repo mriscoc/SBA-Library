@@ -88,6 +88,18 @@
                     selected: false,
                 ),
                 (
+                    item_ref: (16),
+                    level: 0,
+                    unfolded: true,
+                    selected: false,
+                ),
+                (
+                    item_ref: (15),
+                    level: 0,
+                    unfolded: true,
+                    selected: false,
+                ),
+                (
                     item_ref: (10),
                     level: 0,
                     unfolded: true,
@@ -118,7 +130,7 @@
                     selected: false,
                 ),
                 (
-                    item_ref: (15),
+                    item_ref: (21),
                     level: 0,
                     unfolded: true,
                     selected: false,
@@ -130,7 +142,61 @@
                     selected: false,
                 ),
                 (
-                    item_ref: (16),
+                    item_ref: (19),
+                    level: 0,
+                    unfolded: true,
+                    selected: false,
+                ),
+                (
+                    item_ref: (20),
+                    level: 0,
+                    unfolded: true,
+                    selected: false,
+                ),
+                (
+                    item_ref: (22),
+                    level: 0,
+                    unfolded: true,
+                    selected: false,
+                ),
+                (
+                    item_ref: (23),
+                    level: 0,
+                    unfolded: true,
+                    selected: false,
+                ),
+                (
+                    item_ref: (24),
+                    level: 0,
+                    unfolded: true,
+                    selected: false,
+                ),
+                (
+                    item_ref: (25),
+                    level: 0,
+                    unfolded: true,
+                    selected: false,
+                ),
+                (
+                    item_ref: (26),
+                    level: 0,
+                    unfolded: true,
+                    selected: false,
+                ),
+                (
+                    item_ref: (27),
+                    level: 0,
+                    unfolded: true,
+                    selected: false,
+                ),
+                (
+                    item_ref: (29),
+                    level: 0,
+                    unfolded: true,
+                    selected: false,
+                ),
+                (
+                    item_ref: (28),
                     level: 0,
                     unfolded: true,
                     selected: false,
@@ -144,91 +210,6 @@
             ],
         ),
         displayed_items: {
-            (1): Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "testbench",
-                        ],
-                        id: Wellen((8)),
-                    ),
-                    name: "rst_i",
-                    id: Wellen((1)),
-                ),
-                color: None,
-                background_color: None,
-                display_name: "rst_i",
-                display_name_type: Unique,
-                manual_name: None,
-                format: None,
-                field_formats: [],
-                height_scaling_factor: None,
-            )),
-            (5): Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "testbench",
-                        ],
-                        id: Wellen((8)),
-                    ),
-                    name: "adr_i",
-                    id: Wellen((5)),
-                ),
-                color: None,
-                background_color: None,
-                display_name: "adr_i [15:0]",
-                display_name_type: Unique,
-                manual_name: None,
-                format: None,
-                field_formats: [],
-                height_scaling_factor: None,
-            )),
-            (12): Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "testbench",
-                        ],
-                        id: Wellen((8)),
-                    ),
-                    name: "ddc_din_cfg",
-                    id: Wellen((10)),
-                ),
-                color: Some("Blue"),
-                background_color: None,
-                display_name: "ddc_din_cfg",
-                display_name_type: Unique,
-                manual_name: None,
-                format: None,
-                field_formats: [],
-                height_scaling_factor: None,
-            )),
-            (9): Divider((
-                color: None,
-                background_color: None,
-                name: None,
-            )),
-            (4): Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "testbench",
-                        ],
-                        id: Wellen((8)),
-                    ),
-                    name: "we_i",
-                    id: Wellen((4)),
-                ),
-                color: None,
-                background_color: None,
-                display_name: "we_i",
-                display_name_type: Unique,
-                manual_name: None,
-                format: None,
-                field_formats: [],
-                height_scaling_factor: None,
-            )),
             (13): Variable((
                 variable_ref: (
                     path: (
@@ -249,31 +230,6 @@
                 field_formats: [],
                 height_scaling_factor: None,
             )),
-            (6): Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "testbench",
-                        ],
-                        id: Wellen((8)),
-                    ),
-                    name: "dat_i",
-                    id: Wellen((6)),
-                ),
-                color: None,
-                background_color: None,
-                display_name: "dat_i [15:0]",
-                display_name_type: Unique,
-                manual_name: None,
-                format: None,
-                field_formats: [],
-                height_scaling_factor: None,
-            )),
-            (15): Divider((
-                color: None,
-                background_color: None,
-                name: None,
-            )),
             (10): Variable((
                 variable_ref: (
                     path: (
@@ -288,47 +244,6 @@
                 color: Some("Blue"),
                 background_color: None,
                 display_name: "ddc_clk",
-                display_name_type: Unique,
-                manual_name: None,
-                format: Some("Clock"),
-                field_formats: [],
-                height_scaling_factor: None,
-            )),
-            (17): Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "testbench",
-                            "ddc264_control",
-                        ],
-                        id: Wellen((9)),
-                    ),
-                    name: "toggle_conv_cmd",
-                    id: Wellen((32)),
-                ),
-                color: None,
-                background_color: None,
-                display_name: "toggle_conv_cmd",
-                display_name_type: Unique,
-                manual_name: None,
-                format: None,
-                field_formats: [],
-                height_scaling_factor: None,
-            )),
-            (2): Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "testbench",
-                        ],
-                        id: Wellen((8)),
-                    ),
-                    name: "clk_i",
-                    id: Wellen((2)),
-                ),
-                color: None,
-                background_color: None,
-                display_name: "clk_i",
                 display_name_type: Unique,
                 manual_name: None,
                 format: Some("Clock"),
@@ -355,7 +270,12 @@
                 field_formats: [],
                 height_scaling_factor: None,
             )),
-            (18): Variable((
+            (19): Divider((
+                color: None,
+                background_color: None,
+                name: None,
+            )),
+            (23): Variable((
                 variable_ref: (
                     path: (
                         strs: [
@@ -364,19 +284,19 @@
                         ],
                         id: Wellen((9)),
                     ),
-                    name: "config_word_reg",
-                    id: Wellen((22)),
+                    name: "ddc_dvalid",
+                    id: Wellen((26)),
                 ),
                 color: None,
                 background_color: None,
-                display_name: "config_word_reg [15:0]",
+                display_name: "ddc_dvalid",
                 display_name_type: Unique,
                 manual_name: None,
                 format: None,
                 field_formats: [],
                 height_scaling_factor: None,
             )),
-            (3): Variable((
+            (6): Variable((
                 variable_ref: (
                     path: (
                         strs: [
@@ -384,12 +304,188 @@
                         ],
                         id: Wellen((8)),
                     ),
-                    name: "stb_i",
-                    id: Wellen((3)),
+                    name: "dat_i",
+                    id: Wellen((6)),
                 ),
                 color: None,
                 background_color: None,
-                display_name: "stb_i",
+                display_name: "dat_i [19:0]",
+                display_name_type: Unique,
+                manual_name: None,
+                format: None,
+                field_formats: [],
+                height_scaling_factor: None,
+            )),
+            (28): Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "testbench",
+                            "ddc264_control",
+                        ],
+                        id: Wellen((9)),
+                    ),
+                    name: "data_ready",
+                    id: Wellen((49)),
+                ),
+                color: None,
+                background_color: None,
+                display_name: "data_ready",
+                display_name_type: Unique,
+                manual_name: None,
+                format: None,
+                field_formats: [],
+                height_scaling_factor: None,
+            )),
+            (27): Divider((
+                color: None,
+                background_color: None,
+                name: None,
+            )),
+            (20): Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "testbench",
+                            "ddc264_control",
+                        ],
+                        id: Wellen((9)),
+                    ),
+                    name: "start_read_cmd",
+                    id: Wellen((48)),
+                ),
+                color: None,
+                background_color: None,
+                display_name: "start_read_cmd",
+                display_name_type: Unique,
+                manual_name: None,
+                format: None,
+                field_formats: [],
+                height_scaling_factor: None,
+            )),
+            (12): Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "testbench",
+                        ],
+                        id: Wellen((8)),
+                    ),
+                    name: "ddc_din_cfg",
+                    id: Wellen((10)),
+                ),
+                color: Some("Blue"),
+                background_color: None,
+                display_name: "ddc_din_cfg",
+                display_name_type: Unique,
+                manual_name: None,
+                format: None,
+                field_formats: [],
+                height_scaling_factor: None,
+            )),
+            (4): Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "testbench",
+                        ],
+                        id: Wellen((8)),
+                    ),
+                    name: "we_i",
+                    id: Wellen((4)),
+                ),
+                color: None,
+                background_color: None,
+                display_name: "we_i",
+                display_name_type: Unique,
+                manual_name: None,
+                format: None,
+                field_formats: [],
+                height_scaling_factor: None,
+            )),
+            (22): Divider((
+                color: None,
+                background_color: None,
+                name: None,
+            )),
+            (24): Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "testbench",
+                            "ddc264_control",
+                        ],
+                        id: Wellen((9)),
+                    ),
+                    name: "s_ddc_dclk_o",
+                    id: Wellen((38)),
+                ),
+                color: None,
+                background_color: None,
+                display_name: "s_ddc_dclk_o",
+                display_name_type: Unique,
+                manual_name: None,
+                format: None,
+                field_formats: [],
+                height_scaling_factor: None,
+            )),
+            (25): Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "testbench",
+                            "ddc264_control",
+                        ],
+                        id: Wellen((9)),
+                    ),
+                    name: "s_ddc_din_o",
+                    id: Wellen((39)),
+                ),
+                color: None,
+                background_color: None,
+                display_name: "s_ddc_din_o",
+                display_name_type: Unique,
+                manual_name: None,
+                format: None,
+                field_formats: [],
+                height_scaling_factor: None,
+            )),
+            (29): Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "testbench",
+                            "ddc264_control",
+                        ],
+                        id: Wellen((9)),
+                    ),
+                    name: "data_reg_counter",
+                    id: Wellen((46)),
+                ),
+                color: None,
+                background_color: None,
+                display_name: "data_reg_counter",
+                display_name_type: Unique,
+                manual_name: None,
+                format: None,
+                field_formats: [],
+                height_scaling_factor: None,
+            )),
+            (16): Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "testbench",
+                            "ddc264_control",
+                        ],
+                        id: Wellen((9)),
+                    ),
+                    name: "start_config_cmd",
+                    id: Wellen((44)),
+                ),
+                color: None,
+                background_color: None,
+                display_name: "start_config_cmd",
                 display_name_type: Unique,
                 manual_name: None,
                 format: None,
@@ -409,28 +505,7 @@
                 ),
                 color: None,
                 background_color: None,
-                display_name: "dat_o [15:0]",
-                display_name_type: Unique,
-                manual_name: None,
-                format: None,
-                field_formats: [],
-                height_scaling_factor: None,
-            )),
-            (16): Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "testbench",
-                            "ddc264_control",
-                        ],
-                        id: Wellen((9)),
-                    ),
-                    name: "start_config_cmd",
-                    id: Wellen((31)),
-                ),
-                color: None,
-                background_color: None,
-                display_name: "start_config_cmd",
+                display_name: "dat_o [19:0]",
                 display_name_type: Unique,
                 manual_name: None,
                 format: None,
@@ -457,12 +532,149 @@
                 field_formats: [],
                 height_scaling_factor: None,
             )),
+            (21): Divider((
+                color: None,
+                background_color: None,
+                name: None,
+            )),
+            (3): Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "testbench",
+                        ],
+                        id: Wellen((8)),
+                    ),
+                    name: "stb_i",
+                    id: Wellen((3)),
+                ),
+                color: None,
+                background_color: None,
+                display_name: "stb_i",
+                display_name_type: Unique,
+                manual_name: None,
+                format: None,
+                field_formats: [],
+                height_scaling_factor: None,
+            )),
+            (1): Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "testbench",
+                        ],
+                        id: Wellen((8)),
+                    ),
+                    name: "rst_i",
+                    id: Wellen((1)),
+                ),
+                color: None,
+                background_color: None,
+                display_name: "rst_i",
+                display_name_type: Unique,
+                manual_name: None,
+                format: None,
+                field_formats: [],
+                height_scaling_factor: None,
+            )),
+            (2): Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "testbench",
+                        ],
+                        id: Wellen((8)),
+                    ),
+                    name: "clk_i",
+                    id: Wellen((2)),
+                ),
+                color: None,
+                background_color: None,
+                display_name: "clk_i",
+                display_name_type: Unique,
+                manual_name: None,
+                format: Some("Clock"),
+                field_formats: [],
+                height_scaling_factor: None,
+            )),
+            (9): Divider((
+                color: None,
+                background_color: None,
+                name: None,
+            )),
+            (26): Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "testbench",
+                            "ddc264_control",
+                        ],
+                        id: Wellen((9)),
+                    ),
+                    name: "s_ddc_dout_i",
+                    id: Wellen((40)),
+                ),
+                color: None,
+                background_color: None,
+                display_name: "s_ddc_dout_i",
+                display_name_type: Unique,
+                manual_name: None,
+                format: None,
+                field_formats: [],
+                height_scaling_factor: None,
+            )),
+            (18): Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "testbench",
+                            "ddc264_control",
+                        ],
+                        id: Wellen((9)),
+                    ),
+                    name: "config_word_reg",
+                    id: Wellen((30)),
+                ),
+                color: None,
+                background_color: None,
+                display_name: "config_word_reg [15:0]",
+                display_name_type: Unique,
+                manual_name: None,
+                format: None,
+                field_formats: [],
+                height_scaling_factor: None,
+            )),
+            (15): Divider((
+                color: None,
+                background_color: None,
+                name: None,
+            )),
+            (5): Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "testbench",
+                        ],
+                        id: Wellen((8)),
+                    ),
+                    name: "adr_i",
+                    id: Wellen((5)),
+                ),
+                color: None,
+                background_color: None,
+                display_name: "adr_i [15:0]",
+                display_name_type: Unique,
+                manual_name: None,
+                format: None,
+                field_formats: [],
+                height_scaling_factor: None,
+            )),
         },
-        display_item_ref_counter: 18,
+        display_item_ref_counter: 29,
         viewports: [
             (
-                curr_left: (0.0017499995462596813),
-                curr_right: (0.045499999546260377),
+                curr_left: (0.15999999901652215),
+                curr_right: (1.1599999990165237),
                 target_left: (0.0),
                 target_right: (1.0),
                 move_start_left: (0.0),
@@ -475,7 +687,7 @@
             62500000,
         ])),
         markers: {},
-        focused_item: Some((0)),
+        focused_item: Some((27)),
         focused_transaction: (None, None),
         default_variable_name_type: Unique,
         scroll_offset: 0.0,
@@ -484,10 +696,7 @@
     )),
     drag_started: false,
     drag_source_idx: None,
-    drag_target_idx: Some((
-        before: (14),
-        level: 0,
-    )),
+    drag_target_idx: None,
     previous_waves: None,
     count: None,
     blacklisted_translators: [],
