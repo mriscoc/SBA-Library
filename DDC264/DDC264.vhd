@@ -3,8 +3,8 @@
 --
 -- Title: DDC264 IP Core
 --
--- Version: 2.2
--- Date: 2025/11/07
+-- Version: 2.3
+-- Date: 2025/11/08
 -- Author: Miguel A. Risco-Castillo
 --
 -- sba webpage: http://sba.accesus.com
@@ -65,7 +65,6 @@ entity DDC264 is
     -- DDC264 DATA INTERFACE
     DDC_DVALID  : in  std_logic;           -- Data valid signal active low (indicates when DDC_DOUT is stable and can be sampled)
     DDC_DCLK    : out std_logic;           -- Data clock signal (used to synchronize data transfer)
-    DDC_DIN     : out std_logic;           -- Serial data input to DDC264 (used for configuration or control)
     DDC_DOUT    : in  std_logic            -- Serial data output from DDC264 (used to read conversion results)
   );
 end DDC264;
@@ -98,6 +97,7 @@ architecture DDC264_arch of DDC264 is
   constant WTWR_WAIT_CYCLES : natural := T_WTWR_US * F_MHZ;
 
   -- SBA Address Definitions
+  alias s_address         : std_logic_vector is ADR_I(3 downto 0);
   constant ADDR_CTRL      : std_logic_vector(3 downto 0) := x"0";
   constant ADDR_CFG_WORD  : std_logic_vector(3 downto 0) := x"1";
   constant ADDR_DATA_REG  : std_logic_vector(3 downto 0) := x"2";
@@ -111,12 +111,10 @@ architecture DDC264_arch of DDC264 is
   signal s_ddc_conv_o    : std_logic;
   signal s_ddc_clk_cfg_o : std_logic;
   signal s_ddc_reset_o   : std_logic;
-  signal s_ddc_reg_sel   : std_logic_vector(3 downto 0);
 
   -- DDC264 Data Signals
   signal s_ddc_dvalid_i : std_logic;
   signal s_ddc_dclk_o   : std_logic;
-  signal s_ddc_din_o    : std_logic;
   signal s_ddc_dout_i   : std_logic;
 
   -- FSM for Configuration Sequence
@@ -151,11 +149,12 @@ architecture DDC264_arch of DDC264 is
   signal data_reg_counter   : natural range 0 to 64 := 0;
 
   -- Bit counter for the data read shift register
-  signal read_shift_counter   : natural range 0 to 19 := 0;
+  signal read_shift_counter   : natural range 0 to 20 := 0;
 
   -- Array for the data registers
   type t_data_array is array (0 to 63) of std_logic_vector(19 downto 0);
   signal s_ddc_din_reg : t_data_array := (others => (others => '0'));
+  signal Data_Reg : std_logic_vector(19 downto 0);
 
    -- Read sequence started from the SBA bus
   signal start_read_cmd : std_logic := '0';
@@ -334,21 +333,19 @@ begin
       s_ddc_din_reg <= (others => (others => '0'));
       read_shift_counter <= 0;
     elsif rising_edge(CLK_I) then
-
       if read_state = START_SQNC then
-        s_ddc_din_reg <= (others => (others => '0'));
+        s_ddc_din_reg(data_reg_counter) <= (others => '0');
         if data_format = '0' then
-          read_shift_counter <= 15;
+          read_shift_counter <= 16;
         else
-          read_shift_counter <= 19;
+          read_shift_counter <= 20;
         end if;
       elsif read_state = SHIFT_READ then
-        if s_ddc_dclk_o = '0' and s_ddc_dclk_prev = '1' then -- falling edge
+        if s_ddc_dclk_o = '1' and s_ddc_dclk_prev = '0' then
           s_ddc_din_reg(data_reg_counter) <= s_ddc_din_reg(data_reg_counter)(18 downto 0) & s_ddc_dout_i;
           read_shift_counter <= read_shift_counter - 1;
         end if;
       end if;
-
       s_ddc_dclk_prev := s_ddc_dclk_o;
     end if;
   end process;
@@ -403,7 +400,7 @@ begin
       s_ddc_conv_o <= '0';
     elsif rising_edge(CLK_I) then
       if STB_I = '1' and WE_I = '1' then -- SBA Write
-        case s_ddc_reg_sel is
+        case s_address is
           when ADDR_CTRL =>
             if DAT_I(0) = '1' then
               start_config_cmd <= '1'; -- Bit 0 starts configuration sequence
@@ -440,21 +437,20 @@ begin
   DDC_RESET      <= s_ddc_reset_o;
   s_ddc_dvalid_i <= DDC_DVALID;
   DDC_DCLK       <= s_ddc_dclk_o;
-  DDC_DIN        <= s_ddc_din_o;
   s_ddc_dout_i   <= DDC_DOUT;
 
-  -- Register selection logic and SBA Read Data Output
-  s_ddc_reg_sel <= ADR_I(3 downto 0);
-
+  -- SBA Read Data Output
   Status_Reg(15 downto 12) <= std_logic_vector(to_unsigned(t_cfg_state'pos(config_state), 4));
   Status_Reg(11 downto 8)  <= std_logic_vector(to_unsigned(t_read_state'pos(read_state), 4));
   Status_Reg(7)            <= data_ready;
   Status_Reg(6)            <= s_ddc_dvalid_i;
   Status_Reg(5 downto 0)   <= (others => '0');
 
-  DAT_O <= std_logic_vector(resize(unsigned(Status_Reg), DAT_O'length)) when s_ddc_reg_sel = ADDR_CTRL else
-           std_logic_vector(resize(unsigned(Config_Word_Reg), DAT_O'length))  when s_ddc_reg_sel = ADDR_CFG_WORD else
-           std_logic_vector(resize(unsigned(s_ddc_din_reg(reg_to_read)), DAT_O'length)) when s_ddc_reg_sel = ADDR_DATA_REG else
+  Data_Reg <= s_ddc_din_reg(reg_to_read);
+
+  DAT_O <= std_logic_vector(resize(unsigned(Status_Reg), DAT_O'length)) when s_address = ADDR_CTRL else
+           std_logic_vector(resize(unsigned(Config_Word_Reg), DAT_O'length))  when s_address = ADDR_CFG_WORD else
+           std_logic_vector(resize(unsigned(Data_reg), DAT_O'length)) when s_address = ADDR_DATA_REG else
            (DAT_O'range => '0');
 
 end DDC264_arch;

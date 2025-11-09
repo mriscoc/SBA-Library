@@ -1,8 +1,8 @@
 --------------------------------------------------------------------------------
 -- File Name: DDC264.tb.vhd
 -- Title: Testbench for IP Core DDC264
--- Version: 2.1
--- Date: 2025/11/07
+-- Version: 2.3
+-- Date: 2025/11/08
 -- Author: Miguel A. Risco Castillo
 -- Description: VHDL Test Bench for IP Core DDC264
 --------------------------------------------------------------------------------
@@ -41,7 +41,6 @@ signal DDC_CLK_CFG : std_logic;  -- Configuration clock (Max 20 MHz)
 signal DDC_RESET   : std_logic;  -- DDC264 RESET (Active low)
 signal DDC_DVALID  : std_logic;  -- Data valid signal active low (indicates when DDC_DOUT is stable and can be sampled)
 signal DDC_DCLK    : std_logic;  -- Data clock signal (used to synchronize data transfer)
-signal DDC_DIN     : std_logic;  -- Serial data input to DDC264 (used for configuration or control)
 signal DDC_DOUT    : std_logic;  -- Serial data output from DDC264 (used to read conversion results)
 
 constant freq : positive := 40E6; -- Main clock: 40MHz
@@ -51,11 +50,20 @@ constant freq : positive := 40E6; -- Main clock: 40MHz
 --constant freq : positive := 80E6; -- Main clock: 80MHz
 constant CLKPERIOD : time := (real(1000000000)/real(freq)) * 1 ns;
 
+-- Addresses
+constant DDC264_CTRL : std_logic_vector(Adr_width - 1 DOWNTO 0) := x"0000";
+constant DDC264_CFGW : std_logic_vector(Adr_width - 1 DOWNTO 0) := x"0001";
+constant DDC264_DATA : std_logic_vector(Adr_width - 1 DOWNTO 0) := x"0002";
+
 -- Aliases for Status_Reg bit fields
 alias cfg_fsm_state   : std_logic_vector(3 downto 0) is DAT_O(15 downto 12);
 alias read_fsm_state  : std_logic_vector(3 downto 0) is DAT_O(11 downto 8);
 alias status_data_rdy : std_logic is DAT_O(7);
 alias status_dvalid   : std_logic is DAT_O(6);
+
+-- Auxiliary
+constant dataout  : std_logic_vector(19 downto 0) := x"ABCDF";
+signal doutshift : std_logic_vector(19 downto 0) := dataout;
 
 component DDC264
 generic(
@@ -82,7 +90,6 @@ port (
     -- DDC264 DATA INTERFACE
     DDC_DVALID  : in  std_logic;           -- Data valid signal active low (indicates when DDC_DOUT is stable and can be sampled)
     DDC_DCLK    : out std_logic;           -- Data clock signal (used to synchronize data transfer)
-    DDC_DIN     : out std_logic;           -- Serial data input to DDC264 (used for configuration or control)
     DDC_DOUT    : in  std_logic            -- Serial data output from DDC264 (used to read conversion results)
 );
 end component;
@@ -107,12 +114,11 @@ PORT MAP (
   DDC_RESET  => DDC_RESET,
   DDC_DVALID => DDC_DVALID,
   DDC_DCLK => DDC_DCLK,
-  DDC_DIN => DDC_DIN,
   DDC_DOUT => DDC_DOUT
 );
 
 DDC_DVALID <= '1';
-DDC_DOUT <= '0';    -- Dummy serial output value
+DDC_DOUT <= doutshift(19);
 
 -- Reset control process
 reset : process
@@ -133,23 +139,40 @@ begin
   wait FOR CLKPERIOD/2;
 end process clkproc;
 
+
+-- DOUT process
+doutproc : process (RST_I, DDC_DCLK)
+variable bitcount : natural range 0 to 19 := 0;
+begin
+  if RST_I = '1' then
+    doutshift <= (others => '0');
+    bitcount := 0;
+  elsif rising_edge(DDC_DCLK) then
+    if bitcount > 0 then
+       doutshift <= doutshift(18 downto 0) & '0';
+       bitcount := bitcount - 1;
+    else
+      doutshift <= dataout;
+      bitcount := 19;
+    end if;
+  end if;
+end process doutproc;
+
 -- Stimulus process
 control : process
 begin
   -- wait for reset to be released
   wait until RST_I = '0';
 
-  -- Read DDC264 state and wait for power-up sequence
-  report "Reading state";
-  ADR_I <= x"0000";  -- ADDR_FSM_STATUS
+  report "Read DDC264 state and wait for power-up sequence";
+  ADR_I <= DDC264_CTRL;
   WE_I  <= '0';
   wait until rising_edge(CLK_I);
   wait until cfg_fsm_state = x"1"; -- State = IDLE
 
-  -- Write configuration word
   report "Writing Config_Word_Reg with 0xABCD";
+  ADR_I <= DDC264_CFGW;
   DAT_I <= x"0ABCD";
-  ADR_I <= x"0001";   -- ADDR_CFG_WORD
   STB_I <= '1';
   WE_I  <= '1';
   wait until rising_edge(CLK_I);
@@ -157,10 +180,9 @@ begin
   WE_I  <= '0';
   wait until rising_edge(CLK_I);
 
-  -- Start configuration (bit 0 = '1')
   report "Writing start configuration command (start_config_cmd)";
+  ADR_I <= DDC264_CTRL;
   DAT_I <= x"00001";  -- Bit 0 high
-  ADR_I <= x"0000";   -- ADDR_CTRL
   STB_I <= '1';
   WE_I  <= '1';
   wait until rising_edge(CLK_I);
@@ -168,14 +190,48 @@ begin
   WE_I  <= '0';
   wait until rising_edge(CLK_I);
 
-  -- Wait for configuration to complete
-  report "Reading state";
-  ADR_I <= x"0000";  -- ADDR_FSM_STATUS
+  report "Wait for configuration to complete";
+  ADR_I <= DDC264_CTRL;
   WE_I  <= '0';
   wait until rising_edge(CLK_I);
   wait until cfg_fsm_state = x"1"; -- State = IDLE
 
-  -- Toggle DDC_CONV
+  report "Writing start read command (start_read_cmd)";
+  ADR_I <= DDC264_CTRL;
+  DAT_I <= x"00002";  -- start_read_cmd (bit 1) high
+  STB_I <= '1';
+  WE_I  <= '1';
+  wait until rising_edge(CLK_I);
+  STB_I <= '0';
+  WE_I  <= '0';
+  wait until rising_edge(CLK_I);
+
+  report "Wait for read to complete";
+  ADR_I <= DDC264_CTRL;
+  WE_I  <= '0';
+  wait until rising_edge(CLK_I);
+  wait until status_data_rdy = '1'; -- Data ready?
+
+  wait for 1 us;
+
+  report "Select the register #32";
+  ADR_I <= DDC264_DATA;
+  DAT_I <= x"00020";  -- Select register 32
+  STB_I <= '1';
+  WE_I  <= '1';
+  wait until rising_edge(CLK_I);
+  STB_I <= '0';
+  WE_I  <= '0';
+  wait until rising_edge(CLK_I);
+
+  report "Read selected register";
+  ADR_I <= DDC264_DATA;
+  WE_I  <= '0';
+  wait until rising_edge(CLK_I);
+  report "Register content (hex): " & to_hstring(DAT_O);
+
+  wait for 1 us;
+
   report "Changing CONV state to 1";
   DAT_I <= x"00100";  -- Bit 8 high
   ADR_I <= x"0000";   -- ADDR_CTRL
@@ -188,27 +244,6 @@ begin
 
   wait for 1 us;
 
-  -- Start read sequence (bit 2 = '1')
-  report "Writing start read command (start_read_cmd)";
-  DAT_I <= x"00102";  -- start_read_cmd (bit 1) high + CONV (bit 8) high
-  ADR_I <= x"0000";   -- ADDR_CTRL
-  STB_I <= '1';
-  WE_I  <= '1';
-  wait until rising_edge(CLK_I);
-  STB_I <= '0';
-  WE_I  <= '0';
-  wait until rising_edge(CLK_I);
-
-   -- Wait for read to complete
-  report "Reading state";
-  ADR_I <= x"0000";  -- ADDR_FSM_STATUS
-  WE_I  <= '0';
-  wait until rising_edge(CLK_I);
-  wait until status_data_rdy = '1'; -- Data ready?
-
-  wait for 1 us;
-
-  -- Toggle DDC_CONV
   report "Changing CONV state to 0";
   DAT_I <= x"00000";  -- Bit 8 low
   ADR_I <= x"0000";   -- ADDR_CTRL
@@ -219,9 +254,8 @@ begin
   WE_I  <= '0';
   wait until rising_edge(CLK_I);
 
-  wait for 30 us;
+  wait for 1 us;
 
-  -- end simulation
   report "Simulation completed successfully" severity note;
   stop(0); -- Stops the simulation and returns 0 (success)
   wait;

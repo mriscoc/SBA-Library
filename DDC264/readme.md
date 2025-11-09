@@ -2,8 +2,8 @@
 - - -
 ![](image.png)
 
-**Version**: 2.2  
-**Date**: 2025/11/07  
+**Version**: 2.3  
+**Date**: 2025/11/08  
 **Author**: Miguel A. Risco-Castillo  
 
 **sba webpage**: http://sba.accesus.com  
@@ -58,7 +58,6 @@ entity DDC264 is
     -- DDC264 DATA INTERFACE
     DDC_DVALID  : out std_logic;           -- Data valid signal active low (indicates when DDC_DOUT is stable and can be sampled)
     DDC_DCLK    : out std_logic;           -- Data clock signal (used to synchronize data transfer)
-    DDC_DIN     : out std_logic;           -- Serial data input to DDC264 (used for configuration or control)
     DDC_DOUT    : out std_logic            -- Serial data output from DDC264 (used to read conversion results)
   );
 end DDC264;
@@ -110,12 +109,12 @@ SBAcall(DDC264_sendConfig);
 
 SBAcall(DDC264_waitCFGIDLE);      -- Wait for IDLE after configuration
 
+SBAcall(DDC264_startDataRead);
+SBAcall(DDC264_waitDATARDY); 
+
 DDC264_CTRL_bits(8) := '1';       -- Set CONV to '1'
 SBAwrite(DDC264_CTRL, DDC264_CTRL_bits);
 
 DDC264_CTRL_bits(8) := '0';       -- Set CONV to '0'
 SBAwrite(DDC264_CTRL, DDC264_CTRL_bits);
-
-SBAcall(DDC264_startDataRead);
-SBAcall(DDC264_waitDATARDY); 
 ```
