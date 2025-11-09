@@ -12,7 +12,7 @@
 
 **Description**: Preliminary version of SBA Slave IP Core adapter for the DDC264  
 The minimum data bus width is 20 bits.  
-The Register Select uses the four least significant bits of the address bus.  
+The IP core uses the four least significant bits of the address bus.  
 
 * Write:  
 **0000 x"0"**: Control register  
