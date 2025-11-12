@@ -2,37 +2,38 @@
 - - -
 ![](image.png)
 
-**Version**: 2.3  
-**Date**: 2025/11/08  
+**Version**: 2.4  
+**Date**: 2025/11/12  
 **Author**: Miguel A. Risco-Castillo  
 
 **sba webpage**: http://sba.accesus.com  
 **core webpage**: https://github.com/mriscoc/SBA-Library/tree/master/DDC264  
 **DDC264 datasheet**: https://www.ti.com/lit/ds/symlink/ddc264.pdf  
 
-**Description**: Preliminary version of SBA Slave IP Core adapter for the DDC264  
+**Description**: SBA Slave IP Core adapter for the DDC264  
 The minimum data bus width is 20 bits.  
-The IP core uses the four least significant bits of the address bus.  
-
-* Write:  
-**0000 x"0"**: Control register  
-  bit(0) <- start to shift configuration word to DDC_DIN_CFG  
-  bit(1) <- start to read data registers from DDC_DOUT  
-  bit(8) <- set/reset DDC_CONV  
-**0001 x"1"** : Configuration Word  
-**0010 x"2"** : bit(5..0) <- Select data register to read (0 to 63)
-* Read:  
-**0000 x"0"** : Status register (FSMs state, DVALID, Data Ready, etc.)  
-  bit(15..12) <- Configuration FSM state (0:POWER_UP, 1:IDLE, 2:RESET_PULSE, 3:WAIT_WTRST, 4:PREPARE_CFG, 5:SHIFT_CFG, 6:WAIT_WTWR)  
-  bit(11..8)  <- Read FSM state (0:IDLE, 1:START_SQNC, 2:SHIFT_READ, 3:END_SQNC)  
-  bit(7)      <- Data ready flag (1: all 64 data registers have been read, 0: not ready)  
-  bit(6)      <- DDC_DVALID signal (0: valid data available (active low), 1: data not valid)  
-  bit(5..0)   <- Reserved (always 0)  
-**0001 x"1"** : Read back configuration word  
-**0010 x"2"** : Read data register selected previously  
-
+The IP core uses the two least significant bits of the address bus.  
 
 ```vhdl
+-- Write:
+-- 00 x"0": Control register
+--   bit(0) <- start to shift configuration word to DDC_DIN_CFG
+--   bit(1) <- start to read data registers from DDC_DOUT
+--   bit(8) <- set/reset DDC_CONV
+--
+-- 01 x"1" : Configuration Word
+-- 10 x"2" : bit(5..0) <- Select data register to read (0 to 63)
+--
+-- Read:
+-- 00 x"0" : Status register (FSMs state, DVALID, Data Ready, etc.)
+--   bit(15..12) <- Configuration FSM state (0:POWER_UP, 1:IDLE, 2:RESET_PULSE, 3:WAIT_WTRST, 4:PREPARE_CFG, 5:SHIFT_CFG, 6:WAIT_WTWR)
+--   bit(11..8)  <- Read FSM state (0:IDLE, 1:START_SQNC, 2:SHIFT_READ, 3:END_SQNC)
+--   bit(7)      <- Data ready flag (1: all 64 data registers have been read, 0: not ready)
+--   bit(6)      <- DDC_DVALID signal (0: valid data available (active low), 1: data not valid)
+--   bit(5..0)   <- Reserved (always 0)
+-- 01 x"1" : Read back configuration word
+-- 10 x"2" : Read data register selected previously
+
 entity DDC264 is
   generic (
     debug       : positive :=1;
@@ -69,6 +70,9 @@ Variables:
 ```vhdl
    variable DDC264_Config_World : unsigned(15 downto 0) := x"0000"; -- DDC264 configuration word
    variable DDC264_CTRL_bits    : unsigned(15 downto 0) := x"0000"; -- Current value of the Control register
+   alias    DDC264_DVALID : std_logic is dati(6);    -- DDC264 DVALID signal
+   alias    DDC264_DATRDY : std_logic is dati(7);    -- DDC264 Data ready signal
+   alias    CONV : std_logic is DDC264_CTRL_bits(8); -- CONV signal
 ```
 Routines:
 
@@ -94,7 +98,7 @@ Routines:
 -- /L:DDC264_waitDATARDY
 => SBAread(DDC264_CTRL);             -- Read DDC264 Status
 -- /L:DDC264_waitDATARDY_loop
-=> if dati(7) /= '1' then            -- Is status_data_rdy /= 1 ?
+=> if DDC264_DATRDY /= '1' then            -- Is status_data_rdy /= 1 ?
      SBAjump(DDC264_waitDATARDY_loop);         -- try again
    else
      SBAret;
@@ -112,9 +116,11 @@ SBAcall(DDC264_waitCFGIDLE);      -- Wait for IDLE after configuration
 SBAcall(DDC264_startDataRead);
 SBAcall(DDC264_waitDATARDY); 
 
-DDC264_CTRL_bits(8) := '1';       -- Set CONV to '1'
+CONV := '0';       -- Set CONV to '0'
 SBAwrite(DDC264_CTRL, DDC264_CTRL_bits);
 
-DDC264_CTRL_bits(8) := '0';       -- Set CONV to '0'
+CONV := not CONV;  -- Toggle CONV
 SBAwrite(DDC264_CTRL, DDC264_CTRL_bits);
+
+
 ```

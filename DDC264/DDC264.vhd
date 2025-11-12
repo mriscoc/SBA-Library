@@ -3,36 +3,61 @@
 --
 -- Title: DDC264 IP Core
 --
--- Version: 2.3
--- Date: 2025/11/08
+-- Version: 2.4
+-- Date: 2025/11/11
 -- Author: Miguel A. Risco-Castillo
 --
 -- sba webpage: http://sba.accesus.com
 -- core webpage: https://github.com/mriscoc/SBA-Library/tree/master/DDC264
 --
--- Description: Preliminary version of SBA Slave IP Core adapter for the DDC264
+-- Description: SBA Slave IP Core adapter for the DDC264
 -- The minimum data bus width is 20 bits.
--- The IP core uses the four least significant bits of the address bus.
+-- The Register Select uses the two least significant bits of the address bus.
 --
 -- Write:
--- 0000 x"0": Control register
+-- 00 x"0": Control register
 --   bit(0) <- start to shift configuration word to DDC_DIN_CFG
 --   bit(1) <- start to read data registers from DDC_DOUT
 --   bit(8) <- set/reset DDC_CONV
 --
--- 0001 x"1" : Configuration Word
--- 0010 x"2" : bit(5..0) <- Select data register to read (0 to 63)
+-- 01 x"1" : Configuration Word
+-- 10 x"2" : bit(5..0) <- Select data register to read (0 to 63)
 --
 -- Read:
--- 0000 x"0" : Status register (FSMs state, DVALID, Data Ready, etc.)
+-- 00 x"0" : Status register (FSMs state, DVALID, Data Ready, etc.)
 --   bit(15..12) <- Configuration FSM state (0:POWER_UP, 1:IDLE, 2:RESET_PULSE, 3:WAIT_WTRST, 4:PREPARE_CFG, 5:SHIFT_CFG, 6:WAIT_WTWR)
 --   bit(11..8)  <- Read FSM state (0:IDLE, 1:START_SQNC, 2:SHIFT_READ, 3:END_SQNC)
 --   bit(7)      <- Data ready flag (1: all 64 data registers have been read, 0: not ready)
 --   bit(6)      <- DDC_DVALID signal (0: valid data available (active low), 1: data not valid)
 --   bit(5..0)   <- Reserved (always 0)
--- 0001 x"1" : Read back configuration word
--- 0010 x"2" : Read data register selected previously
+-- 01 x"1" : Read back configuration word
+-- 10 x"2" : Read data register selected previously
 --
+--------------------------------------------------------------------------------
+-- Copyright:
+--
+-- (c) Miguel A. Risco-Castillo
+--
+-- This code, modifications, derivate work or based upon, can not be used or
+-- distributed without the complete credits on this header.
+--
+-- This version is released under the GNU/GLP license
+-- http://www.gnu.org/licenses/gpl.html
+-- if you use this component for your research please include the appropriate
+-- credit of Author.
+--
+-- The code may not be included into ip collections and similar compilations
+-- which are sold. If you want to distribute this code for money then contact me
+-- first and ask for my permission.
+--
+-- These copyright notices in the source code may not be removed or modified.
+-- If you modify and/or distribute the code to any third party then you must not
+-- veil the original author. It must always be clearly identifiable.
+--
+-- Although it is not required it would be a nice move to recognize my work by
+-- adding a citation to the application's and/or research.
+--
+-- FOR COMMERCIAL PURPOSES REQUEST THE APPROPRIATE LICENSE FROM THE AUTHOR.
 --------------------------------------------------------------------------------
 
 Library ieee;
@@ -42,7 +67,7 @@ use ieee.math_real.all;
 
 entity DDC264 is
   generic (
-    debug       : positive :=1;
+    debug       : natural := 1;
     infreq      : positive := 50E6         -- Main frequency of CLK_I (50 MHz)
   );
   port (
@@ -97,10 +122,10 @@ architecture DDC264_arch of DDC264 is
   constant WTWR_WAIT_CYCLES : natural := T_WTWR_US * F_MHZ;
 
   -- SBA Address Definitions
-  alias s_address         : std_logic_vector is ADR_I(3 downto 0);
-  constant ADDR_CTRL      : std_logic_vector(3 downto 0) := x"0";
-  constant ADDR_CFG_WORD  : std_logic_vector(3 downto 0) := x"1";
-  constant ADDR_DATA_REG  : std_logic_vector(3 downto 0) := x"2";
+  alias s_address         : std_logic_vector is ADR_I(1 downto 0);
+  constant ADDR_CTRL      : std_logic_vector(1 downto 0) := "00";
+  constant ADDR_CFG_WORD  : std_logic_vector(1 downto 0) := "01";
+  constant ADDR_DATA_REG  : std_logic_vector(1 downto 0) := "10";
 
   -- Stores the 16-bit Configuration Word and status register
   signal Config_Word_Reg : std_logic_vector(15 downto 0) := (others => '0');
@@ -357,12 +382,14 @@ begin
       read_state <= IDLE;
       data_ready <= '0';
       data_reg_counter <= 63;
+    elsif STB_I = '1' and WE_I = '0' and s_address = ADDR_DATA_REG then
+      data_ready <= '0';  -- Reset data_ready when register are readed
     elsif rising_edge(CLK_I) then
       case read_state is
 
         when IDLE =>
           if start_read_cmd = '1' then
-              data_ready <= '0';
+              data_reg_counter <= 63;
               read_state <= START_SQNC;
           end if;
 
@@ -381,6 +408,7 @@ begin
           else
             data_ready <= '1';
             read_state <= IDLE;
+            if debug>0 then report "Data is ready to read"; end if;
           end if;
 
         when others =>
@@ -391,8 +419,8 @@ begin
   end process;
 
 
-  -- SBA Interface Process (Read/Write)
-  process(CLK_I)
+  -- SBA Interface Write Process
+  process(RST_I, CLK_I)
   begin
     if (RST_I='1') then
       Config_Word_Reg  <= (others => '0');
@@ -404,16 +432,20 @@ begin
           when ADDR_CTRL =>
             if DAT_I(0) = '1' then
               start_config_cmd <= '1'; -- Bit 0 starts configuration sequence
+              if debug>0 then report "Config command received"; end if;
             end if;
             if DAT_I(1) = '1' then
               start_read_cmd <= '1';   -- Bit 1 starts read sequence
+              if debug>0 then report "Read command received"; end if;
             end if;
             s_ddc_conv_o <= DAT_I(8);  -- Bit 8 sets CONV state
           when ADDR_CFG_WORD =>
             Config_Word_Reg <= DAT_I(Config_Word_Reg'range);
             data_format <= DAT_I(8);   -- Bit 8 sets data format
+            if debug>0 then report "Configuration word (hex): " & to_hstring(DAT_I); end if;
           when ADDR_DATA_REG =>
             reg_to_read <= to_integer(unsigned(DAT_I(5 downto 0)));
+            if debug>1 then report "Channel selected: " & integer'image(to_integer(unsigned(DAT_I(5 downto 0)))); end if;
           when others =>
             null;
         end case;
