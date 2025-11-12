@@ -1,19 +1,22 @@
 -- File Name: TIMER.tb.vhd
 -- Title: Testbench
--- Version: 1.0
--- Date: 2017/05/12
+-- Version: 2.0
+-- Date: 2025/11/12
 -- Author: Miguel A. Risco Castillo
 -- Description: Vhdl Test Bench for IP Core TIMER
 --------------------------------------------------------------------------------
 
-LIBRARY ieee;                                               
-USE ieee.std_logic_1164.all;                                
+library ieee;
+use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-ENTITY TIMER_test IS
-END TIMER_test;
+library std;
+use std.env.all; -- Include the env package
 
-ARCHITECTURE TIMER_arch OF TIMER_test IS
+entity testbench IS
+end testbench;
+
+architecture TIMER_arch OF testbench IS
 
 constant chans : positive:= 4;                   -- Four channels
 

@@ -3,8 +3,8 @@
 -- TIMER
 --
 -- Title: Timer Module for SBA
--- Version 0.2
--- Date: 2017/05/22
+-- Version 1.1
+-- Date: 2025/11/12
 -- Author: Miguel A. Risco-Castillo
 --
 -- sba webpage: http://sba.accesus.com
@@ -28,6 +28,10 @@
 -- chans: number of timers
 --
 -- Release Notes:
+--
+-- v1.1 2025/11/12
+-- Better address decoding
+-- Debug messages
 --
 -- v0.2 2017/05/22
 -- Added Output Enable control bit, change in IFprocess
@@ -68,6 +72,7 @@ use ieee.numeric_std.all;
 
 Entity TIMER is
 generic (
+  debug:natural:=1;
   chans:positive:=4
   );
 port (
@@ -86,20 +91,22 @@ port (
 end TIMER;
 
 Architecture TIMER_Arch of TIMER is
-constant TMRWIDTH:integer:=32;
-type tTMR is array (0 to chans-1) of unsigned(TMRWIDTH-1 downto 0);
-signal TMRi,CNTi:tTMR;
-signal TOUTi:std_logic_vector(chans-1 downto 0);
-signal CH:integer range 0 to chans-1;
-signal TMREN:std_logic_vector(chans-1 downto 0); -- Timer Enable
-signal TMRIE:std_logic_vector(chans-1 downto 0); -- Timer Interrupt Enable
-signal TMRIF:std_logic_vector(chans-1 downto 0); -- Timer Interrupt Flag
-signal TMROE:std_logic_vector(chans-1 downto 0); -- Timer Output Enable
+  constant TMRWIDTH:integer:=32;
+  type tTMR is array (0 to chans-1) of unsigned(TMRWIDTH-1 downto 0);
+  signal TMRi,CNTi:tTMR;
+  signal TOUTi:std_logic_vector(chans-1 downto 0);
+  signal CH:integer range 0 to chans-1;
+  signal TMREN:std_logic_vector(chans-1 downto 0); -- Timer Enable
+  signal TMRIE:std_logic_vector(chans-1 downto 0); -- Timer Interrupt Enable
+  signal TMRIF:std_logic_vector(chans-1 downto 0); -- Timer Interrupt Flag
+  signal TMROE:std_logic_vector(chans-1 downto 0); -- Timer Output Enable
 
-constant TMRDATL:integer:=0;
-constant TMRDATH:integer:=1;
-constant TMRCFG:integer:=2;
-constant TMRCHS:integer:=3;
+  -- SBA Address definitions
+  alias ADRi       : std_logic_vector is ADR_I(1 downto 0);
+  constant TMRDATL : std_logic_vector(1 downto 0) := "00";
+  constant TMRDATH : std_logic_vector(1 downto 0) := "01";
+  constant TMRCFG  : std_logic_vector(1 downto 0) := "10";
+  constant TMRCHS  : std_logic_vector(1 downto 0) := "11";
 
 begin
 
@@ -120,22 +127,25 @@ begin
   end loop;
 end process CounterProcess;
 
-IFProcess : process(RST_I,STB_I,WE_I,CNTi,CLK_I,CH)
+IFProcess : process(RST_I, CLK_I)
 begin
   if (RST_I='1') then
     TMRIF <= (others=>'0');
   elsif rising_edge(CLK_I) then
-    if ((STB_I='1') and (WE_I='0')) then TMRIF(CH) <= '0'; end if;
+    if ((STB_I='1') and (WE_I='0')) then
+      if debug>1 and TMRIF(CH) = '1' then report "Timer " & integer'image(CH) & " INTERRUPT SERVED"; end if;
+      TMRIF(CH) <= '0';
+    end if;
     for i in 0 to chans-1 loop
       if CNTi(i) = TMRi(i) then
+        if debug>1 and TMRIE(i)='1' then report "Timer " & integer'image(i) & " INTERRUPT"; end if;
         TMRIF(i) <= TMRIE(i);
       end if;
     end loop;
   end if;
 end process IFProcess;
 
-SBAWriteProcess : process(CLK_I,RST_I,STB_I,WE_I,ADR_I)
-variable ADRi:integer;
+SBAWriteProcess : process(RST_I, CLK_I)
 variable CHi:integer;
 begin
   if (RST_I='1') then
@@ -145,7 +155,6 @@ begin
     TMROE <= (others=>'0');
     TMRi  <= (others=>(others=>'1'));
   elsif rising_edge(CLK_I) and (STB_I='1') and (WE_I='1') then
-    ADRi := to_integer(unsigned(ADR_I(1 downto 0)));
     case ADRi is
        When TMRDATL => TMRi(CH)(15 downto 0 ) <= resize(unsigned(DAT_I),16);
        When TMRDATH => TMRi(CH)(31 downto 16) <= resize(unsigned(DAT_I),16);
@@ -161,21 +170,15 @@ begin
   end if;
 end process SBAWriteProcess;
 
-SBAReadProcess : process(RST_I,STB_I,WE_I,ADR_I,CH,CNTi,TMROE,TMRIF,TMRIE,TMREN,TOUTi)
-variable ADRi:integer;
+SBAReadProcess : process(ADRi)
 begin
-  if (RST_I='0') and (STB_I='1') and (WE_I='0') then
-    ADRi := to_integer(unsigned(ADR_I(1 downto 0)));
-    case ADRi is
-       When TMRDATL => DAT_O <= std_logic_vector(resize(CNTi(CH)(15 downto 0 ),DAT_O'length));
-       When TMRDATH => DAT_O <= std_logic_vector(resize(CNTi(CH)(31 downto 16),DAT_O'length));
-       When TMRCFG  => DAT_O <= (DAT_O'length-1 downto 5=>'0')&TOUTi(CH)&TMROE(CH)&TMRIF(CH)&TMRIE(CH)&TMREN(CH);
-       When TMRCHS  => DAT_O <= std_logic_vector(to_unsigned(CH,16));
-       When OTHERS  => DAT_O <= (DAT_O'range=>'X');
-    end case;
-  else
-    DAT_O <= (DAT_O'range=>'X');
-  end if;
+  case ADRi is
+    When TMRDATL => DAT_O <= std_logic_vector(resize(CNTi(CH)(15 downto 0 ),DAT_O'length));
+    When TMRDATH => DAT_O <= std_logic_vector(resize(CNTi(CH)(31 downto 16),DAT_O'length));
+    When TMRCFG  => DAT_O <= (DAT_O'length-1 downto 5=>'0')&TOUTi(CH)&TMROE(CH)&TMRIF(CH)&TMRIE(CH)&TMREN(CH);
+    When TMRCHS  => DAT_O <= std_logic_vector(to_unsigned(CH,DAT_O'length));
+    When OTHERS  => DAT_O <= (DAT_O'range=>'X');
+  end case;
 end process SBAReadProcess;
 
 TOUT <= TOUTi;

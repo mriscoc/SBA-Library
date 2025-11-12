@@ -5,14 +5,18 @@ TIMER
 TIMER Module for SBA
 --------------------
 
-**Version:** 0.2  
-**Date:** 2017/04/21  
+**Version:** 1.1  
+**Date:** 2025/11/12  
 **Author:** Miguel A. Risco-Castillo  
 **Repository URL:** <https://github.com/mriscoc/SBA_Library/blob/master/TIMER>  
 
 Based on SBA v1.1 guidelines
 
 **Release Notes:**
+
+- v1.1 2025/11/12  
+  Better address decoding  
+   Debug messages  
 
 - v0.2 2017/05/22  
   Added Output Enable control bit, change in IFprocess  
