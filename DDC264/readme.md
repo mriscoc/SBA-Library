@@ -2,17 +2,17 @@
 - - -
 ![](image.png)
 
-**Version**: 2.4  
-**Date**: 2025/11/12  
-**Author**: Miguel A. Risco-Castillo  
+Version: 2.5
+Date: 2025/11/13
+Author: Miguel A. Risco-Castillo
 
-**sba webpage**: http://sba.accesus.com  
-**core webpage**: https://github.com/mriscoc/SBA-Library/tree/master/DDC264  
-**DDC264 datasheet**: https://www.ti.com/lit/ds/symlink/ddc264.pdf  
+**sba webpage**: http://sba.accesus.com
+**core webpage**: https://github.com/mriscoc/SBA-Library/tree/master/DDC264
+**DDC264 datasheet**: https://www.ti.com/lit/ds/symlink/ddc264.pdf
 
-**Description**: SBA Slave IP Core adapter for the DDC264  
-The minimum data bus width is 20 bits.  
-The IP core uses the two least significant bits of the address bus.  
+**Description**: SBA Slave IP Core adapter for the DDC264
+The minimum data bus width is 20 bits.
+The IP core uses the two least significant bits of the address bus.
 
 ```vhdl
 -- Write:
@@ -102,7 +102,7 @@ Routines:
      SBAjump(DDC264_waitDATARDY_loop);         -- try again
    else
      SBAret;
-   end if;  
+   end if;
 ```
 Example of usage:
 ```vhdl
@@ -114,7 +114,7 @@ SBAcall(DDC264_sendConfig);
 SBAcall(DDC264_waitCFGIDLE);      -- Wait for IDLE after configuration
 
 SBAcall(DDC264_startDataRead);
-SBAcall(DDC264_waitDATARDY); 
+SBAcall(DDC264_waitDATARDY);
 
 CONV := '0';       -- Set CONV to '0'
 SBAwrite(DDC264_CTRL, DDC264_CTRL_bits);

@@ -3,8 +3,8 @@
 --
 -- Title: DDC264 IP Core
 --
--- Version: 2.4
--- Date: 2025/11/11
+-- Version: 2.5
+-- Date: 2025/11/13
 -- Author: Miguel A. Risco-Castillo
 --
 -- sba webpage: http://sba.accesus.com
@@ -382,9 +382,10 @@ begin
       read_state <= IDLE;
       data_ready <= '0';
       data_reg_counter <= 63;
-    elsif STB_I = '1' and WE_I = '0' and s_address = ADDR_DATA_REG then
-      data_ready <= '0';  -- Reset data_ready when register are readed
     elsif rising_edge(CLK_I) then
+      if STB_I = '1' and WE_I = '0' and s_address = ADDR_DATA_REG then
+        data_ready <= '0';  -- Reset data_ready when register are readed
+      end if;
       case read_state is
 
         when IDLE =>

@@ -1,6 +1,6 @@
 -- /SBA: Program Details -------------------------------------------------------
 -- Snippet: DDC264 support routines
--- Version: 2.4
+-- Version: 2.5
 -- Date: 2025/11/12
 -- Author: Miguel A. Risco-Castillo
 -- Description: Routines to communicate with a DDC264
@@ -15,7 +15,7 @@
 --
 -- CONV := '0';       -- Set CONV to '0'
 -- SBAwrite(DDC264_CTRL, DDC264_CTRL_bits);
--- 
+--
 -- CONV := not CONV;  -- Toggle CONV
 -- SBAwrite(DDC264_CTRL, DDC264_CTRL_bits);
 --
