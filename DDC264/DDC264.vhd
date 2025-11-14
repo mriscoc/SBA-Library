@@ -3,8 +3,8 @@
 --
 -- Title: DDC264 IP Core
 --
--- Version: 2.5
--- Date: 2025/11/13
+-- Version: 2.6
+-- Date: 2025/11/14
 -- Author: Miguel A. Risco-Castillo
 --
 -- sba webpage: http://sba.accesus.com
@@ -419,6 +419,15 @@ begin
     end if;
   end process;
 
+  -- DDC CONV synchronizer
+  process(RST_I, s_ddc_clk_o)
+  begin
+    if RST_I = '1' then
+      DDC_CONV <= '0';
+    elsif falling_edge(s_ddc_clk_o) then
+      DDC_CONV <= s_ddc_conv_o;
+    end if;
+  end process;
 
   -- SBA Interface Write Process
   process(RST_I, CLK_I)
@@ -464,7 +473,6 @@ begin
 
   -- Physical output port mapping
   DDC_CLK        <= s_ddc_clk_o;
-  DDC_CONV       <= s_ddc_conv_o;
   DDC_DIN_CFG    <= s_ddc_din_cfg_reg(15);  -- MSB
   DDC_CLK_CFG    <= s_ddc_clk_cfg_o;
   DDC_RESET      <= s_ddc_reset_o;

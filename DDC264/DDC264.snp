@@ -1,6 +1,6 @@
 -- /SBA: Program Details -------------------------------------------------------
 -- Snippet: DDC264 support routines
--- Version: 2.5
+-- Version: 2.6
 -- Date: 2025/11/12
 -- Author: Miguel A. Risco-Castillo
 -- Description: Routines to communicate with a DDC264

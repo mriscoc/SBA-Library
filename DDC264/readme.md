@@ -2,8 +2,8 @@
 - - -
 ![](image.png)
 
-Version: 2.5
-Date: 2025/11/13
+Version: 2.6
+Date: 2025/11/14
 Author: Miguel A. Risco-Castillo
 
 **sba webpage**: http://sba.accesus.com
