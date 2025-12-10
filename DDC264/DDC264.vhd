@@ -3,8 +3,8 @@
 --
 -- Title: DDC264 IP Core
 --
--- Version: 2.6
--- Date: 2025/11/14
+-- Version: 3.1
+-- Date: 2025/12/09
 -- Author: Miguel A. Risco-Castillo
 --
 -- sba webpage: http://sba.accesus.com
@@ -21,13 +21,13 @@
 --   bit(8) <- set/reset DDC_CONV
 --
 -- 01 x"1" : Configuration Word
--- 10 x"2" : bit(5..0) <- Select data register to read (0 to 63)
+-- 10 x"2" : Select data register to read (0 to NUM_CHANNELS - 1)
 --
 -- Read:
 -- 00 x"0" : Status register (FSMs state, DVALID, Data Ready, etc.)
 --   bit(15..12) <- Configuration FSM state (0:POWER_UP, 1:IDLE, 2:RESET_PULSE, 3:WAIT_WTRST, 4:PREPARE_CFG, 5:SHIFT_CFG, 6:WAIT_WTWR)
 --   bit(11..8)  <- Read FSM state (0:IDLE, 1:START_SQNC, 2:SHIFT_READ, 3:END_SQNC)
---   bit(7)      <- Data ready flag (1: all 64 data registers have been read, 0: not ready)
+--   bit(7)      <- Data ready flag (1: all data registers have been read from the DDC264, 0: not ready)
 --   bit(6)      <- DDC_DVALID signal (0: valid data available (active low), 1: data not valid)
 --   bit(5..0)   <- Reserved (always 0)
 -- 01 x"1" : Read back configuration word
@@ -68,7 +68,8 @@ use ieee.math_real.all;
 entity DDC264 is
   generic (
     debug       : natural := 1;
-    infreq      : positive := 50E6         -- Main frequency of CLK_I (50 MHz)
+    infreq      : positive := 50E6;        -- Main frequency of CLK_I (50 MHz)
+    devices     : positive := 1            -- Number of devices in the Daisy chain
   );
   port (
     -- SBA INTERFACE PORTS (SLAVE)
@@ -100,26 +101,29 @@ architecture DDC264_arch of DDC264 is
   -- Time is based on the CLK_I period (1 / infreq).
   constant F_MHZ : integer := infreq / 1000000;
 
-  -- 1. tPOR: Time between power-up and first reset = 250 ms = 250,000 µs.
+  -- tPOR: Time between power-up and first reset = 250 ms = 250,000 µs.
   -- Cycles = (250,000 µs) / (1 / infreq) = 250,000 * infreq / 1,000,000
   constant T_POWER_UP_US : integer := 3;  -- 3 us
   -- constant T_POWER_UP_US : integer := 250E3;  -- 250 ms
   constant POWER_UP_CYCLES : natural := T_POWER_UP_US * F_MHZ;
 
-  -- 2. tRST: Minimum pulse width for RESET active = 1 µs.
+  -- tRST: Minimum pulse width for RESET active = 1 µs.
   -- Cycles = (1 µs) / (1 / infreq) = infreq / 1,000,000
   constant T_RST_US : integer := 1;
   constant RST_PULSE_CYCLES : natural := T_RST_US * F_MHZ;
 
-  -- 3. tWTRST: Wait Required from Reset High to First Rising Edge of CLK_CFG = 2 µs.
+  -- tWTRST: Wait Required from Reset High to First Rising Edge of CLK_CFG = 2 µs.
   -- Cycles = (2 µs) / (1 / infreq) = 2 * infreq / 1,000,000
   constant T_WTRST_US : integer := 2;
   constant WTRST_WAIT_CYCLES : natural := T_WTRST_US * F_MHZ;
 
-  -- 4. tWTWR: Wait Required from Last CLK_CFG of Write Operation to First DCLK of Read Operation = 2 µs.
+  -- tWTWR: Wait Required from Last CLK_CFG of Write Operation to First DCLK of Read Operation = 2 µs.
   -- Cycles = (2 µs) / (1 / infreq) = 2 * infreq / 1,000,000
   constant T_WTWR_US : integer := 2;
   constant WTWR_WAIT_CYCLES : natural := T_WTWR_US * F_MHZ;
+
+  -- Total number of channel in the Daisy chain
+  constant NUM_CHANNELS : integer := devices * 64;
 
   -- SBA Address Definitions
   alias s_address         : std_logic_vector is ADR_I(1 downto 0);
@@ -171,13 +175,13 @@ architecture DDC264_arch of DDC264 is
   signal read_state : t_read_state := IDLE;
 
   -- Register counter
-  signal data_reg_counter   : natural range 0 to 64 := 0;
+  signal data_reg_counter   : natural range 0 to NUM_CHANNELS := 0;
 
   -- Bit counter for the data read shift register
   signal read_shift_counter   : natural range 0 to 20 := 0;
 
   -- Array for the data registers
-  type t_data_array is array (0 to 63) of std_logic_vector(19 downto 0);
+  type t_data_array is array (0 to (NUM_CHANNELS-1)) of std_logic_vector(19 downto 0);
   signal s_ddc_din_reg : t_data_array := (others => (others => '0'));
   signal Data_Reg : std_logic_vector(19 downto 0);
 
@@ -191,7 +195,7 @@ architecture DDC264_arch of DDC264 is
   signal data_format : std_logic := '1';
 
   -- Select register to read
-  signal reg_to_read : natural range 0 to 63 := 0;
+  signal reg_to_read : natural range 0 to (NUM_CHANNELS-1) := 0;
 
 begin
 
@@ -381,7 +385,7 @@ begin
     if RST_I = '1' then
       read_state <= IDLE;
       data_ready <= '0';
-      data_reg_counter <= 63;
+      data_reg_counter <= NUM_CHANNELS - 1;
     elsif rising_edge(CLK_I) then
       if STB_I = '1' and WE_I = '0' and s_address = ADDR_DATA_REG then
         data_ready <= '0';  -- Reset data_ready when register are readed
@@ -390,7 +394,7 @@ begin
 
         when IDLE =>
           if start_read_cmd = '1' then
-              data_reg_counter <= 63;
+              data_reg_counter <= NUM_CHANNELS - 1;
               read_state <= START_SQNC;
           end if;
 
@@ -454,8 +458,8 @@ begin
             data_format <= DAT_I(8);   -- Bit 8 sets data format
             if debug>0 then report "Configuration word (hex): " & to_hstring(DAT_I); end if;
           when ADDR_DATA_REG =>
-            reg_to_read <= to_integer(unsigned(DAT_I(5 downto 0)));
-            if debug>1 then report "Channel selected: " & integer'image(to_integer(unsigned(DAT_I(5 downto 0)))); end if;
+            reg_to_read <= to_integer(unsigned(DAT_I));
+            if debug>1 then report "Channel selected: " & integer'image(to_integer(unsigned(DAT_I))); end if;
           when others =>
             null;
         end case;

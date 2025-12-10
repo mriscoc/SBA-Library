@@ -22,7 +22,7 @@ ghdl -e --std=08 --work=work testbench
 if %ERRORLEVEL% NEQ 0 goto error
 
 echo Running simulation...
-ghdl -r --std=08 testbench --vcd=.\tb\tb.vcd --stop-time=100us
+ghdl -r --std=08 testbench --vcd=.\tb\tb.vcd --stop-time=300us
 
 echo Opening Surfer with saved configuration...
 surfer .\tb\tb.vcd -s .\tb\tb.surf.ron

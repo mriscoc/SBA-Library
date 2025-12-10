@@ -22,13 +22,13 @@ The IP core uses the two least significant bits of the address bus.
 --   bit(8) <- set/reset DDC_CONV
 --
 -- 01 x"1" : Configuration Word
--- 10 x"2" : bit(5..0) <- Select data register to read (0 to 63)
+-- 10 x"2" : Select data register to read (0 to NUM_CHANNELS - 1)
 --
 -- Read:
 -- 00 x"0" : Status register (FSMs state, DVALID, Data Ready, etc.)
 --   bit(15..12) <- Configuration FSM state (0:POWER_UP, 1:IDLE, 2:RESET_PULSE, 3:WAIT_WTRST, 4:PREPARE_CFG, 5:SHIFT_CFG, 6:WAIT_WTWR)
 --   bit(11..8)  <- Read FSM state (0:IDLE, 1:START_SQNC, 2:SHIFT_READ, 3:END_SQNC)
---   bit(7)      <- Data ready flag (1: all 64 data registers have been read, 0: not ready)
+--   bit(7)      <- Data ready flag (1: all data registers have been read from the DDC264, 0: not ready)
 --   bit(6)      <- DDC_DVALID signal (0: valid data available (active low), 1: data not valid)
 --   bit(5..0)   <- Reserved (always 0)
 -- 01 x"1" : Read back configuration word
@@ -36,8 +36,9 @@ The IP core uses the two least significant bits of the address bus.
 
 entity DDC264 is
   generic (
-    debug       : positive :=1;
-    infreq      : positive := 50E6         -- Main frequency of CLK_I (50 MHz)
+    debug       : natural := 1;
+    infreq      : positive := 50E6;        -- Main frequency of CLK_I (50 MHz)
+    devices     : positive := 1            -- Number of devices in the Daisy chain
   );
   port (
     -- SBA INTERFACE PORTS (SLAVE)

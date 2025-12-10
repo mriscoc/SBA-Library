@@ -68,7 +68,8 @@ signal doutshift : std_logic_vector(19 downto 0) := dataout;
 component DDC264
 generic(
   debug:positive:=debug;
-  infreq:positive:=freq
+  infreq:positive:=freq;
+  devices:positive:=2
 );
 port (
     -- SBA INTERFACE PORTS (SLAVE)
